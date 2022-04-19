@@ -1,0 +1,25 @@
+#!/bin/bash
+
+set -e
+
+qemu-system-x86_64                                        \
+  -m 2048M                                                \
+  -smp 2                                                  \
+  -boot c 	                                          \
+  -nographic                                              \
+  -nic user,hostfwd=tcp::10022-:22,mac=00:11:22:33:44:55  \
+  -nic socket,listen=:12345,mac=52:54:56:53:4B:51         \
+  -hda vib-qemu-demos-guest.qcow2
+
+  #-cdrom debian.iso                         \
+
+#qemu-system-x86_64                          \
+#  -m 512M -smp 2                            \
+#  -boot d 	                            \
+#  -nographic -serial mon:stdio              \
+  #-cdrom alpine-standard-3.15.3-x86_64.iso
+
+  #-nic socket,listen=:12345
+  #-hda alpine.qcow2                         \
+
+# vim: et:sw=2:sts=2
