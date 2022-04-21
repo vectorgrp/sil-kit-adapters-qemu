@@ -12,6 +12,25 @@ target_include_directories(asio INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/third_part
 target_compile_definitions(asio INTERFACE ASIO_STANDALONE=1)
 target_link_libraries(asio INTERFACE Threads::Threads)
 
+add_subdirectory(third_party/fmt)
+
+if(NOT IB_DIR)
+    message(FATAL_ERROR "Please set the PATH to the Integration Bus in IB_DIR: e.g."
+        " cmake -D IB_DIR=../IntegrationBus-x.y.z-Platform/")
+endif()
+message(STATUS "Searching IntegrationBus package in ${IB_DIR}")
+find_package(IntegrationBus
+    REQUIRED
+    CONFIG
+    NO_CMAKE_PACKAGE_REGISTRY
+    NO_DEFAULT_PATH
+    PATHS "${IB_DIR}"
+)
+
+if(NOT TARGET IntegrationBus::IntegrationBus)
+    message(FATAL_ERROR "Could not find Integration Bus package in ${IB_DIR}")
+endif()
+
 add_subdirectory(demos/guest)
 add_subdirectory(demos/host)
 
