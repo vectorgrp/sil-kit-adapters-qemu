@@ -97,7 +97,7 @@ int main(int argc, char**)
 
         if(argc == 2)
         {
-            participantName = "OtherParticipant";
+            participantName = "EthernetReader";
         }
         
         auto participantConfiguration = ib::cfg::ParticipantConfigurationFromString("");

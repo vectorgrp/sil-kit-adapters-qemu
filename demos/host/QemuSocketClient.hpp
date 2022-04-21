@@ -101,8 +101,6 @@ private:
 
                                      print_frame_data(frame_data);
 
-                                     // Remove first 4 Bytes -> Qemu Header
-                                     frame_data.erase(frame_data.begin(), frame_data.begin() + 3);
                                      mOnNewFrameHandler(frame_data);
                                      do_receive();
                                  });
