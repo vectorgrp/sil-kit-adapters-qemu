@@ -11,6 +11,7 @@
 #include "Ip4Address.hpp"
 
 #include "ArpIp4Packet.hpp"
+#include "Ip4Header.hpp"
 
 #include <iostream>
 #include <memory_resource>
@@ -119,6 +120,12 @@ private:
                             }
                             break;
                         }
+                        case EtherType::Ip4:
+                        {
+                            const auto [ip4Header, ip4Payload] = ParseIp4Header(ethernetPayload);
+
+                            fmt::print("{} + {} bytes payload", ip4Header, FormattedBuffer{ip4Payload});
+                        }
                         default: break;
                         }
 
@@ -163,15 +170,19 @@ private:
 
 int main()
 {
+#ifdef NDEBUG
     try
     {
+#endif
         asio::io_context ioContext;
         demo::QemuSocketClient client{ioContext, "localhost", "12345"};
         ioContext.run();
+#ifdef NDEBUG
     }
     catch (const std::exception& exception)
     {
         std::cerr << "error: " << exception.what() << std::endl;
         return EXIT_FAILURE;
     }
+#endif
 }

@@ -103,7 +103,7 @@ int main(int argc, char**)
         auto participantConfiguration = ib::cfg::ParticipantConfigurationFromString("");
 
         std::cout << "Creating participant '" << participantName << "' in domain " << domainId << std::endl;
-        auto participant = ib::CreateSimulationParticipant(participantConfiguration, participantName, domainId, false);
+        auto participant = ib::CreateParticipant(participantConfiguration, participantName, domainId, false);
         auto* ethController = participant->CreateEthController("Eth1");
 
         try

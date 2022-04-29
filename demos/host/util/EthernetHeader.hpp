@@ -4,6 +4,7 @@
 #include "ReadUintBe.hpp"
 #include "WriteUintBe.hpp"
 
+#include "ParseResult.hpp"
 #include "EthernetAddress.hpp"
 
 #include <optional>
@@ -15,13 +16,6 @@
 #include <fmt/format.h>
 
 namespace demo {
-
-template <typename Header>
-struct ParseResult
-{
-    Header header;
-    asio::const_buffer remaining;
-};
 
 enum struct EtherType : std::uint16_t
 {
