@@ -1,13 +1,19 @@
 
-add_executable(DirectQemuSocket
-    DirectQemuSocket.cpp
+add_library(
+    DemoUtil STATIC
 
+    util/BufferReader.cpp
+    util/BufferReader.hpp
+    util/BufferWriter.cpp
+    util/BufferWriter.hpp
     util/Enums.hpp
     util/Enums.cpp
     util/Exceptions.hpp
     util/Exceptions.cpp
     util/FormattedBuffer.cpp
     util/FormattedBuffer.hpp
+    util/InternetChecksum.cpp
+    util/InternetChecksum.hpp
     util/ParseResult.hpp
     util/ParseResult.cpp
     util/ReadUintBe.hpp
@@ -25,15 +31,43 @@ add_executable(DirectQemuSocket
 
     util/Ip4Header.hpp
     util/Ip4Header.cpp
+    util/Icmp4Header.hpp
+    util/Icmp4Header.cpp
 )
-target_link_libraries(DirectQemuSocket
-    PRIVATE
+target_include_directories(DemoUtil PUBLIC util)
+target_link_libraries(DemoUtil
+    PUBLIC
         asio
         fmt
 )
-target_include_directories(DirectQemuSocket
+
+add_library(DemoDevice STATIC
+    device/Device.hpp
+    device/Device.cpp
+)
+target_include_directories(DemoDevice PUBLIC device)
+target_link_libraries(DemoDevice
+    PUBLIC
+        DemoUtil
+)
+
+add_executable(IbDemoEthernetDevice
+    IbDemoEthernetDevice.cpp
+)
+target_link_libraries(IbDemoEthernetDevice
     PRIVATE
-        util
+        DemoDevice
+        IntegrationBus::IntegrationBus
+)
+
+add_executable(DirectQemuSocket
+    DirectQemuSocket.cpp
+)
+target_link_libraries(DirectQemuSocket
+    PRIVATE
+        DemoUtil
+        asio
+        fmt
 )
 
 add_executable(IbDemoEthernetQemu
@@ -42,6 +76,7 @@ add_executable(IbDemoEthernetQemu
 )
 target_link_libraries(IbDemoEthernetQemu
     PRIVATE
+        DemoUtil
         asio
         fmt
         IntegrationBus::IntegrationBus

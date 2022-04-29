@@ -64,20 +64,20 @@ inline auto ParseEthernetHeader(asio::const_buffer data) -> ParseResult<Ethernet
 
     if (const auto tpid = ReadUintBe<EtherType>(remaining); tpid == EtherType::Vlan_802_1ad)
     {
-        ethernetHeader.vlanTag8021ad = EthernetVlanTag{.tpid = tpid, .data = ReadUintBe<std::uint16_t>(remaining + 2)};
+        ethernetHeader.vlanTag8021ad = EthernetVlanTag{tpid, ReadUintBe<std::uint16_t>(remaining + 2)};
         remaining += 4;
     }
 
     if (const auto tpid = ReadUintBe<EtherType>(remaining); tpid == EtherType::Vlan_802_1q)
     {
-        ethernetHeader.vlanTag8021q = EthernetVlanTag{.tpid = tpid, .data = ReadUintBe<std::uint16_t>(remaining + 2)};
+        ethernetHeader.vlanTag8021q = EthernetVlanTag{tpid, ReadUintBe<std::uint16_t>(remaining + 2)};
         remaining += 4;
     }
 
     ethernetHeader.etherType = ReadUintBe<EtherType>(remaining);
     remaining += 2;
 
-    return {.header = ethernetHeader, .remaining = remaining};
+    return {ethernetHeader, remaining};
 }
 
 inline auto WriteEthernetHeader(const asio::mutable_buffer target, EthernetHeader ethernetHeader) -> std::size_t

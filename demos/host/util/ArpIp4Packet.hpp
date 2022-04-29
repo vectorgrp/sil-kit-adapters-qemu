@@ -64,11 +64,7 @@ inline auto ParseArpIp4Packet(asio::const_buffer data) -> ArpIp4Packet
     const auto tpa = ReadIp4Address(data + 24);
 
     return {
-        .operation = operation,
-        .senderHardwareAddress = sha,
-        .senderProtocolAddress = spa,
-        .targetHardwareAddress = tha,
-        .targetProtocolAddress = tpa,
+        operation, sha, spa, tha, tpa,
     };
 }
 

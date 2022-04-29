@@ -5,7 +5,6 @@
 #include <queue>
 #include <iterator>
 #include <stdexcept>
-#include <memory_resource>
 #include <optional>
 
 #include <cerrno>
@@ -47,10 +46,10 @@ public:
     {
         asio::connect(_socket, _resolver.resolve(host, service));
         std::cout << "connect success" << std::endl;
-        do_receive();
+        DoReceiveFrameFromQemu();
     }
 
-    void do_send(const std::vector<uint8_t>& data)
+    void SendEthernetFrameToQemu(const std::vector<uint8_t>& data)
     {
         _socket.async_send(asio::buffer(data.data(), data.size()), [](std::error_code ec, std::size_t bytes_sent) {
             if (ec)
@@ -64,7 +63,7 @@ public:
     }
 
 private:
-    void do_receive()
+    void DoReceiveFrameFromQemu()
     {
         asio::async_read(_socket, asio::buffer(_frame_size_buffer.data(), _frame_size_buffer.size()),
                          [this](const std::error_code ec, const std::size_t bytes_received) {
@@ -102,7 +101,7 @@ private:
                                      print_frame_data(frame_data);
 
                                      mOnNewFrameHandler(frame_data);
-                                     do_receive();
+                                     DoReceiveFrameFromQemu();
                                  });
                          });
     }

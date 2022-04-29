@@ -6,19 +6,18 @@
 #include "WriteUintBe.hpp"
 
 #include "EthernetAddress.hpp"
-#include "EthernetHeader.hpp"
-
 #include "Ip4Address.hpp"
 
+#include "EthernetHeader.hpp"
+
 #include "ArpIp4Packet.hpp"
+
 #include "Ip4Header.hpp"
+#include "Icmp4Header.hpp"
 
 #include <iostream>
 #include <memory_resource>
-#include <queue>
 #include <vector>
-#include <optional>
-#include <variant>
 
 #include <asio/ts/buffer.hpp>
 #include <asio/ts/internet.hpp>
@@ -123,8 +122,62 @@ private:
                         case EtherType::Ip4:
                         {
                             const auto [ip4Header, ip4Payload] = ParseIp4Header(ethernetPayload);
+                            fmt::print("{} + {} bytes payload\n", ip4Header, ip4Payload.size());
 
-                            fmt::print("{} + {} bytes payload", ip4Header, FormattedBuffer{ip4Payload});
+                            switch (ip4Header.protocol)
+                            {
+                            case Ip4Protocol::ICMP:
+                            {
+                                const auto [icmp4Header, icmp4Payload] = ParseIcmp4Header(ip4Payload);
+                                fmt::print("{} + {} bytes payload\n", icmp4Header, icmp4Payload.size());
+
+                                if (icmp4Header.type == Icmp4Type::EchoRequest)
+                                {
+                                    if (ip4Header.destinationAddress == ip4Address)
+                                    {
+                                        EthernetHeader replyEthernetHeader = ethernetHeader;
+                                        replyEthernetHeader.destination = replyEthernetHeader.source;
+                                        replyEthernetHeader.source = ethernetAddress;
+                                        fmt::print("Reply: {}\n", replyEthernetHeader);
+
+                                        Ip4Header replyIp4Header = ip4Header;
+                                        replyIp4Header.destinationAddress = replyIp4Header.sourceAddress;
+                                        replyIp4Header.sourceAddress = ip4Address;
+                                        fmt::print("Reply: {}\n", replyIp4Header);
+
+                                        Icmp4Header replyIcmp4Header = icmp4Header;
+                                        replyIcmp4Header.type = Icmp4Type::EchoReply;
+                                        fmt::print("Reply: {}\n", replyIcmp4Header);
+
+                                        auto reply = AllocateBuffer(frameSize + 4);
+                                        std::fill(reply.begin(), reply.end(), std::byte{});
+
+                                        auto dst = asio::buffer(reply) + 4;
+                                        const std::size_t replySize = dst.size();
+
+                                        dst += WriteEthernetHeader(dst, replyEthernetHeader);
+                                        dst += WriteIp4Header(dst, replyIp4Header);
+                                        auto icmp4Dst = dst;
+                                        dst += WriteIcmp4Header(dst, replyIcmp4Header);
+                                        asio::buffer_copy(dst, icmp4Payload);
+
+                                        InternetChecksum checksum;
+                                        checksum.AddBuffer(icmp4Dst);
+                                        checksum.AddBuffer(icmp4Payload);
+                                        WriteUintBe(icmp4Dst + 2, checksum.GetChecksum());
+
+                                        WriteUintBe<std::uint32_t>(asio::buffer(reply), replySize);
+
+                                        DoSend(asio::buffer(reply));
+                                    }
+                                }
+
+                                break;
+                            }
+                            default: break;
+                            }
+
+                            break;
                         }
                         default: break;
                         }
@@ -170,10 +223,15 @@ private:
 
 int main()
 {
+    std::setbuf(stdout, nullptr);
+    std::setbuf(stderr, nullptr);
+
 #ifdef NDEBUG
     try
     {
 #endif
+        fmt::print("SIL Kit - Qemu Demo\n");
+
         asio::io_context ioContext;
         demo::QemuSocketClient client{ioContext, "localhost", "12345"};
         ioContext.run();
