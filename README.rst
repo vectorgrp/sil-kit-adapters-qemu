@@ -2,10 +2,105 @@
 Vector SiL Kit (Vector Integration Bus) QEmu Demos
 ==================================================
 
-This is a set of demos which show how the Vector SiL Kit (Vector Integration
-Bus) can be attached to QEmu processes.
+This is a set of demos which show how the Vector SiL Kit (Vector Integration Bus) can be attached to QEmu processes.
 
-The goal is to provide documentation and some examples on how to set up QEmu
-and the development environment.
+The goal is to provide documentation and some examples on how to set up QEmu and the development environment.
 
-``git submodule update --init --recursive``
+Overview
+========
+
+IbDemoEthernetQemu
+------------------
+
+This demo application allows the user to attach simulated ethernet interface (``nic``) of a QEmu virtual machine to the
+IntegrationBus.
+
+The demo uses the *socket* backend provided by QEmu.
+It can be configured for the QEmu virtual machine using the following command line argument of QEmu:
+
+::
+
+    -nic socket,listen=:12345
+
+The argument of ``listen=`` specifies a TCP socket endpoint on which QEmu will listen for incoming connections.
+
+All *outgoing* ethernet frames on that particular virtual ethernet interface inside of the virtual machine are sent to
+all connected clients.
+Any *incoming* data from any connected clients is presented to virtual machine as an incoming ethernet frame on the
+virtual interface.
+
+The demo *optionally* takes the hostname and port of the configured socket as command line arguments.
+
+IbDemoEthernetDevice
+--------------------
+
+This demo application implements a very simple IntegrationBus participant with a single simulated ethernet controller.
+The application will reply to an ARP request and respond to ICMPv4 Echo Requests directed to it's hardcoded MAC address
+(``01:23:45:67:89:ab``) and IPv4 address (``192.168.12.35``).
+
+Building the Demos
+==================
+
+The demos are built using ``cmake`` (here with ``/.../vib-qemu-demos/build`` as the build-directory)::
+
+    cd /.../vib-qemu-demos
+    git submodule update --init --recursive
+    cmake -S. -Bbuild -G '...' -DIB_DIR=/path/to/vib/IntegrationBus-3.7.14-???/
+    cmake --build build --parallel
+
+The demo executables are available in ``build/bin`` (depending on the configured build directory).
+Additionally the ``IntegrationBus`` shared library (e.g. ``IntegrationBus[d]?.dll`` on Windows) is copied to that
+directory automatically.
+
+Running the QEmu and the Demos
+==============================
+
+This manual assumes you use WSL (Ubuntu) for running QEmu and use ``bash`` as your interactive shell.
+
+First change your current directory to the top-level in the ``vib-qemu-demos`` repository::
+
+    wsl$ cd /.../vib-qemu-demos
+
+Setup your WSL host (install ``virt-builder`` and a kernel image for use by ``virt-builder``)::
+
+    wsl$ sudo ./tools/setup-host-wsl2-ubuntu.sh
+
+Build the guest image and start it::
+
+    wsl$ ./tools/build-vib-qemu-demos-guest
+    wsl$ ./tools/run-vib-qemu-demos-guest
+
+QEmu forwards the guests SSH port on ``10022``, any interaction with the guest can then proceed via SSH::
+
+    wsl$ ssh -p10022 -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null root@localhost
+
+The password for the ``root`` user is ``root``.
+
+.. note:: The options to SSH deactivate host-key checking for this connection, otherwise you will have to edit your
+  ``known_hosts`` file if you decide to rebuild the guest image.
+
+Now is a good point to start the ``IbRegistry``, ``IbDemoEthernetQemu`` - which connects the QEmu virtual ethernet
+interface with the integration bus - and the ``ObDemoEthernetDevice`` in separate terminals::
+
+    wsl$ /path/to/vib/3.7.14/IntegrationBus/lib/cmake/IntegrationBus/bin/IbRegistry
+    wsl$ ./build/bin/IbDemoEthernetQemu
+    wsl$ ./build/bin/IbDemoEthernetDevice
+
+You can also start ``CANoe 16`` and load the ``EthernetDemoAsync.cfg`` from the ``vib-canoe-demos`` and start the
+measurement.
+
+When the virtual machine boots, the network interface created for hooking up with the IntegrationBus is ``down``.
+To activate it (without having an IP address assigned)::
+
+    guest# ip link set vib0 up
+
+And to add an IP address to the interface::
+
+    guest# ip addr add 192.168.12.34/24 dev vib0
+
+Then ping the demo device four times::
+
+    guest# ping -c4 192.168.12.35
+
+The ping requests should all receive responses.
+If CANoe is connected to the integration bus, all Ethernet traffic should be visible there as well.

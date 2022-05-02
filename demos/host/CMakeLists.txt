@@ -59,6 +59,9 @@ target_link_libraries(IbDemoEthernetDevice
         DemoDevice
         IntegrationBus::IntegrationBus
 )
+set_target_properties(IbDemoEthernetDevice PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY $<$<BOOL:ALWAYS>:${IB_QEMU_DEMOS_RUNTIME_OUTPUT_DIRECTORY}>
+)
 
 add_executable(IbDemoEthernetQemu
     IbDemoEthernetQemu.cpp
@@ -69,5 +72,14 @@ target_link_libraries(IbDemoEthernetQemu
         asio
         fmt
         IntegrationBus::IntegrationBus
+)
+set_target_properties(IbDemoEthernetQemu PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY $<$<BOOL:ALWAYS>:${IB_QEMU_DEMOS_RUNTIME_OUTPUT_DIRECTORY}>
+)
+add_custom_command(
+    TARGET IbDemoEthernetQemu
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND}
+    ARGS -E copy $<TARGET_PROPERTY:IntegrationBus::IntegrationBus,LOCATION> ${IB_QEMU_DEMOS_RUNTIME_OUTPUT_DIRECTORY}
 )
 

@@ -23,18 +23,19 @@ if(NOT IB_DIR)
         " cmake -D IB_DIR=../IntegrationBus-x.y.z-Platform/")
 endif()
 message(STATUS "Searching IntegrationBus package in ${IB_DIR}")
-find_package(IntegrationBus
+find_package(IntegrationBus 3.7.14
     REQUIRED
     CONFIG
     NO_CMAKE_PACKAGE_REGISTRY
     NO_DEFAULT_PATH
     PATHS "${IB_DIR}"
 )
-
 if(NOT TARGET IntegrationBus::IntegrationBus)
     message(FATAL_ERROR "Could not find Integration Bus package in ${IB_DIR}")
 endif()
 
-add_subdirectory(demos/guest)
+set(IB_QEMU_DEMOS_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
+
+add_subdirectory(demos/guest EXCLUDE_FROM_ALL)
 add_subdirectory(demos/host)
 
