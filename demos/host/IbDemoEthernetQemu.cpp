@@ -1,9 +1,7 @@
 // Copyright (c) Vector Informatik GmbH. All rights reserved.
 
 #include <algorithm>
-#include <cstring>
 #include <iostream>
-#include <sstream>
 #include <string>
 #include <thread>
 #include <vector>
@@ -28,11 +26,11 @@ using namespace std::chrono_literals;
 class QemuSocketClient
 {
 public:
-    QemuSocketClient(asio::io_context& io_context, std::string_view host, std::string_view service,
+    QemuSocketClient(asio::io_context& io_context, const std::string& host, const std::string& service,
                      std::function<void(std::vector<uint8_t>)> onNewFrameHandler)
         : _socket{io_context}
         , _resolver{io_context}
-        , mOnNewFrameHandler(onNewFrameHandler)
+        , _onNewFrameHandler(std::move(onNewFrameHandler))
     {
         asio::connect(_socket, _resolver.resolve(host, service));
         std::cout << "connect success" << std::endl;
@@ -42,7 +40,7 @@ public:
     void SendEthernetFrameToQemu(const std::vector<uint8_t>& data)
     {
         std::array<std::uint8_t, 4> frameSizeBytes = {};
-        demo::WriteUintBe<std::uint32_t>(asio::buffer(frameSizeBytes), data.size());
+        demo::WriteUintBe(asio::buffer(frameSizeBytes), std::uint32_t(data.size()));
 
         asio::write(_socket, asio::buffer(frameSizeBytes));
         asio::write(_socket, asio::buffer(data));
@@ -78,57 +76,27 @@ private:
                                          throw demo::IncompleteReadError{};
                                      }
 
-                                     auto frame_data = make_frame_data(frame_size);
+                                     auto frame_data = std::vector<std::uint8_t>(frame_size);
                                      asio::buffer_copy(
                                          asio::buffer(frame_data),
                                          asio::buffer(_frame_data_buffer.data(), _frame_data_buffer.size()),
                                          frame_size);
 
-                                     print_frame_data(frame_data);
+                                     _onNewFrameHandler(std::move(frame_data));
 
-                                     mOnNewFrameHandler(frame_data);
                                      DoReceiveFrameFromQemu();
                                  });
                          });
-    }
-
-    void print_frame_data(std::vector<uint8_t>& frame_data)
-    {
-        std::cout << "frame data ";
-        constexpr auto nibble_to_hex_char = [](const unsigned nibble) {
-            if (nibble < 10)
-                return '0' + nibble;
-            else
-                return 'a' + (nibble - 10u);
-        };
-
-        auto it = std::ostream_iterator<char>{std::cout};
-
-        std::size_t index = 0;
-        for (auto byte : frame_data)
-        {
-            if (index++ > 0)
-                *it++ = ':';
-            *it++ = nibble_to_hex_char((static_cast<unsigned>(byte) & 0xF0) >> 4u);
-            *it++ = nibble_to_hex_char((static_cast<unsigned>(byte) & 0x0F) >> 0u);
-        }
-    }
-
-    std::vector<uint8_t> make_frame_data(std::size_t size)
-    {
-        std::vector<uint8_t> frame_data;
-        frame_data.resize(size);
-        return frame_data;
     }
 
 private:
     asio::ip::tcp::socket _socket;
     asio::ip::tcp::resolver _resolver;
 
-    std::array<uint8_t, 4> _frame_size_buffer;
-    std::array<uint8_t, 4096> _frame_data_buffer;
+    std::array<uint8_t, 4> _frame_size_buffer = {};
+    std::array<uint8_t, 4096> _frame_data_buffer = {};
 
-    std::function<void(std::vector<uint8_t>)> mOnNewFrameHandler;
+    std::function<void(std::vector<uint8_t>)> _onNewFrameHandler;
 };
 
 std::string GetPayloadStringFromRawFrame(const std::vector<uint8_t>& rawFrame)
@@ -144,11 +112,11 @@ void EthAckCallback(eth::IEthController* /*controller*/, const eth::EthTransmitA
 {
     if (ack.status == eth::EthTransmitStatus::Transmitted)
     {
-        std::cout << ">> ACK for ETH Message with transmitId=" << ack.transmitId << std::endl;
+        std::cout << "IB >> Demo: ACK for ETH Message with transmitId=" << ack.transmitId << std::endl;
     }
     else
     {
-        std::cout << ">> NACK for ETH Message with transmitId=" << ack.transmitId;
+        std::cout << "IB >> Demo: NACK for ETH Message with transmitId=" << ack.transmitId;
         switch (ack.status)
         {
         case eth::EthTransmitStatus::Transmitted: break;
@@ -163,55 +131,62 @@ void EthAckCallback(eth::IEthController* /*controller*/, const eth::EthTransmitA
     }
 }
 
-void ReceiveEthMessage(eth::IEthController* /*controller*/, const eth::EthMessage& msg)
+int main(int argc, char** argv)
 {
-    auto rawFrame = msg.ethFrame.RawFrame();
-    auto payload = GetPayloadStringFromRawFrame(rawFrame);
+    const std::string participantConfigurationString =
+        R"({ "Logging": { "Sinks": [ { "Type": "Stdout", "Level": "Info" } ] } })";
 
-    std::cout << ">> ETH Message: \"" << payload << "\"" << std::endl;
-}
+    const std::string participantName = "EthernetQemu";
+    const std::uint32_t domainId = 42;
 
-void SendMessage(eth::IEthController* controller, std::vector<uint8_t> data)
-{
-    eth::EthFrame frame;
-    frame.SetRawFrame(data);
+    const std::string ethernetControllerName = "Eth1";
 
-    auto transmitId = controller->SendFrame(std::move(frame));
-    std::cout << "<< ETH Frame sent with transmitId=" << transmitId << std::endl;
-}
+    const std::string qemuHostname = [argc, argv]() -> std::string {
+        if (argc >= 2)
+        {
+            return argv[1];
+        }
+        return "localhost";
+    }();
+    const std::string qemuService = [argc, argv]() -> std::string {
+        if (argc >= 3)
+        {
+            return argv[2];
+        }
+        return "12345";
+    }();
 
-const std::uint32_t domainId = 42;
-const std::string participantName = "EthernetQemu";
-const std::string participantConfigurationString = R"(
-"Logging": { "Sinks": [ { "Type": "Stdout", "Level": "Info" } ] }
-)";
+    asio::io_context ioContext;
 
-int main(int argc, char**)
-{
     try
     {
         auto participantConfiguration = ib::cfg::ParticipantConfigurationFromString(participantConfigurationString);
 
         std::cout << "Creating participant '" << participantName << "' in domain " << domainId << std::endl;
         auto participant = ib::CreateSimulationParticipant(participantConfiguration, participantName, domainId, false);
-        auto* ethController = participant->CreateEthController("Eth1");
 
-        asio::io_context ioContext;
+        std::cout << "Creating ethernet controller '" << ethernetControllerName << "'" << std::endl;
+        auto* ethController = participant->CreateEthController(ethernetControllerName);
 
-        QemuSocketClient client{ioContext, "localhost", "12345", [ethController](std::vector<std::uint8_t> data) {
-                                    SendMessage(ethController, data);
-                                }};
+        const auto onReceiveEthernetFrameFromQemu = [ethController](std::vector<std::uint8_t> data) {
+            const auto frameSize = data.size();
+            auto transmitId = ethController->SendFrame(eth::EthFrame{std::move(data)});
+            std::cout << "QEmu >> IB: Ethernet frame (" << frameSize << " bytes, txId=" << transmitId << ")"
+                      << std::endl;
+        };
 
-        ethController->RegisterReceiveMessageHandler(
-            [&client](eth::IEthController* /*controller*/, const eth::EthMessage& msg) {
-                auto rawFrame = msg.ethFrame.RawFrame();
-                auto payload = GetPayloadStringFromRawFrame(rawFrame);
+        std::cout << "Creating QEmu ethernet connector for '" << qemuHostname << ":" << qemuService << "'" << std::endl;
+        QemuSocketClient client{ioContext, qemuHostname, qemuService, onReceiveEthernetFrameFromQemu};
 
-                client.SendEthernetFrameToQemu(rawFrame);
+        const auto onReceiveEthernetMessageFromIb = [&client](eth::IEthController* /*controller*/,
+                                                              const eth::EthMessage& msg) {
+            auto rawFrame = msg.ethFrame.RawFrame();
+            client.SendEthernetFrameToQemu(rawFrame);
 
-                std::cout << ">> ETH Message: \"" << payload << "\"" << std::endl;
-            });
+            std::cout << "IB >> QEmu: Ethernet frame (" << rawFrame.size() << " bytes)" << std::endl;
+        };
 
+        ethController->RegisterReceiveMessageHandler(onReceiveEthernetMessageFromIb);
         ethController->RegisterMessageAckHandler(&EthAckCallback);
 
         ioContext.run();

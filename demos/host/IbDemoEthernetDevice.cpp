@@ -3,42 +3,29 @@
 #include "Device.hpp"
 
 #include <algorithm>
-#include <cstring>
 #include <iostream>
-#include <sstream>
 #include <string>
-#include <thread>
 #include <vector>
 
 #include "ib/IntegrationBus.hpp"
 #include "ib/sim/all.hpp"
 #include "ib/mw/sync/all.hpp"
 #include "ib/mw/sync/string_utils.hpp"
-#include "QemuSocketClient.hpp"
 
 using namespace ib::mw;
 using namespace ib::sim;
 
 using namespace std::chrono_literals;
 
-std::string GetPayloadStringFromRawFrame(const std::vector<uint8_t>& rawFrame)
-{
-    std::vector<uint8_t> payload;
-    payload.insert(payload.end(), rawFrame.begin() + 14 /*destination[6]+source[6]+ethType[2]*/,
-                   rawFrame.end() - 4); // CRC
-    std::string payloadString(payload.begin(), payload.end());
-    return payloadString;
-}
-
 void EthAckCallback(eth::IEthController* /*controller*/, const eth::EthTransmitAcknowledge& ack)
 {
     if (ack.status == eth::EthTransmitStatus::Transmitted)
     {
-        std::cout << ">> ACK for ETH Message with transmitId=" << ack.transmitId << std::endl;
+        std::cout << "IB >> Demo: ACK for ETH Message with transmitId=" << ack.transmitId << std::endl;
     }
     else
     {
-        std::cout << ">> NACK for ETH Message with transmitId=" << ack.transmitId;
+        std::cout << "IB >> Demo: NACK for ETH Message with transmitId=" << ack.transmitId;
         switch (ack.status)
         {
         case eth::EthTransmitStatus::Transmitted: break;
@@ -53,55 +40,44 @@ void EthAckCallback(eth::IEthController* /*controller*/, const eth::EthTransmitA
     }
 }
 
-void ReceiveEthMessage(eth::IEthController* /*controller*/, const eth::EthMessage& msg)
-{
-    auto rawFrame = msg.ethFrame.RawFrame();
-    auto payload = GetPayloadStringFromRawFrame(rawFrame);
-
-    std::cout << ">> ETH Message: \"" << payload << "\"" << std::endl;
-}
-
-void SendMessage(eth::IEthController* controller, std::vector<uint8_t> data)
-{
-    eth::EthFrame frame;
-    frame.SetRawFrame(data);
-}
-
 /**************************************************************************************************
  * Main Function
  **************************************************************************************************/
 
-const std::uint32_t domainId = 42;
-const std::string participantName = "EthernetDevice";
-const std::string participantConfigurationString = R"(
-"Logging": { "Sinks": [ { "Type": "Stdout", "Level": "Info" } ] }
-)";
-
 int main(int argc, char**)
 {
+    const std::string participantConfigurationString =
+        R"({ "Logging": { "Sinks": [ { "Type": "Stdout", "Level": "Info" } ] } })";
+
+    const std::string participantName = "EthernetDevice";
+    const std::uint32_t domainId = 42;
+
+    const std::string ethernetControllerName = "Eth1";
+
     try
     {
         auto participantConfiguration = ib::cfg::ParticipantConfigurationFromString(participantConfigurationString);
 
         std::cout << "Creating participant '" << participantName << "' in domain " << domainId << std::endl;
-
         auto participant = ib::CreateSimulationParticipant(participantConfiguration, participantName, domainId, false);
-        auto* ethController = participant->CreateEthController("Eth1");
+
+        std::cout << "Creating ethernet controller '" << ethernetControllerName << "'" << std::endl;
+        auto* ethController = participant->CreateEthController(ethernetControllerName);
 
         static constexpr auto ethernetAddress = demo::EthernetAddress{0x01, 0x23, 0x45, 0x67, 0x89, 0xab};
         static constexpr auto ip4Address = demo::Ip4Address{192, 168, 12, 35};
         auto demoDevice = demo::Device{ethernetAddress, ip4Address, [ethController](std::vector<std::uint8_t> data) {
-                                           std::cout << ">> VIB ETHERNET FRAME (" << data.size() << " bytes)"
-                                                     << std::endl;
-
+                                           const auto frameSize = data.size();
                                            auto transmitId = ethController->SendFrame(eth::EthFrame(std::move(data)));
-                                           std::cout << "<< ETH Frame sent with transmitId=" << transmitId << std::endl;
+                                           std::cout << "Demo >> IB: Ethernet frame (" << frameSize
+                                                     << " bytes, txId=" << transmitId << ")" << std::endl;
                                        }};
 
         ethController->RegisterReceiveMessageHandler(
             [&demoDevice](eth::IEthController* /*controller*/, const eth::EthMessage& msg) {
-                std::cout << "<< VIB ETHERNET FRAME (" << msg.ethFrame.GetFrameSize() << " bytes)" << std::endl;
-                demoDevice.Process(asio::buffer(msg.ethFrame.RawFrame()));
+                auto rawFrame = msg.ethFrame.RawFrame();
+                std::cout << "IB >> Demo: Ethernet frame (" << rawFrame.size() << " bytes)" << std::endl;
+                demoDevice.Process(asio::buffer(rawFrame));
             });
 
         ethController->RegisterMessageAckHandler(&EthAckCallback);

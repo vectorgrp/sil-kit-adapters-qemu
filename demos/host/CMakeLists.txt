@@ -60,19 +60,8 @@ target_link_libraries(IbDemoEthernetDevice
         IntegrationBus::IntegrationBus
 )
 
-add_executable(DirectQemuSocket
-    DirectQemuSocket.cpp
-)
-target_link_libraries(DirectQemuSocket
-    PRIVATE
-        DemoUtil
-        asio
-        fmt
-)
-
 add_executable(IbDemoEthernetQemu
     IbDemoEthernetQemu.cpp
-    QemuSocketClient.hpp
 )
 target_link_libraries(IbDemoEthernetQemu
     PRIVATE
