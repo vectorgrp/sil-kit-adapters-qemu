@@ -99,15 +99,6 @@ private:
     std::function<void(std::vector<uint8_t>)> _onNewFrameHandler;
 };
 
-std::string GetPayloadStringFromRawFrame(const std::vector<uint8_t>& rawFrame)
-{
-    std::vector<uint8_t> payload;
-    payload.insert(payload.end(), rawFrame.begin() + 14 /*destination[6]+source[6]+ethType[2]*/,
-                   rawFrame.end() - 4); // CRC
-    std::string payloadString(payload.begin(), payload.end());
-    return payloadString;
-}
-
 void EthAckCallback(eth::IEthController* /*controller*/, const eth::EthTransmitAcknowledge& ack)
 {
     if (ack.status == eth::EthTransmitStatus::Transmitted)
