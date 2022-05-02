@@ -73,7 +73,7 @@ void Device::Process(asio::const_buffer incomingData)
                     replyIcmp4Header.type = Icmp4Type::EchoReply;
                     fmt::print("Reply: {}\n", replyIcmp4Header);
 
-                    auto reply = AllocateBuffer(incomingData.size() + 4);
+                    auto reply = AllocateBuffer(incomingData.size());
                     auto dst = asio::buffer(reply);
 
                     dst += WriteEthernetHeader(dst, replyEthernetHeader);
@@ -83,8 +83,7 @@ void Device::Process(asio::const_buffer incomingData)
                     asio::buffer_copy(dst, icmp4Payload);
 
                     InternetChecksum checksum;
-                    checksum.AddBuffer(icmp4Dst);
-                    checksum.AddBuffer(icmp4Payload);
+                    checksum.AddBuffer(asio::buffer(icmp4Dst));
                     WriteUintBe(icmp4Dst + 2, checksum.GetChecksum());
 
                     _sendFrameCallback(std::move(reply));
