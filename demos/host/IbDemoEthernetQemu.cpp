@@ -160,6 +160,10 @@ int main(int argc, char** argv)
         auto* ethController = participant->CreateEthController(ethernetControllerName);
 
         const auto onReceiveEthernetFrameFromQemu = [ethController](std::vector<std::uint8_t> data) {
+            if (data.size() < 60)
+            {
+                data.resize(60, 0);
+            }
             const auto frameSize = data.size();
             auto transmitId = ethController->SendFrame(eth::EthFrame{std::move(data)});
             std::cout << "QEmu >> IB: Ethernet frame (" << frameSize << " bytes, txId=" << transmitId << ")"
