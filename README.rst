@@ -9,8 +9,8 @@ The goal is to provide documentation and some examples on how to set up QEmu and
 Overview
 ========
 
-IbDemoEthernetQemu
-------------------
+IbDemoEthernetQemuAdapter
+-------------------------
 
 This demo application allows the user to attach simulated ethernet interface (``nic``) of a QEmu virtual machine to the
 IntegrationBus.
@@ -31,8 +31,8 @@ virtual interface.
 
 The demo *optionally* takes the hostname and port of the configured socket as command line arguments.
 
-IbDemoEthernetDevice
---------------------
+IbDemoEthernetIcmpEchoDevice
+----------------------------
 
 This demo application implements a very simple IntegrationBus participant with a single simulated ethernet controller.
 The application will reply to an ARP request and respond to ICMPv4 Echo Requests directed to it's hardcoded MAC address
@@ -44,7 +44,17 @@ Building the Demos
 The demos are built using ``cmake`` (here with ``/.../vib-qemu-demos/build`` as the build-directory)::
 
     cd /.../vib-qemu-demos
+
+If you cloned the repositoy please call::
+
     git submodule update --init --recursive
+
+Otherwise clone the standalone version of asio manually::
+
+    git clone --branch asio-1-18-2 https://github.com/chriskohlhoff/asio.git third_party/asio
+
+Then you can build the demos::
+
     cmake -S. -Bbuild -G '...' -DIB_DIR=/path/to/vib/IntegrationBus-3.7.14-???/
     cmake --build build --parallel
 
@@ -83,11 +93,13 @@ Now is a good point to start the ``IbRegistry``, ``IbDemoEthernetQemu`` - which 
 interface with the integration bus - and the ``ObDemoEthernetDevice`` in separate terminals::
 
     wsl$ /path/to/vib/3.7.14/IntegrationBus/lib/cmake/IntegrationBus/bin/IbRegistry
-    wsl$ ./build/bin/IbDemoEthernetQemu
-    wsl$ ./build/bin/IbDemoEthernetDevice
+    wsl$ ./build/bin/IbDemoEthernetQemuAdapter
+    wsl$ ./build/bin/IbDemoEthernetIcmpEchoDevice
 
 You can also start ``CANoe 16`` and load the ``EthernetDemoAsync.cfg`` from the ``vib-canoe-demos`` and start the
 measurement.
+
+Please note that you can compile and run the demos on Windows even if QEmu is running in WSL.
 
 When the virtual machine boots, the network interface created for hooking up with the IntegrationBus is ``down``.
 To activate it (without having an IP address assigned)::

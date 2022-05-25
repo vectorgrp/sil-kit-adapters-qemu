@@ -16,8 +16,6 @@ if (WIN32)
     target_compile_definitions(asio INTERFACE WINVER=0x0601 _WIN32_WINNT=0x0601) # Windows 7
 endif()
 
-add_subdirectory(third_party/fmt)
-
 if(NOT IB_DIR)
     message(FATAL_ERROR "Please set the PATH to the Integration Bus in IB_DIR: e.g."
         " cmake -D IB_DIR=../IntegrationBus-x.y.z-Platform/")
@@ -36,6 +34,5 @@ endif()
 
 set(IB_QEMU_DEMOS_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
 
-add_subdirectory(demos/guest EXCLUDE_FROM_ALL)
-add_subdirectory(demos/host)
+add_subdirectory(demos/Ethernet)
 
