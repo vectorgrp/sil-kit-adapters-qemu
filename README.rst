@@ -113,8 +113,29 @@ Now is a good point to start the ``IbRegistry``, ``IbDemoEthernetQemu`` - which 
 interface with the integration bus - and the ``ObDemoEthernetDevice`` in separate terminals::
 
     wsl$ /path/to/vib/3.7.14/IntegrationBus/lib/cmake/IntegrationBus/bin/IbRegistry
+    
     wsl$ ./build/bin/IbDemoEthernetQemuAdapter
+    Creating participant 'EthernetQemu' in domain 42
+    [2022-05-30 09:20:46.651] [EthernetQemu] [info] Creating ComAdapter for Participant EthernetQemu, IntegrationBus-Version: 3.7.14 2022 VIB Sprint 20, Middleware: VAsio
+    [2022-05-30 09:20:46.759] [EthernetQemu] [info] Connected to registry tcp://localhost:8542,
+    [2022-05-30 09:20:46.762] [EthernetQemu] [info] Time provider: WallclockProvider
+    [2022-05-30 09:20:46.763] [EthernetQemu] [info] Participant EthernetQemu has joined the IB-Domain 42
+    Creating ethernet controller 'Eth1'
+    Creating QEmu ethernet connector for 'localhost:12345'
+    connect success
+    ...
+    
     wsl$ ./build/bin/IbDemoEthernetIcmpEchoDevice
+    Creating participant 'EthernetDevice' in domain 42
+    [2022-05-30 09:20:21.252] [EthernetDevice] [info] Creating ComAdapter for Participant EthernetDevice, IntegrationBus-Version: 3.7.14 2022 VIB Sprint 20, Middleware: VAsio
+    [2022-05-30 09:20:21.363] [EthernetDevice] [info] Connected to registry tcp://localhost:8542,
+    [2022-05-30 09:20:21.366] [EthernetDevice] [info] Time provider: WallclockProvider
+    [2022-05-30 09:20:21.367] [EthernetDevice] [info] Participant EthernetDevice has joined the IB-Domain 42
+    Creating ethernet controller 'Eth1'
+    Press enter to stop the process...
+    ...
+    
+The demo applications will produce output when they send and receive Ethernet frames from QEmu or the Vector Integration Bus.
 
 Starting CANoe 16
 -----------------
@@ -124,21 +145,53 @@ measurement.
 
 Please note that you can compile and run the demos on Windows even if QEmu is running in WSL.
 
-Assigning an IP to the QEmu NIC
--------------------------------
+ICMP Ping and Pong
+------------------
 
-When the virtual machine boots, the network interface created for hooking up with the IntegrationBus is ``down``.
-To activate it (without having an IP address assigned)::
+When the virtual machine boots, the network interface created for hooking up with the IntegrationBus (``vib0``) is ``up``.
+It automatically assigns the static IP ``192.168.12.34/24`` to the interface.
 
-    guest# ip link set vib0 up
-
-And to add an IP address to the interface::
-
-    guest# ip addr add 192.168.12.34/24 dev vib0
+Apart from SSH you can also log into the QEmu guest with the user ``root`` with password ``root``.
 
 Then ping the demo device four times::
 
     guest# ping -c4 192.168.12.35
 
 The ping requests should all receive responses.
+
+You should see output similar to the following from the ``IbDemoEthernetQemuAdapter`` application::
+
+    IB >> Demo: ACK for ETH Message with transmitId=1
+    QEmu >> IB: Ethernet frame (70 bytes, txId=1)
+    IB >> Demo: ACK for ETH Message with transmitId=2
+    QEmu >> IB: Ethernet frame (60 bytes, txId=2)
+    IB >> QEmu: Ethernet frame (60 bytes)
+    IB >> Demo: ACK for ETH Message with transmitId=3
+    QEmu >> IB: Ethernet frame (98 bytes, txId=3)
+    IB >> QEmu: Ethernet frame (98 bytes)
+    IB >> Demo: ACK for ETH Message with transmitId=4
+    QEmu >> IB: Ethernet frame (98 bytes, txId=4)
+    IB >> QEmu: Ethernet frame (98 bytes)
+    
+And output similar to the following from the ``IbDemoEthernetIcmpEchoDevice`` application::
+
+    IB >> Demo: Ethernet frame (70 bytes)
+    EthernetHeader(destination=EthernetAddress(33:33:00:00:00:02),source=EthernetAddress(52:54:56:53:4b:51),etherType=EtherType(34525))
+    IB >> Demo: Ethernet frame (60 bytes)
+    EthernetHeader(destination=EthernetAddress(ff:ff:ff:ff:ff:ff),source=EthernetAddress(52:54:56:53:4b:51),etherType=EtherType::Arp)
+    ArpIp4Packet(operation=ArpOperation::Request,senderHardwareAddress=EthernetAddress(52:54:56:53:4b:51),senderProtocolAddress=192.168.12.34,targetHardwareAddress=EthernetAddress(00:00:00:00:00:00),targetProtocolAddress=192.168.12.35)
+    Reply: EthernetHeader(destination=EthernetAddress(52:54:56:53:4b:51),source=EthernetAddress(01:23:45:67:89:ab),etherType=EtherType::Arp)
+    Reply: ArpIp4Packet(operation=ArpOperation::Reply,senderHardwareAddress=EthernetAddress(01:23:45:67:89:ab),senderProtocolAddress=192.168.12.35,targetHardwareAddress=EthernetAddress(52:54:56:53:4b:51),targetProtocolAddress=192.168.12.34)
+    IB >> Demo: ACK for ETH Message with transmitId=1
+    Demo >> IB: Ethernet frame (60 bytes, txId=1)
+    IB >> Demo: Ethernet frame (98 bytes)
+    EthernetHeader(destination=EthernetAddress(01:23:45:67:89:ab),source=EthernetAddress(52:54:56:53:4b:51),etherType=EtherType::Ip4)
+    Ip4Header(totalLength=84,identification=61312,dontFragment=1,moreFragments=0,fragmentOffset=0,timeToLive=64,protocol=Ip4Protocol::ICMP,checksum=45458,sourceAddress=192.168.12.34,destinationAddress=192.168.12.35) + 64 bytes payload
+    Icmp4Header(type=Icmp4Type::EchoRequest,code=,checksum=1764) + 60 bytes payload
+    Reply: EthernetHeader(destination=EthernetAddress(52:54:56:53:4b:51),source=EthernetAddress(01:23:45:67:89:ab),etherType=EtherType::Ip4)
+    Reply: Ip4Header(totalLength=84,identification=61312,dontFragment=1,moreFragments=0,fragmentOffset=0,timeToLive=64,protocol=Ip4Protocol::ICMP,checksum=45458,sourceAddress=192.168.12.35,destinationAddress=192.168.12.34)
+    Reply: Icmp4Header(type=Icmp4Type::EchoReply,code=,checksum=1764)
+    IB >> Demo: ACK for ETH Message with transmitId=2
+    Demo >> IB: Ethernet frame (98 bytes, txId=2)
+
 If CANoe is connected to the integration bus, all Ethernet traffic should be visible there as well.
