@@ -2,38 +2,16 @@
 
 set -e
 
-
-# qemu-system-x86_64 \
-
-/home/dedwards/Documents/Code/qemu/build/qemu-system-x86_64 \
+qemu-system-x86_64                                        \
   -m 2048M                                                \
   -smp 2                                                  \
   -boot c 	                                          \
   -nographic                                              \
   \
+  -nic user,hostfwd=tcp::10022-:22,mac=00:11:22:33:44:55  \
+  \
   -netdev socket,id=mynet0,listen=:12345                                \
   -net nic,macaddr=52:54:56:53:4B:51,netdev=mynet0                      \
   -object filter-dump,id=tap_dump,netdev=mynet0,file=/tmp/qemu_linux_tap_dump \
   \
-  -hda vib-qemu-demos-guest.qcow2 \
-  \
-  -object can-bus,id=canbus0-bus \
-  -object can-host-towin,id=canhost0,if=can0,canbus=canbus0-bus \
-  -device kvaser_pci,canbus=canbus0-bus
-
-#  \
-#  -nic user,hostfwd=tcp::10022-:22,mac=00:11:22:33:44:55
-
-
-
-#qemu-system-x86_64                                        \
-
-#qemu-system-x86_64                                        \
-#  -m 2048M                                                \
-#  -smp 2                                                  \
-#  -boot c 	                                          \
-#  -nographic                                              \
-#  -nic user,hostfwd=tcp::10022-:22,mac=00:11:22:33:44:55  \
-#  -nic socket,listen=:12345,mac=52:54:56:53:4B:51         \
-#  -hda vib-qemu-demos-guest.qcow2
-
+  -hda vib-qemu-demos-guest.qcow2
