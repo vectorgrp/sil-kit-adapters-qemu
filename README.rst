@@ -7,7 +7,7 @@ This is a set of demos which show how the Vector Integration Bus can be attached
 The goal is to provide documentation and some examples on how to set up QEmu and the development environment.
 
 This Demo consists of two separate components: the QEMU based guest image contains a live
-Linux kernel that reacts to ICMP echo requsts on its virtual network interface.
+Linux kernel that reacts to ICMP echo requests on its virtual network interface.
 The VIB component contains a socket client that connects to the virtual QEMU network interface via its
 exported socket and implements a transport to a virtual VIB Ethernet bus named "Eth1".
 ::
