@@ -107,7 +107,7 @@ The password for the ``root`` user is ``root``.
 .. note:: The options to SSH deactivate host-key checking for this connection, otherwise you will have to edit your
   ``known_hosts`` file if you decide to rebuild the guest image.
 
-Running the Demo applications
+Running the Demo Applications
 -----------------------------
 
 Now is a good point to start the ``IbRegistry``, ``IbDemoEthernetQemu`` - which connects the QEmu virtual ethernet
