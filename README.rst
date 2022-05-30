@@ -6,6 +6,20 @@ This is a set of demos which show how the Vector SiL Kit (Vector Integration Bus
 
 The goal is to provide documentation and some examples on how to set up QEmu and the development environment.
 
+This Demo consists of two separate components: the QEMU based guest image contains a live
+Linux kernel that reacts to ICMP echo requsts on its virtual network interface.
+The VIB component contains a socket client that connects to the virtual QEMU network interface via its
+exported socket and implements a transport to a virtual VIB Ethernet bus named "Eth1".
+::
+  
+  +-------[ QEMU ]---------+                                +--------[ VIB ]--------+
+  | Debian 11              |<== [listening socket 12345] ==>|  QemuSocketClient     |
+  |   virtual NIC vib0     |                                |   <=> virtual ETH1    |
+  +------------------------+                                +----------+------------+
+                                                                       |
+                                                      Vector CANoe <=> ´
+  
+
 Overview
 ========
 
@@ -33,15 +47,13 @@ The demo *optionally* takes the hostname and port of the configured socket as co
 
 IbDemoEthernetIcmpEchoDevice
 ----------------------------
-
 This demo application implements a very simple IntegrationBus participant with a single simulated ethernet controller.
 The application will reply to an ARP request and respond to ICMPv4 Echo Requests directed to it's hardcoded MAC address
 (``01:23:45:67:89:ab``) and IPv4 address (``192.168.12.35``).
 
 Building the Demos
 ==================
-
-The demos are built using ``cmake`` (here with ``/.../vib-qemu-demos/build`` as the build-directory)::
+The demos are built using ``cmake`` (here with ``/path/to/vib-qemu-demos/build`` as the build-directory)::
 
     cd /.../vib-qemu-demos
 
@@ -53,9 +65,10 @@ Otherwise clone the standalone version of asio manually::
 
     git clone --branch asio-1-18-2 https://github.com/chriskohlhoff/asio.git third_party/asio
 
+To build the demos, you'll need VIB packages ``IntegrationBus-3.7.14-$platform`` for your platform.
 Then you can build the demos::
 
-    cmake -S. -Bbuild -G '...' -DIB_DIR=/path/to/vib/IntegrationBus-3.7.14-???/
+    cmake -S. -Bbuild -DIB_DIR=/path/to/vib/IntegrationBus-3.7.14-???/
     cmake --build build --parallel
 
 The demo executables are available in ``build/bin`` (depending on the configured build directory).
@@ -77,7 +90,8 @@ Setup your WSL host (install ``virt-builder`` and a kernel image for use by ``vi
 
 Build the guest image and start it::
 
-    wsl$ ./tools/build-vib-qemu-demos-guest
+    wsl$ sudo ./tools/build-vib-qemu-demos-guest
+    wsl$ sudo chmod go+rw vib-qemu-demos-guest.qcow2
     wsl$ ./tools/run-vib-qemu-demos-guest
 
 QEmu forwards the guests SSH port on ``10022``, any interaction with the guest can then proceed via SSH::
