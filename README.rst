@@ -88,6 +88,9 @@ Setup your WSL host (install ``virt-builder`` and a kernel image for use by ``vi
 
     wsl$ sudo ./tools/setup-host-wsl2-ubuntu.sh
 
+Building and Running the QEmu Image
+-----------------------------------
+
 Build the guest image and start it::
 
     wsl$ sudo ./tools/build-vib-qemu-demos-guest
@@ -103,6 +106,9 @@ The password for the ``root`` user is ``root``.
 .. note:: The options to SSH deactivate host-key checking for this connection, otherwise you will have to edit your
   ``known_hosts`` file if you decide to rebuild the guest image.
 
+Running the Demo applications
+-----------------------------
+
 Now is a good point to start the ``IbRegistry``, ``IbDemoEthernetQemu`` - which connects the QEmu virtual ethernet
 interface with the integration bus - and the ``ObDemoEthernetDevice`` in separate terminals::
 
@@ -110,10 +116,16 @@ interface with the integration bus - and the ``ObDemoEthernetDevice`` in separat
     wsl$ ./build/bin/IbDemoEthernetQemuAdapter
     wsl$ ./build/bin/IbDemoEthernetIcmpEchoDevice
 
+Starting CANoe 16
+-----------------
+
 You can also start ``CANoe 16`` and load the ``EthernetDemoAsync.cfg`` from the ``vib-canoe-demos`` and start the
 measurement.
 
 Please note that you can compile and run the demos on Windows even if QEmu is running in WSL.
+
+Assigning an IP to the QEmu NIC
+-------------------------------
 
 When the virtual machine boots, the network interface created for hooking up with the IntegrationBus is ``down``.
 To activate it (without having an IP address assigned)::
