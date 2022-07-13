@@ -5,6 +5,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(CMAKE_CXX_STANDARD 17)
 
+option(BUILD_QEMU_TIMESYNC_PLUGIN "Build the QEMU Time-Sync. Plugin" ON)
+
 find_package(Threads REQUIRED)
 
 add_library(asio INTERFACE)
@@ -36,3 +38,7 @@ set(IB_QEMU_DEMOS_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
 
 add_subdirectory(demos/Ethernet)
 
+if(BUILD_QEMU_TIMESYNC_PLUGIN)
+    message(NOTICE "-- ${PROJECT_NAME}: Building the QEMU Time-Sync. Plugin")
+    add_subdirectory(demos/TimeSyncPlugin)
+endif()

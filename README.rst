@@ -52,6 +52,11 @@ This demo application implements a very simple IntegrationBus participant with a
 The application will reply to an ARP request and respond to ICMPv4 Echo Requests directed to it's hardcoded MAC address
 (``01:23:45:67:89:ab``) and IPv4 address (``192.168.12.35``).
 
+Time Sync Plugin
+----------------------------
+This is a experimental TCG Plugin for adding time synchronization to QEMU. 
+Please refer to the README found in demos/TimeSyncPlugin for more information.
+
 Building the Demos
 ==================
 The demos are built using ``cmake`` (here with ``/path/to/vib-qemu-demos/build`` as the build-directory)::
