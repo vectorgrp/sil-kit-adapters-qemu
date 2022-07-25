@@ -57,6 +57,11 @@ Time Sync Plugin
 This is a experimental TCG Plugin for adding time synchronization to QEMU. 
 Please refer to the README found in demos/TimeSyncPlugin for more information.
 
+To enable the target in the CMake build system, add ``-DBUILD_QEMU_TIMESYNC_PLUGIN=ON`` to the ``cmake`` command line after the ``-DIB_DIR=...`` argument.
+
+Please note that the plugin currently requires the ``unistd.h`` header to be available.
+It was tested to build successfully under Linux and WSL.
+
 Building the Demos
 ==================
 The demos are built using ``cmake`` (here with ``/path/to/vib-qemu-demos/build`` as the build-directory)::

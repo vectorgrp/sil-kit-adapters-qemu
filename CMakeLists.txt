@@ -5,7 +5,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(CMAKE_CXX_STANDARD 17)
 
-option(BUILD_QEMU_TIMESYNC_PLUGIN "Build the QEMU Time-Sync. Plugin" ON)
+option(BUILD_QEMU_TIMESYNC_PLUGIN "Build the QEMU Time-Sync. Plugin" OFF)
 
 find_package(Threads REQUIRED)
 
