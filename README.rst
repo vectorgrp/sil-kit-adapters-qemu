@@ -123,7 +123,7 @@ Running the Demo Applications
 Now is a good point to start the ``IbRegistry``, ``IbDemoEthernetQemu`` - which connects the QEmu virtual ethernet
 interface with the integration bus - and the ``ObDemoEthernetDevice`` in separate terminals::
 
-    wsl$ /path/to/vib/3.7.14/IntegrationBus/lib/cmake/IntegrationBus/bin/IbRegistry
+    wsl$ /path/to/vib/3.7.14/IntegrationBus/bin/IbRegistry
     
     wsl$ ./build/bin/IbDemoEthernetQemuAdapter
     Creating participant 'EthernetQemu' in domain 42
