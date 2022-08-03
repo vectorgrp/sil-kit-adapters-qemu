@@ -10,7 +10,7 @@ option(BUILD_QEMU_TIMESYNC_PLUGIN "Build the QEMU Time-Sync. Plugin" OFF)
 find_package(Threads REQUIRED)
 
 add_library(asio INTERFACE)
-target_include_directories(asio INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/third_party/asio/asio/include)
+target_include_directories(asio INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/../third_party/asio/asio/include)
 target_compile_definitions(asio INTERFACE ASIO_STANDALONE=1)
 target_link_libraries(asio INTERFACE Threads::Threads)
 if (WIN32)

@@ -165,11 +165,11 @@ int main(int argc, char** argv)
             }
             const auto frameSize = data.size();
             auto transmitId = ethController->SendFrame(eth::EthFrame{std::move(data)});
-            std::cout << "QEmu >> IB: Ethernet frame (" << frameSize << " bytes, txId=" << transmitId << ")"
+            std::cout << "QEMU >> IB: Ethernet frame (" << frameSize << " bytes, txId=" << transmitId << ")"
                       << std::endl;
         };
 
-        std::cout << "Creating QEmu ethernet connector for '" << qemuHostname << ":" << qemuService << "'" << std::endl;
+        std::cout << "Creating QEMU ethernet connector for '" << qemuHostname << ":" << qemuService << "'" << std::endl;
         QemuSocketClient client{ioContext, qemuHostname, qemuService, onReceiveEthernetFrameFromQemu};
 
         const auto onReceiveEthernetMessageFromIb = [&client](eth::IEthController* /*controller*/,
@@ -177,7 +177,7 @@ int main(int argc, char** argv)
             auto rawFrame = msg.ethFrame.RawFrame();
             client.SendEthernetFrameToQemu(rawFrame);
 
-            std::cout << "IB >> QEmu: Ethernet frame (" << rawFrame.size() << " bytes)" << std::endl;
+            std::cout << "IB >> QEMU: Ethernet frame (" << rawFrame.size() << " bytes)" << std::endl;
         };
 
         ethController->RegisterReceiveMessageHandler(onReceiveEthernetMessageFromIb);

@@ -1,18 +1,21 @@
 =================================
-Vector Integration Bus QEmu Demos
+Vector SIL Kit Adapters QEMU
 =================================
 
-This is a set of demos which show how the Vector Integration Bus can be attached to QEmu processes.
+Abstract/Overview
+========================
+// TODO: niy
 
-The goal is to provide documentation and some examples on how to set up QEmu and the development environment.
 
-Overview
+Demos
 ========
+
+This is a set of demos which show how the Vector SIL Kit can be attached to QEMU images. The goal is to provide documentation and some examples on how to set up QEMU and the development environment.
 
 This demo consists of two separate components: the QEMU based guest image contains a live
 Linux kernel that reacts to ICMP echo requests on its virtual network interface.
-The VIB component contains a socket client that connects to the virtual QEMU network interface via its
-exported socket and implements a transport to a virtual VIB Ethernet bus named "Eth1".
+The SIL Kit component contains a socket client that connects to the virtual QEMU network interface via its
+exported socket and implements a transport to a virtual SIL Kit Ethernet bus named "Eth1".
 ::
   
   +-------[ QEMU ]---------+                                +--------[ VIB ]--------+
@@ -25,24 +28,24 @@ exported socket and implements a transport to a virtual VIB Ethernet bus named "
 IbDemoEthernetQemuAdapter
 -------------------------
 
-This demo application allows the user to attach simulated ethernet interface (``nic``) of a QEmu virtual machine to the
-IntegrationBus.
+This application allows the user to attach simulated ethernet interface (``nic``) of a QEMU virtual machine to the
+SIL Kit.
 
-The demo uses the *socket* backend provided by QEmu.
-It can be configured for the QEmu virtual machine using the following command line argument of QEmu:
+The application uses the *socket* backend provided by QEMU.
+It can be configured for the QEMU virtual machine using the following command line argument of QEMU:
 
 ::
 
     -nic socket,listen=:12345
 
-The argument of ``listen=`` specifies a TCP socket endpoint on which QEmu will listen for incoming connections.
+The argument of ``listen=`` specifies a TCP socket endpoint on which QEMU will listen for incoming connections.
 
 All *outgoing* ethernet frames on that particular virtual ethernet interface inside of the virtual machine are sent to
 all connected clients.
 Any *incoming* data from any connected clients is presented to virtual machine as an incoming ethernet frame on the
 virtual interface.
 
-The demo *optionally* takes the hostname and port of the configured socket as command line arguments::
+The application *optionally* takes the hostname and port of the configured socket as command line arguments::
 
     ./build/bin/IbDemoEthernetQemuAdapter [hostname] [port]
 
@@ -64,9 +67,9 @@ It was tested to build successfully under Linux and WSL.
 
 Building the Demos
 ==================
-The demos are built using ``cmake`` (here with ``/path/to/vib-qemu-demos/build`` as the build-directory)::
+The demos are built using ``cmake`` (here with ``/path/to/sil-kit-adapters-qemu/qemu-eth-adapter/build`` as the build-directory)::
 
-    cd /path/to/vib-qemu-demos
+    cd /path/to/sil-kit-adapters-qemu
 
 If you cloned the repositoy please call::
 
@@ -79,6 +82,7 @@ Otherwise clone the standalone version of asio manually::
 To build the demos, you'll need VIB packages ``IntegrationBus-3.7.14-$platform`` for your platform.
 Then you can build the demos::
 
+    cd /path/to/sil-kit-adapters-qemu/qemu-eth-adapter
     cmake -S. -Bbuild -DIB_DIR=/path/to/vib/IntegrationBus-3.7.14-$platform/
     cmake --build build --parallel
 
@@ -86,20 +90,20 @@ The demo executables are available in ``build/bin`` (depending on the configured
 Additionally the ``IntegrationBus`` shared library (e.g., ``IntegrationBus[d].dll`` on Windows) is copied to that
 directory automatically.
 
-Running the QEmu and the Demos
+Running the QEMU and the Demos
 ==============================
 
-This manual assumes you use WSL (Ubuntu) for running QEmu and use ``bash`` as your interactive shell.
+This manual assumes you use WSL (Ubuntu) for running QEMU and use ``bash`` as your interactive shell.
 
-First change your current directory to the top-level in the ``vib-qemu-demos`` repository::
+First change your current directory to the top-level in the ``sil-kit-adapters-qemu`` repository::
 
-    wsl$ cd /path/to/vib-qemu-demos
+    wsl$ cd /path/to/sil-kit-adapters-qemu
 
 Setup your WSL host (install ``virt-builder`` and a kernel image for use by ``virt-builder``)::
 
     wsl$ sudo ./tools/setup-host-wsl2-ubuntu.sh
 
-Building and Running the QEmu Image
+Building and Running the QEMU Image
 -----------------------------------
 
 Build the guest image and start it::
@@ -108,7 +112,7 @@ Build the guest image and start it::
     wsl$ sudo chmod go+rw vib-qemu-demos-guest.qcow2
     wsl$ ./tools/run-vib-qemu-demos-guest
 
-QEmu forwards the guests SSH port on ``10022``, any interaction with the guest can then proceed via SSH::
+QEMU forwards the guests SSH port on ``10022``, any interaction with the guest can then proceed via SSH::
 
     wsl$ ssh -p10022 -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null root@localhost
 
@@ -120,10 +124,10 @@ The password for the ``root`` user is ``root``.
 Running the Demo Applications
 -----------------------------
 
-Now is a good point to start the ``IbRegistry``, ``IbDemoEthernetQemu`` - which connects the QEmu virtual ethernet
+Now is a good point to start the ``IbRegistry``, ``IbDemoEthernetQemu`` - which connects the QEMU virtual ethernet
 interface with the integration bus - and the ``ObDemoEthernetDevice`` in separate terminals::
 
-    wsl$ /path/to/vib/3.7.14/IntegrationBus/bin/IbRegistry
+    wsl$ ./path/to/vib/3.7.14/IntegrationBus/bin/IbRegistry
     
     wsl$ ./build/bin/IbDemoEthernetQemuAdapter
     Creating participant 'EthernetQemu' in domain 42
@@ -132,7 +136,7 @@ interface with the integration bus - and the ``ObDemoEthernetDevice`` in separat
     [2022-05-30 09:20:46.762] [EthernetQemu] [info] Time provider: WallclockProvider
     [2022-05-30 09:20:46.763] [EthernetQemu] [info] Participant EthernetQemu has joined the IB-Domain 42
     Creating ethernet controller 'Eth1'
-    Creating QEmu ethernet connector for 'localhost:12345'
+    Creating QEMU ethernet connector for 'localhost:12345'
     connect success
     ...
     
@@ -146,7 +150,7 @@ interface with the integration bus - and the ``ObDemoEthernetDevice`` in separat
     Press enter to stop the process...
     ...
     
-The demo applications will produce output when they send and receive Ethernet frames from QEmu or the Vector Integration Bus.
+The demo applications will produce output when they send and receive Ethernet frames from QEMU or the Vector Integration Bus.
 
 Starting CANoe 16
 -----------------
@@ -154,7 +158,7 @@ Starting CANoe 16
 You can also start ``CANoe 16`` and load the ``EthernetDemoAsync.cfg`` from the ``vib-canoe-demos`` and start the
 measurement.
 
-Please note that you can compile and run the demos on Windows even if QEmu is running in WSL.
+Please note that you can compile and run the demos on Windows even if QEMU is running in WSL.
 
 ICMP Ping and Pong
 ------------------
@@ -162,7 +166,7 @@ ICMP Ping and Pong
 When the virtual machine boots, the network interface created for hooking up with the IntegrationBus (``vib0``) is ``up``.
 It automatically assigns the static IP ``192.168.12.34/24`` to the interface.
 
-Apart from SSH you can also log into the QEmu guest with the user ``root`` with password ``root``.
+Apart from SSH you can also log into the QEMU guest with the user ``root`` with password ``root``.
 
 Then ping the demo device four times::
 
@@ -173,16 +177,16 @@ The ping requests should all receive responses.
 You should see output similar to the following from the ``IbDemoEthernetQemuAdapter`` application::
 
     IB >> Demo: ACK for ETH Message with transmitId=1
-    QEmu >> IB: Ethernet frame (70 bytes, txId=1)
+    QEMU >> IB: Ethernet frame (70 bytes, txId=1)
     IB >> Demo: ACK for ETH Message with transmitId=2
-    QEmu >> IB: Ethernet frame (60 bytes, txId=2)
-    IB >> QEmu: Ethernet frame (60 bytes)
+    QEMU >> IB: Ethernet frame (60 bytes, txId=2)
+    IB >> QEMU: Ethernet frame (60 bytes)
     IB >> Demo: ACK for ETH Message with transmitId=3
-    QEmu >> IB: Ethernet frame (98 bytes, txId=3)
-    IB >> QEmu: Ethernet frame (98 bytes)
+    QEMU >> IB: Ethernet frame (98 bytes, txId=3)
+    IB >> QEMU: Ethernet frame (98 bytes)
     IB >> Demo: ACK for ETH Message with transmitId=4
-    QEmu >> IB: Ethernet frame (98 bytes, txId=4)
-    IB >> QEmu: Ethernet frame (98 bytes)
+    QEMU >> IB: Ethernet frame (98 bytes, txId=4)
+    IB >> QEMU: Ethernet frame (98 bytes)
     
 And output similar to the following from the ``IbDemoEthernetIcmpEchoDevice`` application::
 
