@@ -14,4 +14,4 @@ qemu-system-x86_64                                        \
   -net nic,macaddr=52:54:56:53:4B:51,netdev=mynet0                      \
   -object filter-dump,id=tap_dump,netdev=mynet0,file=/tmp/qemu_linux_tap_dump \
   \
-  -hda vib-qemu-demos-guest.qcow2
+  -hda silkit-qemu-demos-guest.qcow2

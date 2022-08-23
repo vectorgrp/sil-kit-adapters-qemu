@@ -15,17 +15,17 @@ This is a set of demos which show how the Vector SIL Kit can be attached to QEMU
 This demo consists of two separate components: the QEMU based guest image contains a live
 Linux kernel that reacts to ICMP echo requests on its virtual network interface.
 The SIL Kit component contains a socket client that connects to the virtual QEMU network interface via its
-exported socket and implements a transport to a virtual SIL Kit Ethernet bus named "Eth1".
+exported socket and implements a transport to a virtual SIL Kit Ethernet bus named "qemu_demo".
 ::
   
-  +-------[ QEMU ]---------+                                +--------[ VIB ]--------+
+  +-------[ QEMU ]---------+                                +------[ SIL Kit ]------+
   | Debian 11              |<== [listening socket 12345] ==>|  QemuSocketClient     |
   |   virtual NIC vib0     |                                |   <=> virtual Eth1    |
   +------------------------+                                +----------+------------+
                                                                        |
                                                       Vector CANoe <=> ´
 
-IbDemoEthernetQemuAdapter
+SilKitAdapterQemuEthernet
 -------------------------
 
 This application allows the user to attach simulated ethernet interface (``nic``) of a QEMU virtual machine to the
@@ -47,11 +47,11 @@ virtual interface.
 
 The application *optionally* takes the hostname and port of the configured socket as command line arguments::
 
-    ./build/bin/IbDemoEthernetQemuAdapter [hostname] [port]
+    ./build/bin/SilKitAdapterQemuEthernet [hostname] [port]
 
-IbDemoEthernetIcmpEchoDevice
-----------------------------
-This demo application implements a very simple IntegrationBus participant with a single simulated ethernet controller.
+SilKitDemoEthernetIcmpEchoDevice
+--------------------------------
+This demo application implements a very simple SIL Kit participant with a single simulated ethernet controller.
 The application will reply to an ARP request and respond to ICMPv4 Echo Requests directed to it's hardcoded MAC address
 (``01:23:45:67:89:ab``) and IPv4 address (``192.168.12.35``).
 
@@ -71,7 +71,7 @@ The demos are built using ``cmake`` (here with ``/path/to/sil-kit-adapters-qemu/
 
     cd /path/to/sil-kit-adapters-qemu
 
-If you cloned the repositoy please call::
+If you cloned the repository please call::
 
     git submodule update --init --recursive
 
@@ -79,15 +79,15 @@ Otherwise clone the standalone version of asio manually::
 
     git clone --branch asio-1-18-2 https://github.com/chriskohlhoff/asio.git third_party/asio
 
-To build the demos, you'll need VIB packages ``IntegrationBus-3.7.14-$platform`` for your platform.
+To build the demos, you'll need SilKit packages ``SilKit-4.0.2-$platform`` for your platform.
 Then you can build the demos::
 
     cd /path/to/sil-kit-adapters-qemu/qemu-eth-adapter
-    cmake -S. -Bbuild -DIB_DIR=/path/to/vib/IntegrationBus-3.7.14-$platform/
+    cmake -S. -Bbuild -DSK_DIR=/path/to/vib/SilKit-4.0.2-$platform/
     cmake --build build --parallel
 
-The demo executables are available in ``build/bin`` (depending on the configured build directory).
-Additionally the ``IntegrationBus`` shared library (e.g., ``IntegrationBus[d].dll`` on Windows) is copied to that
+The demo executables are available in ``out/build/x64-Debug/bin`` (depending on the configured build directory).
+Additionally the ``SilKit`` shared library (e.g., ``SilKit[d].dll`` on Windows) is copied to that
 directory automatically.
 
 Running the QEMU and the Demos
@@ -124,29 +124,25 @@ The password for the ``root`` user is ``root``.
 Running the Demo Applications
 -----------------------------
 
-Now is a good point to start the ``IbRegistry``, ``IbDemoEthernetQemu`` - which connects the QEMU virtual ethernet
-interface with the integration bus - and the ``ObDemoEthernetDevice`` in separate terminals::
+Now is a good point to start the ``sil-kit-registry``, ``SilKitAdapterQemuEthernet`` - which connects the QEMU virtual ethernet
+interface with the SIL Kit - and the ``SilKitDemoEthernetIcmpEchoDevice`` in separate terminals::
 
-    wsl$ ./path/to/vib/3.7.14/IntegrationBus/bin/IbRegistry
+    wsl$ ./path/to/vib/4.0.2/SilKit/bin/sil-kit-registry --listen-uri 'silkit://127.0.0.1:8501'
     
-    wsl$ ./build/bin/IbDemoEthernetQemuAdapter
-    Creating participant 'EthernetQemu' in domain 42
-    [2022-05-30 09:20:46.651] [EthernetQemu] [info] Creating ComAdapter for Participant EthernetQemu, IntegrationBus-Version: 3.7.14 2022 VIB Sprint 20, Middleware: VAsio
-    [2022-05-30 09:20:46.759] [EthernetQemu] [info] Connected to registry tcp://localhost:8542,
-    [2022-05-30 09:20:46.762] [EthernetQemu] [info] Time provider: WallclockProvider
-    [2022-05-30 09:20:46.763] [EthernetQemu] [info] Participant EthernetQemu has joined the IB-Domain 42
-    Creating ethernet controller 'Eth1'
+    wsl$ ./build/bin/SilKitAdapterQemuEthernet
+    Creating participant 'EthernetQemu' at silkit://localhost:8501
+    [2022-08-19 16:42:59.847] [EthernetQemu] [info] Creating participant 'EthernetQemu' at 'silkit://localhost:8501', SIL Kit version: 4.0.2
+    [2022-08-19 16:42:59.963] [EthernetQemu] [info] Connected to registry at 'tcp://127.0.0.1:8501' via 'tcp://127.0.0.1:59986' (silkit://localhost:8501)
+    Creating ethernet controller 'EthernetQemu_Eth1'
     Creating QEMU ethernet connector for 'localhost:12345'
     connect success
     ...
     
-    wsl$ ./build/bin/IbDemoEthernetIcmpEchoDevice
-    Creating participant 'EthernetDevice' in domain 42
-    [2022-05-30 09:20:21.252] [EthernetDevice] [info] Creating ComAdapter for Participant EthernetDevice, IntegrationBus-Version: 3.7.14 2022 VIB Sprint 20, Middleware: VAsio
-    [2022-05-30 09:20:21.363] [EthernetDevice] [info] Connected to registry tcp://localhost:8542,
-    [2022-05-30 09:20:21.366] [EthernetDevice] [info] Time provider: WallclockProvider
-    [2022-05-30 09:20:21.367] [EthernetDevice] [info] Participant EthernetDevice has joined the IB-Domain 42
-    Creating ethernet controller 'Eth1'
+    wsl$ ./build/bin/SilKitDemoEthernetIcmpEchoDevice
+    Creating participant 'EthernetDevice' at silkit://localhost:8501
+    [2022-08-19 16:43:47.092] [EthernetDevice] [info] Creating participant 'EthernetDevice' at 'silkit://localhost:8501', SIL Kit version: 4.0.2
+    [2022-08-19 16:43:47.213] [EthernetDevice] [info] Connected to registry at 'tcp://127.0.0.1:8501' via 'tcp://127.0.0.1:60007' (silkit://localhost:8501)
+    Creating ethernet controller 'EthernetDevice_Eth1'
     Press enter to stop the process...
     ...
     
@@ -155,7 +151,7 @@ The demo applications will produce output when they send and receive Ethernet fr
 Starting CANoe 16
 -----------------
 
-You can also start ``CANoe 16`` and load the ``EthernetDemoAsync.cfg`` from the ``vib-canoe-demos`` and start the
+You can also start ``CANoe 16 SP3`` and load the ``Qemu_Ethernet_adapter_CANoe.cfg`` from the ``CANoe`` directory and start the
 measurement.
 
 Please note that you can compile and run the demos on Windows even if QEMU is running in WSL.
@@ -174,39 +170,40 @@ Then ping the demo device four times::
 
 The ping requests should all receive responses.
 
-You should see output similar to the following from the ``IbDemoEthernetQemuAdapter`` application::
+You should see output similar to the following from the ``SilKitAdapterQemuEthernet`` application::
 
-    IB >> Demo: ACK for ETH Message with transmitId=1
-    QEMU >> IB: Ethernet frame (70 bytes, txId=1)
-    IB >> Demo: ACK for ETH Message with transmitId=2
-    QEMU >> IB: Ethernet frame (60 bytes, txId=2)
-    IB >> QEMU: Ethernet frame (60 bytes)
-    IB >> Demo: ACK for ETH Message with transmitId=3
-    QEMU >> IB: Ethernet frame (98 bytes, txId=3)
-    IB >> QEMU: Ethernet frame (98 bytes)
-    IB >> Demo: ACK for ETH Message with transmitId=4
-    QEMU >> IB: Ethernet frame (98 bytes, txId=4)
-    IB >> QEMU: Ethernet frame (98 bytes)
+    SIL Kit >> Demo: ACK for ETH Message with transmitId=1
+    QEMU >> SIL Kit: Ethernet frame (98 bytes, txId=1)
+    SIL Kit >> Demo: ACK for ETH Message with transmitId=2
+    QEMU >> SIL Kit: Ethernet frame (98 bytes, txId=2)
+    SIL Kit >> QEMU: Ethernet frame (98 bytes)
+    SIL Kit >> Demo: ACK for ETH Message with transmitId=3
+    QEMU >> SIL Kit: Ethernet frame (98 bytes, txId=3)
+    SIL Kit >> QEMU: Ethernet frame (98 bytes)
+    SIL Kit >> Demo: ACK for ETH Message with transmitId=4
+    QEMU >> SIL Kit: Ethernet frame (98 bytes, txId=4)
+    SIL Kit >> QEMU: Ethernet frame (98 bytes)
+
     
-And output similar to the following from the ``IbDemoEthernetIcmpEchoDevice`` application::
+And output similar to the following from the ``SilKitDemoEthernetIcmpEchoDevice`` application::
 
-    IB >> Demo: Ethernet frame (70 bytes)
+    SIL Kit >> Demo: Ethernet frame (98 bytes)
     EthernetHeader(destination=EthernetAddress(33:33:00:00:00:02),source=EthernetAddress(52:54:56:53:4b:51),etherType=EtherType(34525))
-    IB >> Demo: Ethernet frame (60 bytes)
+    SIL Kit >> Demo: Ethernet frame (98 bytes)
     EthernetHeader(destination=EthernetAddress(ff:ff:ff:ff:ff:ff),source=EthernetAddress(52:54:56:53:4b:51),etherType=EtherType::Arp)
     ArpIp4Packet(operation=ArpOperation::Request,senderHardwareAddress=EthernetAddress(52:54:56:53:4b:51),senderProtocolAddress=192.168.12.34,targetHardwareAddress=EthernetAddress(00:00:00:00:00:00),targetProtocolAddress=192.168.12.35)
     Reply: EthernetHeader(destination=EthernetAddress(52:54:56:53:4b:51),source=EthernetAddress(01:23:45:67:89:ab),etherType=EtherType::Arp)
     Reply: ArpIp4Packet(operation=ArpOperation::Reply,senderHardwareAddress=EthernetAddress(01:23:45:67:89:ab),senderProtocolAddress=192.168.12.35,targetHardwareAddress=EthernetAddress(52:54:56:53:4b:51),targetProtocolAddress=192.168.12.34)
-    IB >> Demo: ACK for ETH Message with transmitId=1
-    Demo >> IB: Ethernet frame (60 bytes, txId=1)
-    IB >> Demo: Ethernet frame (98 bytes)
+    SIL Kit >> Demo: ACK for ETH Message with transmitId=1
+    Demo >> SIL Kit: Ethernet frame (98 bytes, txId=1)
+    SIL Kit >> Demo: Ethernet frame (98 bytes)
     EthernetHeader(destination=EthernetAddress(01:23:45:67:89:ab),source=EthernetAddress(52:54:56:53:4b:51),etherType=EtherType::Ip4)
     Ip4Header(totalLength=84,identification=61312,dontFragment=1,moreFragments=0,fragmentOffset=0,timeToLive=64,protocol=Ip4Protocol::ICMP,checksum=45458,sourceAddress=192.168.12.34,destinationAddress=192.168.12.35) + 64 bytes payload
     Icmp4Header(type=Icmp4Type::EchoRequest,code=,checksum=1764) + 60 bytes payload
     Reply: EthernetHeader(destination=EthernetAddress(52:54:56:53:4b:51),source=EthernetAddress(01:23:45:67:89:ab),etherType=EtherType::Ip4)
     Reply: Ip4Header(totalLength=84,identification=61312,dontFragment=1,moreFragments=0,fragmentOffset=0,timeToLive=64,protocol=Ip4Protocol::ICMP,checksum=45458,sourceAddress=192.168.12.35,destinationAddress=192.168.12.34)
     Reply: Icmp4Header(type=Icmp4Type::EchoReply,code=,checksum=1764)
-    IB >> Demo: ACK for ETH Message with transmitId=2
-    Demo >> IB: Ethernet frame (98 bytes, txId=2)
+    SIL Kit >> Demo: ACK for ETH Message with transmitId=2
+    Demo >> SIL Kit: Ethernet frame (98 bytes, txId=2)
 
-If CANoe is connected to the integration bus, all Ethernet traffic should be visible there as well.
+If CANoe is connected to the Sil Kit, all Ethernet traffic should be visible there as well.

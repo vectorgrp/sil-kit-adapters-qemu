@@ -18,23 +18,23 @@ if (WIN32)
     target_compile_definitions(asio INTERFACE WINVER=0x0601 _WIN32_WINNT=0x0601) # Windows 7
 endif()
 
-if(NOT IB_DIR)
-    message(FATAL_ERROR "Please set the PATH to the Integration Bus in IB_DIR: e.g."
-        " cmake -D IB_DIR=../IntegrationBus-x.y.z-Platform/")
+if(NOT SK_DIR)
+    message(FATAL_ERROR "Please set the PATH to the SIL Kit in SK_DIR: e.g."
+        " cmake -D SK_DIR=../SilKit-x.y.z-Platform/")
 endif()
-message(STATUS "Searching IntegrationBus package in ${IB_DIR}")
-find_package(IntegrationBus 3.7.14
+message(STATUS "Searching SilKit package in ${SK_DIR}")
+find_package(SilKit 4.0.2
     REQUIRED
     CONFIG
     NO_CMAKE_PACKAGE_REGISTRY
     NO_DEFAULT_PATH
-    PATHS "${IB_DIR}"
+    PATHS "${SK_DIR}"
 )
-if(NOT TARGET IntegrationBus::IntegrationBus)
-    message(FATAL_ERROR "Could not find Integration Bus package in ${IB_DIR}")
+if(NOT TARGET SilKit::SilKit)
+    message(FATAL_ERROR "Could not find SilKit package in ${SK_DIR}")
 endif()
 
-set(IB_QEMU_DEMOS_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
+set(SK_QEMU_DEMOS_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
 
 add_subdirectory(demos/Ethernet)
 

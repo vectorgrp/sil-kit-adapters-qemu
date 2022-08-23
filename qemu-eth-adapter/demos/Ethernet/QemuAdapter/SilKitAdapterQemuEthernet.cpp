@@ -5,10 +5,9 @@
 #include <thread>
 #include <vector>
 
-#include "ib/IntegrationBus.hpp"
-#include "ib/sim/all.hpp"
-#include "ib/mw/sync/all.hpp"
-#include "ib/mw/sync/string_utils.hpp"
+#include "silkit/SilKit.hpp"
+#include "silkit/config/all.hpp"
+#include "silkit/services/ethernet/all.hpp"
 
 #include "Exceptions.hpp"
 #include "WriteUintBe.hpp"
@@ -17,8 +16,7 @@
 #include <asio/ts/io_context.hpp>
 #include <asio/ts/net.hpp>
 
-using namespace ib::mw;
-using namespace ib::sim;
+using namespace SilKit::Services::Ethernet;
 
 using namespace std::chrono_literals;
 
@@ -36,13 +34,14 @@ public:
         DoReceiveFrameFromQemu();
     }
 
-    void SendEthernetFrameToQemu(const std::vector<uint8_t>& data)
+    template<class container>
+    void SendEthernetFrameToQemu(const container& data)
     {
         std::array<std::uint8_t, 4> frameSizeBytes = {};
         demo::WriteUintBe(asio::buffer(frameSizeBytes), std::uint32_t(data.size()));
 
         asio::write(_socket, asio::buffer(frameSizeBytes));
-        asio::write(_socket, asio::buffer(data));
+        asio::write(_socket, asio::buffer(data.data(),data.size()));
     }
 
 private:
@@ -98,23 +97,25 @@ private:
     std::function<void(std::vector<uint8_t>)> _onNewFrameHandler;
 };
 
-void EthAckCallback(eth::IEthController* /*controller*/, const eth::EthTransmitAcknowledge& ack)
+void EthAckCallback(IEthernetController* /*controller*/, const EthernetFrameTransmitEvent& ack)
 {
-    if (ack.status == eth::EthTransmitStatus::Transmitted)
+    if (ack.status == EthernetTransmitStatus::Transmitted)
     {
-        std::cout << "IB >> Demo: ACK for ETH Message with transmitId=" << ack.transmitId << std::endl;
+        std::cout << "SIL Kit >> Demo: ACK for ETH Message with transmitId=" 
+                  << reinterpret_cast<intptr_t>(ack.userContext) << std::endl;
     }
     else
     {
-        std::cout << "IB >> Demo: NACK for ETH Message with transmitId=" << ack.transmitId;
+        std::cout << "SIL Kit >> Demo: NACK for ETH Message with transmitId="
+                  << reinterpret_cast<intptr_t>(ack.userContext);
         switch (ack.status)
         {
-        case eth::EthTransmitStatus::Transmitted: break;
-        case eth::EthTransmitStatus::InvalidFrameFormat: std::cout << ": InvalidFrameFormat"; break;
-        case eth::EthTransmitStatus::ControllerInactive: std::cout << ": ControllerInactive"; break;
-        case eth::EthTransmitStatus::LinkDown: std::cout << ": LinkDown"; break;
-        case eth::EthTransmitStatus::Dropped: std::cout << ": Dropped"; break;
-        case eth::EthTransmitStatus::DuplicatedTransmitId: std::cout << ": DuplicatedTransmitId"; break;
+        case EthernetTransmitStatus::Transmitted: break;
+        case EthernetTransmitStatus::InvalidFrameFormat: std::cout << ": InvalidFrameFormat"; break;
+        case EthernetTransmitStatus::ControllerInactive: std::cout << ": ControllerInactive"; break;
+        case EthernetTransmitStatus::LinkDown: std::cout << ": LinkDown"; break;
+        case EthernetTransmitStatus::Dropped: std::cout << ": Dropped"; break;
+        case EthernetTransmitStatus::DuplicatedTransmitId: std::cout << ": DuplicatedTransmitId"; break;
         }
 
         std::cout << std::endl;
@@ -127,9 +128,10 @@ int main(int argc, char** argv)
         R"({ "Logging": { "Sinks": [ { "Type": "Stdout", "Level": "Info" } ] } })";
 
     const std::string participantName = "EthernetQemu";
-    const std::uint32_t domainId = 42;
+    const std::string registryURI = "silkit://localhost:8501";
 
-    const std::string ethernetControllerName = "Eth1";
+    const std::string ethernetControllerName = participantName + "_Eth1";
+    const std::string ethernetNetworkName = "qemu_demo";
 
     const std::string qemuHostname = [argc, argv]() -> std::string {
         if (argc >= 2)
@@ -150,13 +152,13 @@ int main(int argc, char** argv)
 
     try
     {
-        auto participantConfiguration = ib::cfg::ParticipantConfigurationFromString(participantConfigurationString);
+        auto participantConfiguration = SilKit::Config::ParticipantConfigurationFromString(participantConfigurationString);
 
-        std::cout << "Creating participant '" << participantName << "' in domain " << domainId << std::endl;
-        auto participant = ib::CreateSimulationParticipant(participantConfiguration, participantName, domainId, false);
+        std::cout << "Creating participant '" << participantName << "' at " << registryURI << std::endl;
+        auto participant = SilKit::CreateParticipant(participantConfiguration, participantName, registryURI);
 
         std::cout << "Creating ethernet controller '" << ethernetControllerName << "'" << std::endl;
-        auto* ethController = participant->CreateEthController(ethernetControllerName);
+        auto* ethController = participant->CreateEthernetController(ethernetControllerName,ethernetNetworkName);
 
         const auto onReceiveEthernetFrameFromQemu = [ethController](std::vector<std::uint8_t> data) {
             if (data.size() < 60)
@@ -164,31 +166,34 @@ int main(int argc, char** argv)
                 data.resize(60, 0);
             }
             const auto frameSize = data.size();
-            auto transmitId = ethController->SendFrame(eth::EthFrame{std::move(data)});
-            std::cout << "QEMU >> IB: Ethernet frame (" << frameSize << " bytes, txId=" << transmitId << ")"
+            static intptr_t transmitId = 0;
+            ethController->SendFrame(EthernetFrame{std::move(data)}, reinterpret_cast < void * >(++transmitId));
+            std::cout << "QEMU >> SIL Kit: Ethernet frame (" << frameSize << " bytes, txId=" << transmitId << ")"
                       << std::endl;
         };
 
         std::cout << "Creating QEMU ethernet connector for '" << qemuHostname << ":" << qemuService << "'" << std::endl;
         QemuSocketClient client{ioContext, qemuHostname, qemuService, onReceiveEthernetFrameFromQemu};
 
-        const auto onReceiveEthernetMessageFromIb = [&client](eth::IEthController* /*controller*/,
-                                                              const eth::EthMessage& msg) {
-            auto rawFrame = msg.ethFrame.RawFrame();
+        const auto onReceiveEthernetMessageFromIb = [&client](IEthernetController* /*controller*/,
+                                                              const EthernetFrameEvent& msg) {
+            auto rawFrame = msg.frame.raw;
             client.SendEthernetFrameToQemu(rawFrame);
 
-            std::cout << "IB >> QEMU: Ethernet frame (" << rawFrame.size() << " bytes)" << std::endl;
+            std::cout << "SIL Kit >> QEMU: Ethernet frame (" << rawFrame.size() << " bytes)" << std::endl;
         };
 
-        ethController->RegisterReceiveMessageHandler(onReceiveEthernetMessageFromIb);
-        ethController->RegisterMessageAckHandler(&EthAckCallback);
+        ethController->AddFrameHandler(onReceiveEthernetMessageFromIb);
+        ethController->AddFrameTransmitHandler(&EthAckCallback);
+
+        ethController->Activate();
 
         ioContext.run();
 
         std::cout << "Press enter to stop the process..." << std::endl;
         std::cin.ignore();
     }
-    catch (const ib::ConfigurationError& error)
+    catch (const SilKit::ConfigurationError& error)
     {
         std::cerr << "Invalid configuration: " << error.what() << std::endl;
         std::cout << "Press enter to stop the process..." << std::endl;

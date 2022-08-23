@@ -1,15 +1,15 @@
 
-add_executable(IbDemoEthernetIcmpEchoDevice
-    IbDemoEthernetIcmpEchoDevice.cpp
+add_executable(SilKitDemoEthernetIcmpEchoDevice
+    "SilKitDemoEthernetIcmpEchoDevice.cpp"
     Device.hpp
     Device.cpp
 )
-target_link_libraries(IbDemoEthernetIcmpEchoDevice
+target_link_libraries(SilKitDemoEthernetIcmpEchoDevice
     PRIVATE
         Utility
-        IntegrationBus::IntegrationBus
+        SilKit::SilKit
 )
-set_target_properties(IbDemoEthernetIcmpEchoDevice PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY $<$<BOOL:ALWAYS>:${IB_QEMU_DEMOS_RUNTIME_OUTPUT_DIRECTORY}>
+set_target_properties(SilKitDemoEthernetIcmpEchoDevice PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY $<$<BOOL:ALWAYS>:${SK_QEMU_DEMOS_RUNTIME_OUTPUT_DIRECTORY}>
 )
 
