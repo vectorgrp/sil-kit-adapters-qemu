@@ -86,7 +86,7 @@ Then you can build the demos::
     cmake -S. -Bbuild -DSK_DIR=/path/to/vib/SilKit-4.0.2-$platform/
     cmake --build build --parallel
 
-The demo executables are available in ``out/build/x64-Debug/bin`` (depending on the configured build directory).
+The demo executables are available in ``build/bin`` (depending on the configured build directory).
 Additionally the ``SilKit`` shared library (e.g., ``SilKit[d].dll`` on Windows) is copied to that
 directory automatically.
 
