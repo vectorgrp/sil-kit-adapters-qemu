@@ -58,16 +58,16 @@ The application will reply to an ARP request and respond to ICMPv4 Echo Requests
 Time Sync Plugin
 ----------------------------
 This is a experimental TCG Plugin for adding time synchronization to QEMU. 
-Please refer to the README found in demos/TimeSyncPlugin for more information.
+Please refer to the README found in time_sync for more information.
 
-To enable the target in the CMake build system, add ``-DBUILD_QEMU_TIMESYNC_PLUGIN=ON`` to the ``cmake`` command line after the ``-DIB_DIR=...`` argument.
+To enable the target in the CMake build system, add ``-DBUILD_QEMU_TIMESYNC_PLUGIN=ON`` to the ``cmake`` command line after the ``-DSK_DIR=...`` argument.
 
 Please note that the plugin currently requires the ``unistd.h`` header to be available.
 It was tested to build successfully under Linux and WSL.
 
-Building the Demos
-==================
-The demos are built using ``cmake`` (here with ``/path/to/sil-kit-adapters-qemu/qemu-eth-adapter/build`` as the build-directory)::
+Building the Adapter and Demos
+==============================
+The demos are built using ``cmake`` (here with ``/path/to/sil-kit-adapters-qemu/build`` as the build-directory)::
 
     cd /path/to/sil-kit-adapters-qemu
 
@@ -82,7 +82,7 @@ Otherwise clone the standalone version of asio manually::
 To build the demos, you'll need SilKit packages ``SilKit-4.0.2-$platform`` for your platform.
 Then you can build the demos::
 
-    cd /path/to/sil-kit-adapters-qemu/qemu-eth-adapter
+    cd /path/to/sil-kit-adapters-qemu
     cmake -S. -Bbuild -DSK_DIR=/path/to/vib/SilKit-4.0.2-$platform/
     cmake --build build --parallel
 
@@ -108,9 +108,9 @@ Building and Running the QEMU Image
 
 Build the guest image and start it::
 
-    wsl$ sudo ./tools/build-vib-qemu-demos-guest
-    wsl$ sudo chmod go+rw vib-qemu-demos-guest.qcow2
-    wsl$ ./tools/run-vib-qemu-demos-guest
+    wsl$ sudo ./tools/build-silkit-qemu-demos-guest
+    wsl$ sudo chmod go+rw silkit-qemu-demos-guest.qcow2
+    wsl$ ./tools/run-silkit-qemu-demos-guest
 
 QEMU forwards the guests SSH port on ``10022``, any interaction with the guest can then proceed via SSH::
 

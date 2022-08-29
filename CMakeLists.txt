@@ -1,16 +1,17 @@
 cmake_minimum_required(VERSION 3.5)
-project(VectorSilKitQemuDemos)
+project(VectorSilKitAdaptersQemu)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(CMAKE_CXX_STANDARD 17)
 
-option(BUILD_QEMU_TIMESYNC_PLUGIN "Build the QEMU Time-Sync. Plugin" OFF)
+option(BUILD_QEMU_TIMESYNC_PLUGIN "Build the QEMU Time-Sync. Plugin" OFF) # experimental feature
+# option(BUILD_QEMU_SPI_ADAPTER "Build the QEMU SPI_ADAPTER" OFF) # niy
 
 find_package(Threads REQUIRED)
 
 add_library(asio INTERFACE)
-target_include_directories(asio INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/../third_party/asio/asio/include)
+target_include_directories(asio INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/third_party/asio/asio/include)
 target_compile_definitions(asio INTERFACE ASIO_STANDALONE=1)
 target_link_libraries(asio INTERFACE Threads::Threads)
 if (WIN32)
@@ -36,9 +37,17 @@ endif()
 
 set(SK_QEMU_DEMOS_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
 
-add_subdirectory(demos/Ethernet)
+add_subdirectory(eth/Utility)
+add_subdirectory(eth/adapter)
+add_subdirectory(eth/demos)
 
 if(BUILD_QEMU_TIMESYNC_PLUGIN)
     message(NOTICE "-- ${PROJECT_NAME}: Building the QEMU Time-Sync. Plugin")
-    add_subdirectory(demos/TimeSyncPlugin)
+    add_subdirectory(time_sync)
 endif()
+
+# if(BUILD_QEMU_SPI_ADAPTER) # niy
+#     message(NOTICE "-- ${PROJECT_NAME}: Building the QEMU SPI Adapter")
+#     add_subdirectory(spi/adapter)
+#     add_subdirectory(spi/demo)
+# endif()
