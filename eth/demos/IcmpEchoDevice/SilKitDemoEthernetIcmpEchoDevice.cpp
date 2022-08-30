@@ -9,6 +9,7 @@
 #include "silkit/SilKit.hpp"
 #include "silkit/config/all.hpp"
 #include "silkit/services/ethernet/all.hpp"
+#include "silkit/services/ethernet/string_utils.hpp"
 
 
 using namespace SilKit::Services::Ethernet;
@@ -25,18 +26,9 @@ void EthAckCallback(IEthernetController* /*controller*/, const EthernetFrameTran
     else
     {
         std::cout << "SIL Kit >> Demo: NACK for ETH Message with transmitId="
-                  << reinterpret_cast<intptr_t>(ack.userContext);
-        switch (ack.status)
-        {
-        case EthernetTransmitStatus::Transmitted: break;
-        case EthernetTransmitStatus::InvalidFrameFormat: std::cout << ": InvalidFrameFormat"; break;
-        case EthernetTransmitStatus::ControllerInactive: std::cout << ": ControllerInactive"; break;
-        case EthernetTransmitStatus::LinkDown: std::cout << ": LinkDown"; break;
-        case EthernetTransmitStatus::Dropped: std::cout << ": Dropped"; break;
-        case EthernetTransmitStatus::DuplicatedTransmitId: std::cout << ": DuplicatedTransmitId"; break;
-        }
-
-        std::cout << std::endl;
+                  << reinterpret_cast<intptr_t>(ack.userContext)
+                  << ": " << ack.status
+                  << std::endl;
     }
 }
 
