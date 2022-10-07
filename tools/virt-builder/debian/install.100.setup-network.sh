@@ -11,11 +11,11 @@ auto lo
 iface lo inet loopback
 
 auto internet0
-allow-hotplut internet0
+allow-hotplug internet0
 iface internet0 inet dhcp
 
 auto vib0
-allow-hotplut vib0
+allow-hotplug vib0
 iface vib0 inet static
   address 192.168.12.34
   netmask 255.255.255.0
