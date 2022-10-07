@@ -1,0 +1,23 @@
+version 1.4;
+import module "SilKit";
+
+namespace Namespace
+{
+  [Binding="SilKit"]
+  interface SPIAdapterItf
+  {
+    consumed data string qemuOutbound;
+    provided data string qemuInbound;
+  }
+  
+  object SPIAdapter : SPIAdapterItf;
+  
+  [Binding="SilKit"]
+  interface SPIDeviceItf
+  {
+    consumed data string qemuInbound;
+    provided data string qemuOutbound;
+  }
+  
+  object SPIDevice : SPIDeviceItf;
+}

@@ -102,4 +102,9 @@ To enable the target in the CMake build system, add ``-DBUILD_QEMU_TIMESYNC_PLUG
 Please note that the plugin currently requires the ``unistd.h`` header to be available.
 It was tested to build successfully under Linux and WSL.
 
+SilKitAdapterQemuSpi
+--------------------
+This is a experimental adapter to QEMU's SPI interface. 
+Please refer to the README found in spi for more information.
 
+To enable the target in the CMake build system, add ``-BUILD_QEMU_SPI_ADAPTER=ON`` to the ``cmake`` command line after the ``-DSK_DIR=...`` argument.
