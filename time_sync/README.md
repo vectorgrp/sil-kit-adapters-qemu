@@ -9,7 +9,7 @@ executed. Inside this callback we then halt the guest whenever n instructions ha
 Add the following QEMU command line argument:
 
 ```
--plugin <pathTo>/libTimeSyncPlugin.so,HostToGuestPipe=/tmp/HostToGuestPipe,GuestToHostPipe=/tmp/GuestToHostPipe,AdvanceTimeinMicroseconds=1000
+-plugin <pathTo>/libTimeSyncPlugin.so,HostToGuestPipe=/tmp/HostToGuestPipe,GuestToHostPipe=/tmp/GuestToHostPipe,TimeinMicroseconds=1000
 ```
 
 In the simulation participant that controls the execution you need to open the corresponding pipes you specified in the QEMU command line argument (/tmp/HostToGuestPipe, /tmp/GuestToHostPipe). 

@@ -108,22 +108,22 @@ SIL Kit >> SIL Kit: message11
 You can also start ``CANoe 16 SP3`` and load the ``Qemu_SPI_adapter_CANoe.cfg`` from the ``CANoe`` directory and start
 the measurement. Note that if necessary, you must provide the associated ``Datasource.vcdl`` file to CANoe.
 
-The demo setup is done so that CANNoe is optional in this demo, therefore the Publisher/Subscribers matching labels are
+The demo setup is done so that CANoe is optional in this demo, therefore the Publisher/Subscribers matching labels are
 done so that communication coming from the other participant or from CANoe are not distinguished. The "instance"
 matching label is set by the ``Datasource.vcdl`` file on CANoe's side and programmatically in the participants.
 
 Here is a small drawing to illustrate how CANoe taps and stimulate the topics:
 ```
-+--[ QEMU ]--+           CANoe::                          CANoe::
-| Debian  11 |    SPIDevice.qemuOutbound   O-   -<  SPIAdapter.qemuOutbound
-|   ttyS1    |                               \ /
-+------------+                         _______V________
-      ^            +--[SIL Kit]--+    / >qemuOutbound> \      +--[SIL Kit]--+
-      \____________| SPIAdapter  |----  < qemuInbound<  ------|  SPIDevice  |
-        socket     +-------------+    \_______ ________/      +-------------+
-        23456                                 ^
-                         CANoe::             / \          CANoe:: 
-                    SPIDevice.qemuInbound  >-   -O  SPIAdapter.qemuInbound
++--[ QEMU ]--+               CANoe::                                CANoe::
+| Debian  11 |        SPIDevice.qemuOutbound O------   -----< SPIAdapter.qemuOutbound
+|   ttyS1    |                                      \ /          
++------------+                              _________V__________     
+      ^                +--[SIL Kit]--+     /   >qemuOutbound>   \         +--[SIL Kit]--+
+      \________________| SPIAdapter  |-----    < qemuInbound<    ---------|  SPIDevice  |
+        socket         +-------------+     \_________ __________/         +-------------+
+        23456                                        ^           
+                             CANoe::                / \             CANoe:: 
+                        SPIDevice.qemuInbound >-----   -----O SPIAdapter.qemuInbound
 ```
 
 Please note that you can compile and run the demos on Windows even if QEMU is running in WSL.
