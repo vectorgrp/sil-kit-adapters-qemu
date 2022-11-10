@@ -47,6 +47,7 @@ Setup your WSL host (install ``virt-builder`` and a kernel image for use by ``vi
 
 Build the guest image::
 
+    sudo chmod a+x tools/build-silkit-qemu-demos-guest
     sudo ./tools/build-silkit-qemu-demos-guest
     sudo chmod go+rw silkit-qemu-demos-guest.qcow2
 
@@ -56,7 +57,8 @@ Running QEMU image
 
 To start the guest image, run::
 
-    ./tools/run-silkit-qemu-demos-guest
+    sudo chmod a+x tools/run-silkit-qemu-demos-guest
+    sudo ./tools/run-silkit-qemu-demos-guest
 
 By default, the options in this script will spawn the guest system in the same terminal. The password for the ``root``
 user is ``root``.
@@ -90,10 +92,10 @@ Demos
 Ethernet Demo
 -------------
 
-The aim of this demo is to showcase a simple adapter forwarding ethernet trafic from and to the QEMU image through
+The aim of this demo is to showcase a simple adapter forwarding ethernet traffic from and to the QEMU image through
 Vector SIL Kit. Traffic being exchanged are ping (ICMP) requests, and the answering device replies only to them.
 
-This demo is further explained in `eth/README.rst<eth/README.rst>`_
+This demo is further explained in `README.rst <eth/README.rst>`_ found in folder eth.
 
 Time Sync Plugin
 ----------------------------
@@ -110,4 +112,4 @@ SilKitAdapterQemuSpi
 This is a experimental adapter to QEMU's SPI interface. 
 Please refer to the README found in spi for more information.
 
-To enable the target in the CMake build system, add ``-BUILD_QEMU_SPI_ADAPTER=ON`` to the ``cmake`` command line.
+To enable the target in the CMake build system, add ``-DBUILD_QEMU_SPI_ADAPTER=ON`` to the ``cmake`` command line.

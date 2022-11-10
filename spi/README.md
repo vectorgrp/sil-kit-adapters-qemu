@@ -22,10 +22,10 @@ received (the ``echo`` part) and transforms input instead of keeping it ``raw`` 
 especially useful for the interactive part of the ``-serial mon:stdio``, it is useless for the demo adapter. Indeed,
 the adapter is not configured to ignore this echo which could produce extra control characters or infinite loops, so
 it is advised to deactivate it. It is also advised to toggle into raw mode, because the serial driver will replace
-newline characters by two characters: carriage return and line feed, as well as other behaviorial problem with
+newline characters by two characters: carriage return and line feed, as well as other behavioral problem with
 accidental control codes.
 
-So first, inside the QEMU image, setup the ``ttyS1`` pseudofile for raw mode and remove echo:
+So first, inside the QEMU image, setup the ``ttyS1`` pseudo file for raw mode and remove echo:
 ```
 root@silkit-qemu-demos-guest:~# stty raw -echo -F /dev/ttyS1
 ```
@@ -76,7 +76,7 @@ out of the socket port 23456, sent to SilKitDemoSpiEchoDevice which will send th
 through the QEMU socket connection and you'll see them printed by the ``cat`` command launched during the setup.
 
 If you chose not to use SSH to read what is incoming from ``ttyS1``, it is recommended to make the terminal pause to
-allow the message to backtrip through the SIL Kit:
+allow the message to roundtrip through the SIL Kit:
 ```
 root@silkit-qemu-demos-guest:~# echo message1 > /dev/ttyS1 ; sleep 0.1
 message1
@@ -96,7 +96,7 @@ QEMU >> SIL Kit: message11
 SIL Kit >> QEMU: message11
 ```
 
-And you shoud see output similar to the following from the SilKitAdapterQemuSpi application:
+And you should see output similar to the following from the SilKitDemoSpiEchoDevice application:
 ```
 SIL Kit >> SIL Kit: message1
 SIL Kit >> SIL Kit: message10
