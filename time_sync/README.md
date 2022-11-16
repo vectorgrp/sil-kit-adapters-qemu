@@ -1,47 +1,41 @@
 # Time Sync Plugin
 
-This TCG Plugin offers a basic time synchronization interface to QEMU which can be used to synchronize simulation participants. This is done by running QEMU in icount mode where 1 instruction takes 1 nanosecond to execute.
-This is enforced by passing the QEMU commandline argument -icount shift=0. The TCG Plugin interface offers the possibility to register a callback whenever a translation block is
-executed. Inside this callback we then halt the guest whenever n instructions have been executed and wait for the external simulation participant to signal that the guest can continue.
+This TCG Plugin offers a basic time synchronization interface to QEMU which can be used to synchronize simulation
+participants. This is done by running QEMU in icount mode where 1 instruction takes 1 nanosecond to execute. This is
+enforced by passing the QEMU commandline argument -icount shift=0. The TCG Plugin interface offers the possibility to
+register a callback whenever a translation block is executed. Inside this callback we then halt the guest whenever n
+instructions have been executed and wait for the external simulation participant to signal that the guest can continue.
+
+## Prerequisites
+
+Version of QEMU on Ubuntu does not come with plugin support. You need to download the sources and compile them with:
+```
+cd third_party
+git clone https://github.com/qemu/qemu.git -b v7.0.0
+cd qemu 
+mkdir build ; cd build
+../configure --target-list=x86_64-softmmu --enable-plugins --enable-kvm
+ninja
+```
 
 ## Usage of the Time Sync Plugin
 
-Add the following QEMU command line argument:
+Adding the following QEMU command line arguments is necessary:
 
 ```
+-L <pathToQemuSources>/pc-bios/
+-icount 0
 -plugin <pathTo>/libTimeSyncPlugin.so,HostToGuestPipe=/tmp/HostToGuestPipe,GuestToHostPipe=/tmp/GuestToHostPipe,TimeinMicroseconds=1000
 ```
 
-In the simulation participant that controls the execution you need to open the corresponding pipes you specified in the QEMU command line argument (/tmp/HostToGuestPipe, /tmp/GuestToHostPipe). 
-Next read exactly one character that the plugin writes to the GuestToHostPipe indicating that the execution is finished.
-Now is the time to synchronize your simulation. Afterwards you signal the guest to continue execution by writing exactly one character to the HostToGuestPipe.
+You are able to run the `run-silkit-qemu-demos-guest` script with the `--with-time-sync` argument to do this.
 
-      char pipeHostToGuest[] = "/tmp/HostToGuestPipe";
-      char pipeGuestToHost[] = "/tmp/GuestToHostPipe";
-      char contString[] = "c";
+## Basic Sync
 
-      mkfifo(pipeHostToGuest, 0666);
-      mkfifo(pipeGuestToHost, 0666);
+In the simulation participant that controls the execution, open the corresponding pipes specified in the QEMU command line argument (/tmp/HostToGuestPipe, /tmp/GuestToHostPipe). 
+Next read exactly two bytes that the plugin writes to the GuestToHostPipe indicating that the translation and execution are finished.
+Now is the time to synchronize your simulation by signaling the guest to continue execution by writing exactly one character to the HostToGuestPipe.
 
-      int fdHostToGuest = open(pipeHostToGuest, O_WRONLY, O_CREAT);
-      int fdGuestToHost = open(pipeGuestToHost, O_RDONLY, O_CREAT);
-
-      ssize_t bytes;
-
-      // participant behavior
-      participantController->SetPeriod(1ms);
-      participantController->SetSimulationTask(
-        [&](std::chrono::nanoseconds now, std::chrono::nanoseconds /*duration*/) {
-        // The application reacts to CANoe messages only.
-
-        char arr[2];
-        bytes = read(fdGuestToHost, arr, sizeof(arr));
-
-        std::this_thread::sleep_for(1ms);
-
-        bytes = write(fdHostToGuest, &contString, strlen(contString));
-      });
-    
 ## Helpful links
 
 * https://qemu.readthedocs.io/en/latest/devel/tcg-plugins.html (About TCG Plugins)
