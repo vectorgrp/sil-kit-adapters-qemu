@@ -8,7 +8,7 @@
 
 #include "silkit/SilKit.hpp"
 #include "silkit/config/all.hpp"
-#include "silkit/services/PubSub/all.hpp"
+#include "silkit/services/pubsub/all.hpp"
 #include "silkit/util/serdes/Serialization.hpp"
 
 using namespace SilKit::Services::PubSub;
