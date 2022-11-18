@@ -97,15 +97,6 @@ Vector SIL Kit. Traffic being exchanged are ping (ICMP) requests, and the answer
 
 This demo is further explained in `README.rst <eth/README.rst>`_ found in folder eth.
 
-Time Sync Plugin
-----------------------------
-This is a experimental TCG Plugin for adding time synchronization to QEMU. 
-Please refer to the README found in time_sync for more information.
-
-To enable the target in the CMake build system, add ``-DBUILD_QEMU_TIMESYNC_PLUGIN=ON`` to the ``cmake`` command line.
-
-Please note that the plugin currently requires the linux-only ``unistd.h`` header to be available.
-It was tested to build successfully under Linux and WSL.
 
 SilKitAdapterQemuSpi
 --------------------
