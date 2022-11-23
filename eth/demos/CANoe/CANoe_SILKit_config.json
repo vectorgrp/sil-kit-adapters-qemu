@@ -1,8 +1,0 @@
-{
-	"EthernetControllers": [
-		{
-		"Name": "Eth1/Listening_ECU",
-		"Network": "qemu_demo"
-		}
-	]
-}
