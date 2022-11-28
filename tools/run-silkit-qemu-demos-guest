@@ -1,23 +1,5 @@
 #!/bin/bash
-
-set -e
-
-while test $# -gt 0
-do
-    case "$1" in
-        --with-time-sync) 
-            PATH_TO_QEMU=./third_party/qemu/build/
-            PLUGIN_ARGS="-icount shift=0  
-                        -plugin /mnt/d/vfs/SilKit/vib-qemu-demos/build_wsl/time_sync/Plugin/libTimeSyncPlugin.so,HostToGuestPipe=/tmp/HostToGuestPipe,GuestToHostPipe=/tmp/GuestToHostPipe,TimeInMicroSeconds=1000
-                        -L ./third_party/qemu/pc-bios/ "
-            ;;
-        *) echo "unknown argument $1"
-            ;;
-    esac
-    shift
-done
-
-${PATH_TO_QEMU}qemu-system-x86_64              \
+qemu-system-x86_64              \
   -m 2048M                                                \
   -smp 2                                                  \
   -boot c 	                                          \
@@ -29,7 +11,5 @@ ${PATH_TO_QEMU}qemu-system-x86_64              \
   -netdev socket,id=mynet0,listen=:12345                                \
   -net nic,macaddr=52:54:56:53:4B:51,netdev=mynet0                      \
   -object filter-dump,id=tap_dump,netdev=mynet0,file=/tmp/qemu_linux_tap_dump \
-  ${PLUGIN_ARGS} \
   -hda silkit-qemu-demos-guest.qcow2
-
-exit 0
+  
