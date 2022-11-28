@@ -6,7 +6,7 @@ exported socket and implements a transport to a virtual SIL Kit Ethernet bus nam
 
     +-------[ QEMU ]---------+                                +------[ SIL Kit ]------+
     | Debian 11              |<== [listening socket 12345] ==>|  QemuSocketClient     |
-    |   virtual NIC vib0     |                                |   <=> virtual Eth1    |
+    |   virtual NIC silkit0  |                                |   <=> virtual Eth1    |
     +------------------------+                                +----------+------------+
                                                                          |
                                                            Vector CANoe <=> 
@@ -74,7 +74,7 @@ You can also start ``CANoe 16 SP3`` and load the ``Qemu_Ethernet_adapter_CANoe.c
 measurement.
 
 ## ICMP Ping and Pong
-When the virtual machine boots, the network interface created for hooking up with the Vector SIL Kit (``vib0``) is ``up``.
+When the virtual machine boots, the network interface created for hooking up with the Vector SIL Kit (``silkit0``) is ``up``.
 It automatically assigns the static IP ``192.168.12.34/24`` to the interface.
 
 Apart from SSH you can also log into the QEMU guest with the user ``root`` with password ``root``.
