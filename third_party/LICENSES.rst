@@ -1,7 +1,7 @@
-SIL Kit Adapters QEMU Third Party Libraries
+SIL Kit Adapters for QEMU Third Party Libraries
 ======================================
 
-The SIL Kit Adapters QEMU uses the following third party software components which are governed by their respective licenses:
+The SIL Kit Adapters for QEMU uses the following third party software components which are governed by their respective licenses:
 
  1. Asio C++ Library
 
