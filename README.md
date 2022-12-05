@@ -63,7 +63,7 @@ To build the demos, you'll need SIL Kit packages ``SilKit-x.y.z-$platform`` for 
 The adapters and demos are built using ``cmake``:
 
     mkdir build
-    cmake -S. -Bbuild -DSK_DIR=/path/to/SilKit-x.y.z-$platform/
+    cmake -S. -Bbuild -DSILKIT_PACKAGE_DIR=/path/to/SilKit-x.y.z-$platform/
     cmake --build build --parallel
 
 The adapters and demo executables will be available in ``build/bin`` (depending on the configured build directory).
@@ -72,7 +72,7 @@ automatically.
 
 **Note:** There is a experimental adapter for the SPI interface of QEMU. To enable the target in the CMake build system, add ``-DBUILD_QEMU_SPI_ADAPTER=ON`` to the ``cmake`` command line. Like in the following command:
 
-    cmake -S. -Bbuild -DSK_DIR=/path/to/SilKit-x.y.z-$platform/ -DBUILD_QEMU_SPI_ADAPTER=ON
+    cmake -S. -Bbuild -DSILKIT_PACKAGE_DIR=/path/to/SilKit-x.y.z-$platform/ -DBUILD_QEMU_SPI_ADAPTER=ON
 
 
 ## Ethernet Demo
