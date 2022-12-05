@@ -4,6 +4,7 @@
 #include <string>
 #include <thread>
 #include <vector>
+#include <algorithm>
 
 #include "Exceptions.hpp"
 #include "WriteUintBe.hpp"
@@ -23,75 +24,74 @@ using namespace std::chrono_literals;
 
 class QemuSocketTransmitter
 {
+  typedef std::string string;
 public:
-    QemuSocketTransmitter(asio::io_context& io_context, const std::string& host, const std::string& service,
-                          IDataPublisher* publisher,
-                          IDataSubscriber* subscriber)
-        : _socket{io_context}
-        , _publisher{publisher}
-        , _subscriber{subscriber}
-    {
-        asio::connect(_socket, asio::ip::tcp::resolver{io_context}.resolve(host, service));
-        std::cout << "connect success" << std::endl;
-        _subscriber->SetDataMessageHandler(
-            [&](SilKit::Services::PubSub::IDataSubscriber* subscriber, const DataMessageEvent& dataMessageEvent) {
-                //remove size which is added by CANoe.
-                const auto data =
-                    std::string_view((const char*)dataMessageEvent.data.data() + 4, dataMessageEvent.data.size() - 4);
-                std::cout << "SIL Kit >> QEMU: " << data << std::endl;
-                SendToQemu(data);
-            });
-        DoReceiveFrameFromQemu();
-    }
 
-    template<class vector_like_container>
-    void SendToQemu(const vector_like_container& data)
-    {
-        asio::write(_socket, asio::buffer(data.data(), data.size()));
-    }
+  template<class vector_like_container>
+  void SendToQemu( const vector_like_container& data )
+  {
+    asio::write( _socket , asio::buffer( data.data() , data.size() ) );
+  }
 
-private:
-    void DoReceiveFrameFromQemu()
-    {
-        asio::async_read_until(_socket, asio::dynamic_buffer(_data_buffer), '\n',
-                               [this](const std::error_code ec, const std::size_t bytes_received) {
-                                   if( ec )
-                                       throw demo::IncompleteReadError{};
+  QemuSocketTransmitter(asio::io_context& io_context, const string& host, const string& service,
+                         const string& publisherName, const string& subscriberName,  
+                         const PubSubSpec& pubDataSpec, const PubSubSpec& subDataSpec, 
+                         SilKit::IParticipant* participant)
+    : _socket { io_context }
+    , _publisher { participant->CreateDataPublisher( publisherName, pubDataSpec ) }
+    , _subscriber{ participant->CreateDataSubscriber( subscriberName, subDataSpec,
+              [&](SilKit::Services::PubSub::IDataSubscriber* subscriber, const DataMessageEvent& dataMessageEvent) {
+                  //remove size which is added by CANoe.
+                  const auto data =
+                      std::string_view((const char*)dataMessageEvent.data.data() + 4, dataMessageEvent.data.size() - 4);
+                  std::cout << "SIL Kit >> QEMU: " << data << std::endl;
+                  SendToQemu(data);
+              })}
+  {
+    asio::connect( _socket , asio::ip::tcp::resolver { io_context }.resolve( host , service ) );
+    std::cout << "connect success" << std::endl;
+    DoReceiveFrameFromQemu();
+  }
 
-                                   auto eol_it = std::find(_data_buffer.begin(), _data_buffer.end(), '\n');
-                                   if( eol_it==_data_buffer.end() )
-                                       throw demo::IncompleteReadError{};
-
-                                   auto line_len = eol_it - _data_buffer.begin();
-
-                                   std::cout << "QEMU >> SIL Kit: "
-                                             << std::string_view(_data_buffer.data(), line_len)
-                                             << std::endl;
-                                   
-                                   //Prefix data with big endian size. This is for CANoe.
-                                   std::vector<uint8_t> dataToPublish;
-                                   dataToPublish.reserve(4 + line_len);
-                                   for (int byte_index = 0; byte_index < 4; byte_index++)
-                                       dataToPublish.push_back( (line_len >> (8 * byte_index)) & 0xFF);
-                                   std::copy(_data_buffer.begin(), eol_it,
-                                             std::back_inserter(dataToPublish));
-                                   _publisher->Publish(SilKit::Util::Span<uint8_t>(dataToPublish));
-
-                                   //clean buffer of the read line; asio doesn't do it on next invocation
-                                   _data_buffer.erase(_data_buffer.begin(), eol_it + 1);
-
-                                   DoReceiveFrameFromQemu();
-                               });
-    }
 
 private:
-    asio::ip::tcp::socket _socket;
+  void DoReceiveFrameFromQemu()
+  {
+      asio::async_read_until(_socket, asio::dynamic_buffer(_data_buffer_in), '\n',
+                            [ this ]( const std::error_code ec , const std::size_t bytes_received ) {
+                              if( ec )
+                                throw demo::IncompleteReadError {};
 
-    std::vector<char> _data_buffer = {};
-    IDataPublisher* _publisher = nullptr;
-    IDataSubscriber* _subscriber = nullptr;
+                              auto eol_it = std::find(_data_buffer_in.begin(), _data_buffer_in.end(), '\n');
+                              if (eol_it == _data_buffer_in.end())
+                                throw demo::IncompleteReadError {};
 
-    std::function<void(std::vector<uint8_t>)> _onNewFrameHandler;
+                              auto line_len = eol_it - _data_buffer_in.begin() + 1;
+
+                              std::cout << "QEMU >> SIL Kit: " << std::string_view(_data_buffer_in.data(), line_len);
+
+                              //Prefix data with big endian size. This is for CANoe.
+                              _data_buffer_out.clear();
+                              _data_buffer_out.reserve(4 + line_len);
+                              for( int byte_index = 0; byte_index < 4; byte_index++ )
+                                  _data_buffer_out.push_back((line_len >> (8 * byte_index)) & 0xFF);
+                              std::copy(_data_buffer_in.begin(), eol_it + 1, std::back_inserter(_data_buffer_out));
+                              _publisher->Publish(SilKit::Util::Span<uint8_t>(_data_buffer_out));
+
+                              //clean buffer of the read line; asio doesn't do it on next invocation
+                              _data_buffer_in.erase( _data_buffer_in.begin() , eol_it + 1 );
+
+                              DoReceiveFrameFromQemu();
+                            } );
+  }
+
+private:
+  asio::ip::tcp::socket _socket;
+
+  std::vector<char> _data_buffer_in = {};
+  std::vector<uint8_t> _data_buffer_out = {};
+  IDataPublisher* _publisher;
+  IDataSubscriber* _subscriber;
 };
 
 int main(int argc, char** argv)
@@ -99,47 +99,50 @@ int main(int argc, char** argv)
     const std::string participantConfigurationString =
         R"({ "Logging": { "Sinks": [ { "Type": "Stdout", "Level": "Info" } ] } })";
 
-    const std::string qemuHostname = [argc, argv]() -> std::string {
-        if (argc >= 2)
-        {
-            return argv[1];
-        }
-        return "localhost";
-    }();
-    const std::string qemuService = [argc, argv]() -> std::string {
-        if (argc >= 3)
-        {
-            return argv[2];
-        }
-        return "23456";
-    }();
+    const auto getArgDefault = [ argc , argv ](const std::string& argument, const std::string& defaultValue)-> auto{
+        return [argc, argv, argument, defaultValue]() -> std::string {
+            auto found = std::find_if(argv, argv + argc, [argument](const char* arg) -> bool {
+                const static std::string Switch = argument;
+                return arg == Switch;
+            });
+            if (found != argv + argc && found + 1 != argv + argc)
+                return *(found + 1);
+            return defaultValue;
+        };
+    };
+
+    const std::string qemuHostname = getArgDefault("--hostname","localhost")();
+    const std::string qemuService = getArgDefault("--port","23456")();
+
+    const auto qemuInboundTopicName = getArgDefault("--qemuinbound","qemuInbound")();
+    const auto qemuOutboundTopicName = getArgDefault("--qemuoutbound","qemuOutbound")();
 
     asio::io_context ioContext;
 
-    const std::string participantName = "SPIAdapter";
+    const std::string participantName = getArgDefault("--name","SPIAdapter")();
+
     const std::string registryURI = "silkit://localhost:8501";
 
     const std::string publisherName = participantName + "_pub";
     const std::string subscriberName = participantName + "_sub";
 
-    const auto create_pubsubspec = [](const std::string& topic_name, const std::string& instance,
+    const auto create_pubsubspec = [](const std::string& topic_name,
                                 SilKit::Services::MatchingLabel::Kind matching_mode) {
         PubSubSpec r(topic_name, SilKit::Util::SerDes::MediaTypeData());
         r.AddLabel("VirtualNetwork", "Default", matching_mode);
         r.AddLabel("Namespace", "Namespace", matching_mode);
-        // Uncomment next line if you have a meaningful instance to filter, but this makes it necessary to "know"
-        // the instance of the sender, see invocations of "create_pubsubspec", as well as make CANoe a disturbance
-        // in this (this is the DO's object name)
-        //r.AddLabel("Instance", instance , matching_mode);
+        // Next lines would filter either CANoe's or the other participant's, so we don't add it.
+        //instance = "Observed";
+        //instance = "Stimulate";
+        //r.AddLabel("Instance", instance, matching_mode);
         return r;
     };
 
     const PubSubSpec subDataSpec =
-        create_pubsubspec("qemuInbound", "SPIDevice", SilKit::Services::MatchingLabel::Kind::Mandatory);
+        create_pubsubspec(qemuInboundTopicName, SilKit::Services::MatchingLabel::Kind::Mandatory);
 
-
-    const PubSubSpec pubDataSpec =
-        create_pubsubspec("qemuOutbound", participantName, SilKit::Services::MatchingLabel::Kind::Optional);
+    const PubSubSpec pubDataSpec = create_pubsubspec(qemuOutboundTopicName,
+                                                     SilKit::Services::MatchingLabel::Kind::Optional);
 
 
     try
@@ -150,20 +153,8 @@ int main(int argc, char** argv)
         std::cout << "Creating participant '" << participantName << "' at " << registryURI << std::endl;
         auto participant = SilKit::CreateParticipant(participantConfiguration, participantName, registryURI);
 
-        //TODO: create Data Publisher/Subscriber
-        auto dataPublisher = participant->CreateDataPublisher(publisherName, pubDataSpec);
-
-        auto dataSubscriber = participant->CreateDataSubscriber(
-            subscriberName, subDataSpec,
-            [&](SilKit::Services::PubSub::IDataSubscriber* subscriber, const DataMessageEvent& dataMessageEvent) {
-                std::cout << "SIL Kit >> QEMU (default): "
-                          << std::string_view(reinterpret_cast<const char*>(dataMessageEvent.data.data()),
-                                              dataMessageEvent.data.size())
-                          << std::endl;
-                ;
-            });
-
-        QemuSocketTransmitter transmitter{ioContext, qemuHostname, qemuService, dataPublisher, dataSubscriber};
+        QemuSocketTransmitter transmitter{ioContext, qemuHostname, qemuService, publisherName, subscriberName, pubDataSpec,
+                                                       subDataSpec, participant.get()};
 
         ioContext.run();
 

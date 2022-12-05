@@ -27,23 +27,23 @@ int main(int argc, char**)
     const std::string participantName = "SPIDevice";
     const std::string registryURI = "silkit://localhost:8501";
 
-    const auto create_pubsubspec = [](const std::string& topic_name, const std::string& instance,
+    const auto create_pubsubspec = [](const std::string& topic_name,
                                 SilKit::Services::MatchingLabel::Kind matching_mode) {
         PubSubSpec r(topic_name, SilKit::Util::SerDes::MediaTypeData());
         r.AddLabel("VirtualNetwork", "Default", matching_mode);
         r.AddLabel("Namespace", "Namespace", matching_mode);
-        // Uncomment next line if you have a meaningful instance to filter, but this makes it necessary to "know"
-        // the instance of the sender, see invocations of "create_pubsubspec", as well as make CANoe a disturbance
-        // in this (this is the DO's object name)
+        // Next lines would filter either CANoe's or the other participant's, so we don't add it.
+        //instance = "Observed";
+        //instance = "Stimulate";
         //r.AddLabel("Instance", instance, matching_mode);
         return r;
     };
 
     const PubSubSpec subDataSpec =
-        create_pubsubspec("qemuOutbound", "SPIAdapter", SilKit::Services::MatchingLabel::Kind::Mandatory);
+        create_pubsubspec("qemuOutbound", SilKit::Services::MatchingLabel::Kind::Mandatory);
 
     const PubSubSpec pubDataSpec =
-        create_pubsubspec("qemuInbound", participantName, SilKit::Services::MatchingLabel::Kind::Optional);
+        create_pubsubspec("qemuInbound", SilKit::Services::MatchingLabel::Kind::Optional);
 
     try
     {

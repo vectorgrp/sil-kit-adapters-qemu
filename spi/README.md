@@ -54,7 +54,7 @@ root@silkit-qemu-demos-guest:~# cat /dev/ttyS1
 
 Then (or before) you have to setup the SIL Kit environment:
 ```
-wsl$ ./path/to/vib/4.0.5/SilKit/bin/sil-kit-registry --listen-uri 'silkit://127.0.0.1:8501'
+wsl$ ./path/to/SilKit-x.y.z-$platform/SilKit/bin/sil-kit-registry --listen-uri 'silkit://127.0.0.1:8501'
     
 wsl$ ./build/bin/SilKitAdapterQemuSpi
 Creating participant 'SPIAdapter' at silkit://localhost:8501
@@ -96,34 +96,50 @@ QEMU >> SIL Kit: message11
 SIL Kit >> QEMU: message11
 ```
 
-And you should see output similar to the following from the SilKitDemoSpiEchoDevice application:
+
+And you shoud see output similar to the following from the SilKitDemoSpiEchoDevice application:
 ```
 SIL Kit >> SIL Kit: message1
 SIL Kit >> SIL Kit: message10
 SIL Kit >> SIL Kit: message11
 ```
 
-## Starting CANoe 16
+In the following diagram you can see the whole setup. It illustrates the data flow going through each component involved.
 
-You can also start ``CANoe 16 SP3`` and load the ``Qemu_SPI_adapter_CANoe.cfg`` from the ``CANoe`` directory and start
-the measurement. Note that if necessary, you must provide the associated ``Datasource.vcdl`` file to CANoe.
-
-The demo setup is done so that CANoe is optional in this demo, therefore the Publisher/Subscribers matching labels are
-done so that communication coming from the other participant or from CANoe are not distinguished. The "instance"
-matching label is set by the ``Datasource.vcdl`` file on CANoe's side and programmatically in the participants.
-
-Here is a small drawing to illustrate how CANoe taps and stimulate the topics:
 ```
-+--[ QEMU ]--+               CANoe::                                CANoe::
-| Debian  11 |        SPIDevice.qemuOutbound O------   -----< SPIAdapter.qemuOutbound
-|   ttyS1    |                                      \ /          
-+------------+                              _________V__________     
-      ^                +--[SIL Kit]--+     /   >qemuOutbound>   \         +--[SIL Kit]--+
-      \________________| SPIAdapter  |-----    < qemuInbound<    ---------|  SPIDevice  |
-        socket         +-------------+     \_________ __________/         +-------------+
-        23456                                        ^           
-                             CANoe::                / \             CANoe:: 
-                        SPIDevice.qemuInbound >-----   -----O SPIAdapter.qemuInbound
++--[ QEMU ]--+                          SIL Kit  topics:
+| Debian  11 |    
+|   ttyS1    |                          > qemuOutbound >  
++------------+                         ------------------
+     |             +--[SIL Kit]--+    /                  \      +--[SIL Kit]--+
+      \____________| SPIAdapter  |----                    ------|  SPIDevice  |
+      < socket >   +-------------+    \                  /      +-------------+
+        23456                          ------------------
+                                        < qemuInbound < 
 ```
 
 Please note that you can compile and run the demos on Windows even if QEMU is running in WSL.
+
+## Using the demo with CANoe
+
+You can also start ``CANoe 16 SP3`` or newer and load the ``Qemu_SPI_adapter_CANoe.cfg`` from the ``CANoe`` directory and start
+the measurement. Note that if necessary, you must provide the associated ``Datasource.vcdl`` file to CANoe.
+
+CANoe's Publisher/Subscriber counterpart are Distributed Objects. By nature, they are meant to convey their state to and from
+CANoe, but not simultaneously. Therefore, the CANoe demo will contain 4 such objects in order to demonstrate the
+observation capability and the stimulation capability. However, CANoe won't observe its own stimulus which exclusively
+will come from the SIL Kit participants.
+
+Here is a small drawing to illustrate how CANoe observes and stimulates the topics:
+```
+  CANoe Observation                         CANoe Stimulation
+               \                             \
++--[SIL Kit]--+ \        > qemuOutbound >     \  +--[SIL Kit]--+
+|             |__)_____________________________\_|             |
+| SPIAdapter  |                                  |  SPIDevice  |    
+|             |__________________________________|             |
+|             | \        < qemuInbound <       / |             |
++-------------+  \                            (  +-------------+
+                  \                            \
+    CANoe Stimulation                       CANoe Observation
+```

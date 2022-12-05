@@ -4,20 +4,20 @@ import module "SilKit";
 namespace Namespace
 {
   [Binding="SilKit"]
-  interface SPIAdapterItf
+  interface ObserverIf
   {
     consumed data string qemuOutbound;
-    provided data string qemuInbound;
+    consumed data string qemuInbound;
   }
   
-  object SPIAdapter : SPIAdapterItf;
+  object Observed : ObserverIf;
   
   [Binding="SilKit"]
-  interface SPIDeviceItf
+  interface StimulatedIf
   {
-    consumed data string qemuInbound;
+    provided data string qemuInbound;
     provided data string qemuOutbound;
   }
   
-  object SPIDevice : SPIDeviceItf;
+  object Stimulate : StimulatedIf;
 }
