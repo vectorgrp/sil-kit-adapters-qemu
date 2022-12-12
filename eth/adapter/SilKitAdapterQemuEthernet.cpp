@@ -167,7 +167,7 @@ int main(int argc, char** argv)
         std::cout << "Creating QEMU ethernet connector for '" << qemuHostname << ":" << qemuService << "'" << std::endl;
         QemuSocketClient client{ioContext, qemuHostname, qemuService, onReceiveEthernetFrameFromQemu};
 
-        const auto onReceiveEthernetMessageFromIb = [&client](IEthernetController* /*controller*/,
+        const auto onReceiveEthernetMessageFromSilKit = [&client](IEthernetController* /*controller*/,
                                                               const EthernetFrameEvent& msg) {
             auto rawFrame = msg.frame.raw;
             client.SendEthernetFrameToQemu(rawFrame);
@@ -175,7 +175,7 @@ int main(int argc, char** argv)
             std::cout << "SIL Kit >> QEMU: Ethernet frame (" << rawFrame.size() << " bytes)" << std::endl;
         };
 
-        ethController->AddFrameHandler(onReceiveEthernetMessageFromIb);
+        ethController->AddFrameHandler(onReceiveEthernetMessageFromSilKit);
         ethController->AddFrameTransmitHandler(&EthAckCallback);
 
         ethController->Activate();
