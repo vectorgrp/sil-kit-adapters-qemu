@@ -70,9 +70,9 @@ The adapters and demo executables will be available in ``build/bin`` (depending 
 Additionally the ``SilKit`` shared library (e.g., ``SilKit[d].dll`` on Windows) is copied to that directory
 automatically.
 
-**Note:** There is a experimental adapter for the SPI interface of QEMU. To enable the target in the CMake build system, add ``-DBUILD_QEMU_SPI_ADAPTER=ON`` to the ``cmake`` command line. Like in the following command:
+**Note:** There is a experimental adapter for the Chardev interface of QEMU. To enable the target in the CMake build system, add ``-DBUILD_QEMU_CHARDEV_ADAPTER=ON`` to the ``cmake`` command line. Like in the following command:
 
-    cmake -S. -Bbuild -DSILKIT_PACKAGE_DIR=/path/to/SilKit-x.y.z-$platform/ -DBUILD_QEMU_SPI_ADAPTER=ON
+    cmake -S. -Bbuild -DSILKIT_PACKAGE_DIR=/path/to/SilKit-x.y.z-$platform/ -DBUILD_QEMU_CHARDEV_ADAPTER=ON
 
 
 ## Ethernet Demo
@@ -82,9 +82,9 @@ Vector SIL Kit. Traffic being exchanged are ping (ICMP) requests, and the answer
 This demo is further explained in [eth/README.md](eth/README.md).
 
 
-## SPI Demo
-This demo application allows the user to attach a simulated SPI interface (pipe) of a QEMU image to the SIL Kit in the form of a DataPublisher/DataSubscriber.
+## Chardev Demo
+This demo application allows the user to attach a simulated character device (chardev) interface (pipe) of a QEMU image to the SIL Kit in the form of a DataPublisher/DataSubscriber.
 
-This demo is further explained in [spi/README.md](spi/README.md).
+This demo is further explained in [chardev/README.md](chardev/README.md).
 
 

@@ -119,7 +119,7 @@ int main(int argc, char** argv)
 
     asio::io_context ioContext;
 
-    const std::string participantName = getArgDefault("--name","SPIAdapter")();
+    const std::string participantName = getArgDefault("--name","ChardevAdapter")();
 
     const std::string registryURI = "silkit://localhost:8501";
 

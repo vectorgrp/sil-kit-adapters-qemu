@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 set(SK_QEMU_DEMOS_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
 
-option(BUILD_QEMU_SPI_ADAPTER "Build the QEMU SPI Adapter and Demos" OFF)
+option(BUILD_QEMU_CHARDEV_ADAPTER "Build the QEMU Chardev Adapter and Demos" OFF)
 
 find_package(Threads REQUIRED)
 add_library(asio INTERFACE)
@@ -42,8 +42,8 @@ add_subdirectory(eth/Utility)
 add_subdirectory(eth/adapter)
 add_subdirectory(eth/demos)
 
-if(BUILD_QEMU_SPI_ADAPTER) 
-    message(NOTICE "-- ${PROJECT_NAME}: Building the QEMU SPI Adapter")
-    add_subdirectory(spi/adapter)
-    add_subdirectory(spi/demos)
+if(BUILD_QEMU_CHARDEV_ADAPTER) 
+    message(NOTICE "-- ${PROJECT_NAME}: Building the QEMU Chardev Adapter")
+    add_subdirectory(chardev/adapter)
+    add_subdirectory(chardev/demos)
 endif()

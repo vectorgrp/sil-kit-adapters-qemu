@@ -24,7 +24,7 @@ int main(int argc, char**)
     const std::string participantConfigurationString =
         R"({ "Logging": { "Sinks": [ { "Type": "Stdout", "Level": "Info" } ] } })";
 
-    const std::string participantName = "SPIDevice";
+    const std::string participantName = "ChardevDevice";
     const std::string registryURI = "silkit://localhost:8501";
 
     const auto create_pubsubspec = [](const std::string& topic_name,

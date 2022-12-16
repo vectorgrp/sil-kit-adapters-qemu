@@ -1,4 +1,4 @@
-# SPI adapter and demo
+# Chardev adapter and demo
 
 This demo application allows the user to attach a simulated SPI interface (``pipe``) of a QEMU virtual machine to the
 SIL Kit in the form of a DataPublisher/DataSubscriber.
@@ -15,7 +15,7 @@ Please note that use of QEMU in ``-nographics`` is however in competition with t
 keep ``-serial mon:stdio`` in the arguments before the ``-device isa-serial`` to be able to interact with the system
 when QEMU boots it.
 
-## Basic SPI Echo
+## Basic Chardev Echo
 
 When the QEMU emulator boots the debian image, the serial devices are in ``cooked echo`` mode, which sends back input
 received (the ``echo`` part) and transforms input instead of keeping it ``raw`` (the ``cooked`` part). While this is
@@ -56,23 +56,26 @@ Then (or before) you have to setup the SIL Kit environment:
 ```
 wsl$ ./path/to/SilKit-x.y.z-$platform/SilKit/bin/sil-kit-registry --listen-uri 'silkit://127.0.0.1:8501'
     
-wsl$ ./build/bin/SilKitAdapterQemuSpi
-Creating participant 'SPIAdapter' at silkit://localhost:8501
-[2022-08-31 18:06:27.674] [SPIAdapter] [info] Creating participant 'SPIAdapter' at 'silkit://localhost:8501', SIL Kit version: 4.0.7
-[2022-08-31 18:06:27.790] [SPIAdapter] [info] Connected to registry at 'tcp://127.0.0.1:8501' via 'tcp://127.0.0.1:49224' (silkit://localhost:8501)
+wsl$ ./build/bin/SilKitAdapterQemuChardev
+Creating participant 'ChardevAdapter' at silkit://localhost:8501
+[2022-08-31 18:06:27.674] [ChardevAdapter] [info] Creating participant 'ChardevAdapter' at 'silkit://localhost:8501', SIL Kit version: 4.0.7
+[2022-08-31 18:06:27.790] [ChardevAdapter] [info] Connected to registry at 'tcp://127.0.0.1:8501' via 'tcp://127.0.0.1:49224' (silkit://localhost:8501)
 connect success
     ...
     
-wsl$ ./build/bin/SilKitDemoSpiEchoDevice
-Creating participant 'SPIDevice' at silkit://localhost:8501
-[2022-08-31 18:07:03.818] [SPIDevice] [info] Creating participant 'SPIDevice' at 'silkit://localhost:8501', SIL Kit version: 4.0.7
-[2022-08-31 18:07:03.935] [SPIDevice] [info] Connected to registry at 'tcp://127.0.0.1:8501' via 'tcp://127.0.0.1:49242' (silkit://localhost:8501)
+wsl$ ./build/bin//SilKitDemoChardevEchoDevice
+Creating participant 'ChardevDevice' at silkit://localhost:8501
+[2022-08-31 18:07:03.818] [ChardevDevice] [info] Creating participant 'ChardevDevice' at 'silkit://localhost:8501', SIL Kit version: 4.0.7
+[2022-08-31 18:07:03.935] [ChardevDevice] [info] Connected to registry at 'tcp://127.0.0.1:8501' via 'tcp://127.0.0.1:49242' (silkit://localhost:8501)
 Press enter to stop the process...
     ...
-```
+see below:
+```Finally, you can test sending characters to ``/dev/ttyS1`` inside QEMU, which will be received by SilKitAdapterQemuChardev
+out of the socket port 23456, sent to SilKitDemoCharDevEchoDevice which will send them back, before finally be resent
+through the QEMU socket connection and you'll see them printed by the ``cat`` command launched during the setup.
 
-Finally, you can test sending characters to ``/dev/ttyS1`` inside QEMU, which will be received by SilKitAdapterQemuSpi
-out of the socket port 23456, sent to SilKitDemoSpiEchoDevice which will send them back, before finally be resent
+Finally, you can test sending characters to ``/dev/ttyS1`` inside QEMU, which will be received by SilKitAdapterQemuChardev
+out of the socket port 23456, sent to SilKitDemoChardevEchoDevice which will send them back, before finally be resent
 through the QEMU socket connection and you'll see them printed by the ``cat`` command launched during the setup.
 
 If you chose not to use SSH to read what is incoming from ``ttyS1``, it is recommended to make the terminal pause to
@@ -86,7 +89,7 @@ root@silkit-qemu-demos-guest:~# echo message11 > /dev/ttyS1 ; sleep 0.1
 message11
 ```
 
-You should see output similar to the following from the SilKitAdapterQemuSpi application:
+You should see output similar to the following from the SilKitAdapterQemuChardev application:
 ```
 QEMU >> SIL Kit: message1
 SIL Kit >> QEMU: message1
@@ -97,7 +100,7 @@ SIL Kit >> QEMU: message11
 ```
 
 
-And you shoud see output similar to the following from the SilKitDemoSpiEchoDevice application:
+And you shoud see output similar to the following from the SilKitDemoChardevEchoDevice application:
 ```
 SIL Kit >> SIL Kit: message1
 SIL Kit >> SIL Kit: message10
@@ -107,22 +110,23 @@ SIL Kit >> SIL Kit: message11
 In the following diagram you can see the whole setup. It illustrates the data flow going through each component involved.
 
 ```
-+--[ QEMU ]--+                          SIL Kit  topics:
-| Debian  11 |    
-|   ttyS1    |                          > qemuOutbound >  
-+------------+                         ------------------
-     |             +--[SIL Kit]--+    /                  \      +--[SIL Kit]--+
-      \____________| SPIAdapter  |----                    ------|  SPIDevice  |
-      < socket >   +-------------+    \                  /      +-------------+
-        23456                          ------------------
-                                        < qemuInbound < 
+see above:
+You should see output similar to the following from the SilKitAdapterQemuChardev application:
+| Debian  11 |                        
+|   ttyS1    |                              > qemuOutbound >  
++------------+                             ------------------
+     |             +----[SIL Kit]----+    /                  \      +----[SIL Kit]----+
+      \____________| ChardevAdapter  |----                    ------|  ChardevDevice  |
+      < socket >   +-----------------+    \                  /      +-----------------+
+        23456                              ------------------
+                                            < qemuInbound < 
 ```
 
 Please note that you can compile and run the demos on Windows even if QEMU is running in WSL.
 
 ## Using the demo with CANoe
 
-You can also start ``CANoe 16 SP3`` or newer and load the ``Qemu_SPI_adapter_CANoe.cfg`` from the ``CANoe`` directory and start
+You can also start ``CANoe 16 SP3`` or newer and load the ``Qemu_Chardev_adapter_CANoe.cfg`` from the ``CANoe`` directory and start
 the measurement. Note that if necessary, you must provide the associated ``Datasource.vcdl`` file to CANoe.
 
 CANoe's Publisher/Subscriber counterpart are Distributed Objects. By nature, they are meant to convey their state to and from
@@ -132,14 +136,14 @@ will come from the SIL Kit participants.
 
 Here is a small drawing to illustrate how CANoe observes and stimulates the topics:
 ```
-  CANoe Observation                         CANoe Stimulation
-               \                             \
-+--[SIL Kit]--+ \        > qemuOutbound >     \  +--[SIL Kit]--+
-|             |__)_____________________________\_|             |
-| SPIAdapter  |                                  |  SPIDevice  |    
-|             |__________________________________|             |
-|             | \        < qemuInbound <       / |             |
-+-------------+  \                            (  +-------------+
-                  \                            \
-    CANoe Stimulation                       CANoe Observation
+      CANoe Observation                         CANoe Stimulation
+                   \                             \
++----[SIL Kit]----+ \        > qemuOutbound >     \  +----[SIL Kit]----+
+|                 |__)_____________________________\_|                 |
+| ChardevAdapter  |                                  |  ChardevDevice  |    
+|                 |__________________________________|                 |
+|                 | \        < qemuInbound <       / |                 |
++-----------------+  \                            (  +-----------------+
+                      \                            \
+        CANoe Stimulation                       CANoe Observation
 ```
