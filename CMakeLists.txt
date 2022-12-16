@@ -5,7 +5,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(CMAKE_CXX_STANDARD 17)
 
-set(SK_QEMU_DEMOS_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
+set(SILKIT_ADAPTERS_QEMU_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
 
 option(BUILD_QEMU_CHARDEV_ADAPTER "Build the QEMU Chardev Adapter and Demos" OFF)
 
@@ -36,7 +36,7 @@ if(NOT TARGET SilKit::SilKit)
     message(FATAL_ERROR "Could not find SilKit package in ${SILKIT_PACKAGE_DIR}")
 endif()
 
-set(SK_QEMU_DEMOS_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
+set(SILKIT_ADAPTERS_QEMU_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
 
 add_subdirectory(eth/Utility)
 add_subdirectory(eth/adapter)
