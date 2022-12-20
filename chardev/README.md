@@ -63,16 +63,13 @@ Creating participant 'ChardevAdapter' at silkit://localhost:8501
 connect success
     ...
     
-wsl$ ./build/bin//SilKitDemoChardevEchoDevice
+wsl$ ./build/bin/SilKitDemoChardevEchoDevice
 Creating participant 'ChardevDevice' at silkit://localhost:8501
 [2022-08-31 18:07:03.818] [ChardevDevice] [info] Creating participant 'ChardevDevice' at 'silkit://localhost:8501', SIL Kit version: 4.0.7
 [2022-08-31 18:07:03.935] [ChardevDevice] [info] Connected to registry at 'tcp://127.0.0.1:8501' via 'tcp://127.0.0.1:49242' (silkit://localhost:8501)
 Press enter to stop the process...
     ...
-see below:
-```Finally, you can test sending characters to ``/dev/ttyS1`` inside QEMU, which will be received by SilKitAdapterQemuChardev
-out of the socket port 23456, sent to SilKitDemoCharDevEchoDevice which will send them back, before finally be resent
-through the QEMU socket connection and you'll see them printed by the ``cat`` command launched during the setup.
+```
 
 Finally, you can test sending characters to ``/dev/ttyS1`` inside QEMU, which will be received by SilKitAdapterQemuChardev
 out of the socket port 23456, sent to SilKitDemoChardevEchoDevice which will send them back, before finally be resent
@@ -112,6 +109,7 @@ In the following diagram you can see the whole setup. It illustrates the data fl
 ```
 see above:
 You should see output similar to the following from the SilKitAdapterQemuChardev application:
++--[ QEMU ]--+                              SIL Kit  topics:
 | Debian  11 |                        
 |   ttyS1    |                              > qemuOutbound >  
 +------------+                             ------------------
