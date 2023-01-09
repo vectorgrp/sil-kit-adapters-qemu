@@ -102,8 +102,7 @@ int main(int argc, char** argv)
     const auto getArgDefault = [ argc , argv ](const std::string& argument, const std::string& defaultValue)-> auto{
         return [argc, argv, argument, defaultValue]() -> std::string {
             auto found = std::find_if(argv, argv + argc, [argument](const char* arg) -> bool {
-                const static std::string Switch = argument;
-                return arg == Switch;
+                return arg == argument;
             });
             if (found != argv + argc && found + 1 != argv + argc)
                 return *(found + 1);
