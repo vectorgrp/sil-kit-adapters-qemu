@@ -11,33 +11,10 @@ exported socket and implements a transport to a virtual SIL Kit Ethernet bus nam
                                                                          |
                                                            Vector CANoe <=> 
 
-## SilKitAdapterQemuEthernet
-This application allows the user to attach simulated ethernet interface (``nic``) of a QEMU virtual machine to the
-SIL Kit.
-
-The application uses the *socket* backend provided by QEMU.
-It can be configured for the QEMU virtual machine using the following command line argument of QEMU:
-
-    -nic socket,listen=:12345
-
-The argument of ``listen=`` specifies a TCP socket endpoint on which QEMU will listen for incoming connections.
-
-All *outgoing* ethernet frames on that particular virtual ethernet interface inside of the virtual machine are sent to
-all connected clients.
-Any *incoming* data from any connected clients is presented to the virtual machine as an incoming ethernet frame on the
-virtual interface.
-
-The application *optionally* takes the hostname and port of the configured socket as command line arguments:
-
-    ./build/bin/SilKitAdapterQemuEthernet [hostname] [port]
-
 ## SilKitDemoEthernetIcmpEchoDevice
 This demo application implements a very simple SIL Kit participant with a single simulated ethernet controller.
 The application will reply to an ARP request and respond to ICMPv4 Echo Requests directed to it's hardcoded MAC address
 (``01:23:45:67:89:ab``) and IPv4 address (``192.168.12.35``).
-
-
-
 
 # Running the Demos
 
@@ -46,9 +23,9 @@ The application will reply to an ARP request and respond to ICMPv4 Echo Requests
 Now is a good point to start the ``sil-kit-registry``, ``SilKitAdapterQemuEthernet`` - which connects the QEMU virtual ethernet
 interface with the SIL Kit - and the ``SilKitDemoEthernetIcmpEchoDevice`` in separate terminals:
 
-    wsl$ ./path/to/SilKit-x.y.z-$platform/SilKit/bin/sil-kit-registry --listen-uri 'silkit://127.0.0.1:8501'
+    ./path/to/SilKit-x.y.z-$platform/SilKit/bin/sil-kit-registry --listen-uri 'silkit://127.0.0.1:8501'
     
-    wsl$ ./build/bin/SilKitAdapterQemuEthernet
+    ./build/bin/SilKitAdapterQemuEthernet
     Creating participant 'EthernetQemu' at silkit://localhost:8501
     [2022-08-19 16:42:59.847] [EthernetQemu] [info] Creating participant 'EthernetQemu' at 'silkit://localhost:8501', SIL Kit version: 4.0.2
     [2022-08-19 16:42:59.963] [EthernetQemu] [info] Connected to registry at 'tcp://127.0.0.1:8501' via 'tcp://127.0.0.1:59986' (silkit://localhost:8501)
@@ -57,7 +34,7 @@ interface with the SIL Kit - and the ``SilKitDemoEthernetIcmpEchoDevice`` in sep
     connect success
     ...
     
-    wsl$ ./build/bin/SilKitDemoEthernetIcmpEchoDevice
+    ./build/bin/SilKitDemoEthernetIcmpEchoDevice
     Creating participant 'EthernetDevice' at silkit://localhost:8501
     [2022-08-19 16:43:47.092] [EthernetDevice] [info] Creating participant 'EthernetDevice' at 'silkit://localhost:8501', SIL Kit version: 4.0.2
     [2022-08-19 16:43:47.213] [EthernetDevice] [info] Connected to registry at 'tcp://127.0.0.1:8501' via 'tcp://127.0.0.1:60007' (silkit://localhost:8501)

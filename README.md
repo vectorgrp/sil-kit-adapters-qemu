@@ -8,15 +8,15 @@ The main contents are working examples of necessary software to connect the runn
 as well as complimentary demo applications for some communication to happen.
 
 ## Getting Started
+Those instructions assume you use WSL (Ubuntu) or a Linux OS for running QEMU and building and running the adapter (nevertheless it is also possible to do this directly on a Windows system, with the exception of setting up the QEMU image), and use ``bash`` as your interactive
+shell.
+
 This section specifies steps you should do if you have just cloned the repository.
 
 Before any of those topics, please change your current directory to the top-level in the ``sil-kit-adapters-qemu``
 repository:
 
     cd /path/to/sil-kit-adapters-qemu
-
-Those instructions assume you use WSL (Ubuntu) or a Linux OS for running QEMU, and use ``bash`` as your interactive
-shell.
 
 ### Fetch Third Party Software
 The first thing that you should do is initializing the submodules to fetch the required third party software:
@@ -27,38 +27,8 @@ Otherwise clone the standalone version of asio manually:
 
     git clone --branch asio-1-18-2 https://github.com/chriskohlhoff/asio.git third_party/asio
 
-
-### Build QEMU image
-Setup your WSL host (install ``virt-builder`` and a kernel image for use by ``virt-builder``):
-
-    sudo ./tools/setup-host-wsl2-ubuntu.sh
-
-Build the guest image:
-
-    sudo chmod a+x tools/build-silkit-qemu-demos-guest
-    sudo ./tools/build-silkit-qemu-demos-guest
-    sudo chmod go+rw silkit-qemu-demos-guest.qcow2
-
-
-### Run QEMU image
-To start the guest image, run:
-
-    sudo chmod a+x tools/run-silkit-qemu-demos-guest
-    sudo ./tools/run-silkit-qemu-demos-guest
-
-By default, the options in this script will spawn the guest system in the same terminal. The password for the ``root``
-user is ``root``.
-
-QEMU is also set up to forward the guests SSH port on ``localhost:10022``, any interaction with the guest can then
-proceed via SSH:
-
-    ssh -p10022 -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null root@localhost
-
-**Note:** The options passed to SSH deactivate host-key checking for this connection, otherwise you will have to edit your
-``known_hosts`` file if you decide to rebuild the guest image.
-
 ### Build the Adapters and Demos
-To build the demos, you'll need SIL Kit packages ``SilKit-x.y.z-$platform`` for your platform. You can download them directly from [Vector SIL Kit Releases](https://github.com/vectorgrp/sil-kit/releases).
+To build the adapters and demos, you'll need a SIL Kit package ``SilKit-x.y.z-$platform`` for your platform. You can download them directly from [Vector SIL Kit Releases](https://github.com/vectorgrp/sil-kit/releases). The easiest way would be to download it with your web browser, unzip it and place it on your Windows file system, where it also can be accessed by WSL.
 
 The adapters and demos are built using ``cmake``:
 
@@ -74,6 +44,34 @@ automatically.
 
     cmake -S. -Bbuild -DSILKIT_PACKAGE_DIR=/path/to/SilKit-x.y.z-$platform/ -DBUILD_QEMU_CHARDEV_ADAPTER=ON
 
+### Run the SilKitAdapterQemuEthernet
+This application allows the user to attach simulated ethernet interface (``nic``) of a QEMU virtual machine to the
+SIL Kit.
+
+The application uses the *socket* backend provided by QEMU.
+It can be configured for the QEMU virtual machine using the following command line argument of QEMU:
+
+    -nic socket,listen=:12345
+
+The argument of ``listen=`` specifies a TCP socket endpoint on which QEMU will listen for incoming connections.
+
+All *outgoing* ethernet frames on that particular virtual ethernet interface inside of the virtual machine are sent to
+all connected clients.
+Any *incoming* data from any connected clients is presented to the virtual machine as an incoming ethernet frame on the
+virtual interface.
+
+Before you start the adapter there always needs to be a sil-kit-registry running already. Start it e.g. like this:
+
+    ./path/to/SilKit-x.y.z-$platform/SilKit/bin/sil-kit-registry --listen-uri 'silkit://127.0.0.1:8501'
+
+The application *optionally* takes the hostname and port of the configured socket as command line arguments:
+
+    ./build/bin/SilKitAdapterQemuEthernet [hostname] [port]
+
+**Note:** Be aware that the QEMU image needs to be running already before you start the adapter application.
+
+## Setup QEMU image
+With the following instructions you can setup your own QEMU image which can be used for the demos below: [tools/README.md](tools/README.md)
 
 ## Ethernet Demo
 The aim of this demo is to showcase a simple adapter forwarding ethernet traffic from and to the QEMU image through
