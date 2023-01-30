@@ -33,7 +33,7 @@ To build the adapters and demos, you'll need a SIL Kit package ``SilKit-x.y.z-$p
 The adapters and demos are built using ``cmake``:
 
     mkdir build
-    cmake -S. -Bbuild -DSILKIT_PACKAGE_DIR=/path/to/SilKit-x.y.z-$platform/
+    cmake -S. -Bbuild -DSILKIT_PACKAGE_DIR=/path/to/SilKit-x.y.z-$platform/ -D CMAKE_BUILD_TYPE=Release
     cmake --build build --parallel
 
 The adapters and demo executables will be available in ``build/bin`` (depending on the configured build directory).
@@ -42,7 +42,7 @@ automatically.
 
 **Note:** There is a experimental adapter for the Chardev interface of QEMU. To enable the target in the CMake build system, add ``-DBUILD_QEMU_CHARDEV_ADAPTER=ON`` to the ``cmake`` command line. Like in the following command:
 
-    cmake -S. -Bbuild -DSILKIT_PACKAGE_DIR=/path/to/SilKit-x.y.z-$platform/ -DBUILD_QEMU_CHARDEV_ADAPTER=ON
+    cmake -S. -Bbuild -DSILKIT_PACKAGE_DIR=/path/to/SilKit-x.y.z-$platform/ -DBUILD_QEMU_CHARDEV_ADAPTER=ON -D CMAKE_BUILD_TYPE=Release
 
 ### Run the SilKitAdapterQemuEthernet
 This application allows the user to attach simulated ethernet interface (``nic``) of a QEMU virtual machine to the
@@ -62,7 +62,7 @@ virtual interface.
 
 Before you start the adapter there always needs to be a sil-kit-registry running already. Start it e.g. like this:
 
-    ./path/to/SilKit-x.y.z-$platform/SilKit/bin/sil-kit-registry --listen-uri 'silkit://127.0.0.1:8501'
+    ./path/to/SilKit-x.y.z-$platform/SilKit/bin/sil-kit-registry --listen-uri 'silkit://0.0.0.0:8501'
 
 The application *optionally* takes the hostname and port of the configured socket as command line arguments:
 

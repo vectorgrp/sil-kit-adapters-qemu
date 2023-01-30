@@ -54,7 +54,7 @@ root@silkit-qemu-demos-guest:~# cat /dev/ttyS1
 
 Then (or before) you have to setup the SIL Kit environment:
 ```
-wsl$ ./path/to/SilKit-x.y.z-$platform/SilKit/bin/sil-kit-registry --listen-uri 'silkit://127.0.0.1:8501'
+wsl$ ./path/to/SilKit-x.y.z-$platform/SilKit/bin/sil-kit-registry --listen-uri 'silkit://0.0.0.0:8501'
     
 wsl$ ./build/bin/SilKitAdapterQemuChardev
 Creating participant 'ChardevAdapter' at silkit://localhost:8501
