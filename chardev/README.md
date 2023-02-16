@@ -15,7 +15,7 @@ Please note that use of QEMU in ``-nographics`` is however in competition with t
 keep ``-serial mon:stdio`` in the arguments before the ``-device isa-serial`` to be able to interact with the system
 when QEMU boots it.
 
-## Basic Chardev Echo
+## Demos common steps
 
 When the QEMU emulator boots the debian image, the serial devices are in ``cooked echo`` mode, which sends back input
 received (the ``echo`` part) and transforms input instead of keeping it ``raw`` (the ``cooked`` part). While this is
@@ -35,23 +35,6 @@ Then, you can start a dump of data sent through the link from the outside:
 root@silkit-qemu-demos-guest:~# cat /dev/ttyS1&
 ```
 
-Alternatively you may also start the dump into a second terminal by using SSH through the port 10022:
-```
-wsl$ ssh -p10022 -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null root@localhost
-Warning: Permanently added '[localhost]:10022' (ECDSA) to the list of known hosts.
-root@localhost's password:
-Linux silkit-qemu-demos-guest 5.10.0-9-amd64 #1 SMP Debian 5.10.70-1 (2021-09-30) x86_64
-
-The programs included with the Debian GNU/Linux system are free software;
-the exact distribution terms for each program are described in the
-individual files in /usr/share/doc/*/copyright.
-
-Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
-permitted by applicable law.
-Last login: Wed Oct  5 10:11:29 2022 from 10.0.2.2
-root@silkit-qemu-demos-guest:~# cat /dev/ttyS1
-```
-
 Then (or before) you have to setup the SIL Kit environment:
 ```
 wsl$ ./path/to/SilKit-x.y.z-$platform/SilKit/bin/sil-kit-registry --listen-uri 'silkit://0.0.0.0:8501'
@@ -62,7 +45,10 @@ Creating participant 'ChardevAdapter' at silkit://localhost:8501
 [2022-08-31 18:06:27.790] [ChardevAdapter] [info] Connected to registry at 'tcp://127.0.0.1:8501' via 'tcp://127.0.0.1:49224' (silkit://localhost:8501)
 connect success
     ...
-    
+```
+## Basic Chardev Echo
+
+``` 
 wsl$ ./build/bin/SilKitDemoChardevEchoDevice
 Creating participant 'ChardevDevice' at silkit://localhost:8501
 [2022-08-31 18:07:03.818] [ChardevDevice] [info] Creating participant 'ChardevDevice' at 'silkit://localhost:8501', SIL Kit version: 4.0.7
@@ -97,7 +83,7 @@ SIL Kit >> QEMU: message11
 ```
 
 
-And you shoud see output similar to the following from the SilKitDemoChardevEchoDevice application:
+And you should see output similar to the following from the SilKitDemoChardevEchoDevice application:
 ```
 SIL Kit >> SIL Kit: message1
 SIL Kit >> SIL Kit: message10
@@ -107,8 +93,6 @@ SIL Kit >> SIL Kit: message11
 In the following diagram you can see the whole setup. It illustrates the data flow going through each component involved.
 
 ```
-see above:
-You should see output similar to the following from the SilKitAdapterQemuChardev application:
 +--[ QEMU ]--+                              SIL Kit  topics:
 | Debian  11 |                        
 |   ttyS1    |                              > qemuOutbound >  
@@ -124,24 +108,24 @@ Please note that you can compile and run the demos on Windows even if QEMU is ru
 
 ## Using the demo with CANoe
 
-You can also start ``CANoe 16 SP3`` or newer and load the ``Qemu_Chardev_adapter_CANoe.cfg`` from the ``CANoe`` directory and start
-the measurement. Note that if necessary, you must provide the associated ``Datasource.vcdl`` file to CANoe.
+You can also start ``CANoe 16 SP3`` or newer and load the ``Qemu_Chardev_demo_CANoe_observer.cfg`` from the ``CANoe`` directory 
+and start the measurement after setting the demo as above. Note that if necessary, you must provide the associated 
+``Datasource_observer.vcdl`` file to CANoe.
 
 CANoe's Publisher/Subscriber counterpart are Distributed Objects. By nature, they are meant to convey their state to and from
-CANoe, but not simultaneously. Therefore, the CANoe demo will contain 4 such objects in order to demonstrate the
-observation capability and the stimulation capability. However, CANoe won't observe its own stimulus which exclusively
-will come from the SIL Kit participants.
+CANoe, but not simultaneously. Therefore, the CANoe demo will contain 2 such objects in order to demonstrate the
+observation capability, but the stimulation capability will be demonstrated in a future demo.
 
-Here is a small drawing to illustrate how CANoe observes and stimulates the topics:
+Here is a small drawing to illustrate how CANoe observes the topics (the observation happens in SIL Kit's network):
 ```
-      CANoe Observation                         CANoe Stimulation
-                   \                             \
-+----[SIL Kit]----+ \        > qemuOutbound >     \  +----[SIL Kit]----+
-|                 |__)_____________________________\_|                 |
+      CANoe Observation
+                   \
++----[SIL Kit]----+ \        > qemuOutbound >        +----[SIL Kit]----+
+|                 |__)_______________________________|                 |
 | ChardevAdapter  |                                  |  ChardevDevice  |    
 |                 |__________________________________|                 |
-|                 | \        < qemuInbound <       / |                 |
-+-----------------+  \                            (  +-----------------+
-                      \                            \
-        CANoe Stimulation                       CANoe Observation
+|                 |          < qemuInbound <       / |                 |
++-----------------+                               (  +-----------------+
+                                                   \
+                                                CANoe Observation
 ```

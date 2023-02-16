@@ -126,7 +126,7 @@ int main(int argc, char** argv)
     const std::string subscriberName = participantName + "_sub";
 
     const auto create_pubsubspec = [](const std::string& topic_name,
-                                SilKit::Services::MatchingLabel::Kind matching_mode) {
+                                      SilKit::Services::MatchingLabel::Kind matching_mode) {
         PubSubSpec r(topic_name, SilKit::Util::SerDes::MediaTypeData());
         r.AddLabel("VirtualNetwork", "Default", matching_mode);
         r.AddLabel("Namespace", "Namespace", matching_mode);
@@ -137,11 +137,12 @@ int main(int argc, char** argv)
         return r;
     };
 
-    const PubSubSpec subDataSpec =
+    PubSubSpec subDataSpec =
         create_pubsubspec(qemuInboundTopicName, SilKit::Services::MatchingLabel::Kind::Mandatory);
+    subDataSpec.AddLabel("Instance", "EchoDevice", SilKit::Services::MatchingLabel::Kind::Mandatory);
 
-    const PubSubSpec pubDataSpec = create_pubsubspec(qemuOutboundTopicName,
-                                                     SilKit::Services::MatchingLabel::Kind::Optional);
+    PubSubSpec pubDataSpec = create_pubsubspec(qemuOutboundTopicName, SilKit::Services::MatchingLabel::Kind::Optional);
+    pubDataSpec.AddLabel("Instance", "Adapter", SilKit::Services::MatchingLabel::Kind::Optional);
 
 
     try

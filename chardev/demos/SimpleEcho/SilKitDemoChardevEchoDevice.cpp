@@ -32,18 +32,14 @@ int main(int argc, char**)
         PubSubSpec r(topic_name, SilKit::Util::SerDes::MediaTypeData());
         r.AddLabel("VirtualNetwork", "Default", matching_mode);
         r.AddLabel("Namespace", "Namespace", matching_mode);
-        // Next lines would filter either CANoe's or the other participant's, so we don't add it.
-        //instance = "Observed";
-        //instance = "Stimulate";
-        //r.AddLabel("Instance", instance, matching_mode);
         return r;
     };
 
-    const PubSubSpec subDataSpec =
-        create_pubsubspec("qemuOutbound", SilKit::Services::MatchingLabel::Kind::Mandatory);
+    PubSubSpec subDataSpec = create_pubsubspec("qemuOutbound", SilKit::Services::MatchingLabel::Kind::Mandatory);
+    subDataSpec.AddLabel("Instance", "Adapter", SilKit::Services::MatchingLabel::Kind::Mandatory);
 
-    const PubSubSpec pubDataSpec =
-        create_pubsubspec("qemuInbound", SilKit::Services::MatchingLabel::Kind::Optional);
+    PubSubSpec pubDataSpec = create_pubsubspec("qemuInbound", SilKit::Services::MatchingLabel::Kind::Optional);
+    pubDataSpec.AddLabel("Instance", "EchoDevice", SilKit::Services::MatchingLabel::Kind::Optional);
 
     try
     {
