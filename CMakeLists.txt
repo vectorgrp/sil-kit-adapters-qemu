@@ -38,6 +38,7 @@ endif()
 
 set(SILKIT_ADAPTERS_QEMU_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
 
+add_subdirectory(adapter)
 add_subdirectory(eth/Utility)
 add_subdirectory(eth/adapter)
 add_subdirectory(eth/demos)

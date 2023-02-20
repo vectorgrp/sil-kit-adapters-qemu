@@ -15,7 +15,7 @@ Please note that use of QEMU in ``-nographics`` is however in competition with t
 keep ``-serial mon:stdio`` in the arguments before the ``-device isa-serial`` to be able to interact with the system
 when QEMU boots it.
 
-## Demos common steps
+## Demos Commons Steps
 
 When the QEMU emulator boots the debian image, the serial devices are in ``cooked echo`` mode, which sends back input
 received (the ``echo`` part) and transforms input instead of keeping it ``raw`` (the ``cooked`` part). While this is
@@ -38,17 +38,19 @@ root@silkit-qemu-demos-guest:~# cat /dev/ttyS1&
 Then (or before) you have to setup the SIL Kit environment:
 ```
 wsl$ ./path/to/SilKit-x.y.z-$platform/SilKit/bin/sil-kit-registry --listen-uri 'silkit://0.0.0.0:8501'
-    
-wsl$ ./build/bin/SilKitAdapterQemuChardev
+```
+
+## Basic Chardev Echo
+After following the common steps above, launch the following two processes in separate windows:
+
+``` 
+wsl$ ./build/bin/SilKitAdapter --socket-to-chardev localhost:23456,Namespace::qemuInbound,VirtualNetwork=Default,Instance=EchoDevice,Namespace::qemuOutbound,VirtualNetwork:Default,Instance:Adapter --log Debug
 Creating participant 'ChardevAdapter' at silkit://localhost:8501
 [2022-08-31 18:06:27.674] [ChardevAdapter] [info] Creating participant 'ChardevAdapter' at 'silkit://localhost:8501', SIL Kit version: 4.0.7
 [2022-08-31 18:06:27.790] [ChardevAdapter] [info] Connected to registry at 'tcp://127.0.0.1:8501' via 'tcp://127.0.0.1:49224' (silkit://localhost:8501)
 connect success
     ...
-```
-## Basic Chardev Echo
 
-``` 
 wsl$ ./build/bin/SilKitDemoChardevEchoDevice
 Creating participant 'ChardevDevice' at silkit://localhost:8501
 [2022-08-31 18:07:03.818] [ChardevDevice] [info] Creating participant 'ChardevDevice' at 'silkit://localhost:8501', SIL Kit version: 4.0.7
@@ -106,7 +108,7 @@ In the following diagram you can see the whole setup. It illustrates the data fl
 
 Please note that you can compile and run the demos on Windows even if QEMU is running in WSL.
 
-## Using the demo with CANoe
+### Using the demo with CANoe
 
 You can also start ``CANoe 16 SP3`` or newer and load the ``Qemu_Chardev_demo_CANoe_observer.cfg`` from the ``CANoe`` directory 
 and start the measurement after setting the demo as above. Note that if necessary, you must provide the associated 

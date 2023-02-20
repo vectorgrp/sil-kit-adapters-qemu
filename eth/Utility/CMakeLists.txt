@@ -1,4 +1,3 @@
-
 add_library(
     Utility STATIC
 
@@ -8,8 +7,7 @@ add_library(
     BufferWriter.hpp
     Enums.hpp
     Enums.cpp
-    Exceptions.hpp
-    Exceptions.cpp
+    
     FormattedBuffer.cpp
     FormattedBuffer.hpp
     InternetChecksum.cpp
@@ -36,7 +34,7 @@ add_library(
     Icmp4Header.hpp
     Icmp4Header.cpp
 )
-target_include_directories(Utility PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(Utility PUBLIC ${CMAKE_SOURCE_DIR}/adapter ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(Utility
     PUBLIC
         asio

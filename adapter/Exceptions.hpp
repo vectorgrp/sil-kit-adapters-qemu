@@ -54,4 +54,17 @@ struct InvalidIp4PacketError : std::runtime_error
     }
 };
 
+class InvalidCli : public std::exception
+{
+};
+
+template<class exception>
+void throwIf(bool b)
+{
+    if (b)
+        throw exception();
+}
+
+inline auto& throwInvalidCliIf = throwIf<InvalidCli>;
+
 } // namespace demo

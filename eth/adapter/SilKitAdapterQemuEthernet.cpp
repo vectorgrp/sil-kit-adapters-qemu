@@ -10,7 +10,7 @@
 #include "silkit/services/ethernet/all.hpp"
 #include "silkit/services/ethernet/string_utils.hpp"
 
-#include "Exceptions.hpp"
+#include "adapter/Exceptions.hpp"
 #include "WriteUintBe.hpp"
 
 #include <asio/ts/buffer.hpp>
