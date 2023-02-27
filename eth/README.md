@@ -20,16 +20,16 @@ The application will reply to an ARP request and respond to ICMPv4 Echo Requests
 
 ## Running the Demo Applications
 
-Now is a good point to start the ``sil-kit-registry``, ``SilKitAdapterQemuEthernet`` - which connects the QEMU virtual ethernet
+Now is a good point to start the ``sil-kit-registry``, ``SilKitAdapterQemu`` - which connects the QEMU virtual ethernet
 interface with the SIL Kit - and the ``SilKitDemoEthernetIcmpEchoDevice`` in separate terminals:
 
     ./path/to/SilKit-x.y.z-$platform/SilKit/bin/sil-kit-registry --listen-uri 'silkit://0.0.0.0:8501'
     
-    ./build/bin/SilKitAdapterQemuEthernet
+    ./build/bin/SilKitAdapterQemu  --socket-to-ethernet localhost:12345,network=qemu_demo --log Debug
     Creating participant 'EthernetQemu' at silkit://localhost:8501
     [2022-08-19 16:42:59.847] [EthernetQemu] [info] Creating participant 'EthernetQemu' at 'silkit://localhost:8501', SIL Kit version: 4.0.2
     [2022-08-19 16:42:59.963] [EthernetQemu] [info] Connected to registry at 'tcp://127.0.0.1:8501' via 'tcp://127.0.0.1:59986' (silkit://localhost:8501)
-    Creating ethernet controller 'EthernetQemu_Eth1'
+    Creating ethernet controller 'EthernetQemu_Eth_1'
     Creating QEMU ethernet connector for 'localhost:12345'
     connect success
     ...
@@ -62,19 +62,20 @@ Then ping the demo device four times:
 
 The ping requests should all receive responses.
 
-You should see output similar to the following from the ``SilKitAdapterQemuEthernet`` application:
+You should see output similar to the following from the ``SilKitAdapterQemu`` application:
 
-    SIL Kit >> Demo: ACK for ETH Message with transmitId=1
-    QEMU >> SIL Kit: Ethernet frame (98 bytes, txId=1)
-    SIL Kit >> Demo: ACK for ETH Message with transmitId=2
-    QEMU >> SIL Kit: Ethernet frame (98 bytes, txId=2)
-    SIL Kit >> QEMU: Ethernet frame (98 bytes)
-    SIL Kit >> Demo: ACK for ETH Message with transmitId=3
-    QEMU >> SIL Kit: Ethernet frame (98 bytes, txId=3)
-    SIL Kit >> QEMU: Ethernet frame (98 bytes)
-    SIL Kit >> Demo: ACK for ETH Message with transmitId=4
-    QEMU >> SIL Kit: Ethernet frame (98 bytes, txId=4)
-    SIL Kit >> QEMU: Ethernet frame (98 bytes)
+    [2023-02-21 16:49:15.975] [SilKitAdapterQemu] [debug] SIL Kit >> Demo: ACK for ETH Message with transmitId=1
+    [2023-02-21 16:49:15.975] [SilKitAdapterQemu] [debug] QEMU >> SIL Kit: Ethernet frame (98 bytes, txId=1)
+    [2023-02-21 16:49:15.983] [SilKitAdapterQemu] [debug] SIL Kit >> QEMU: Ethernet frame (98 bytes)
+    [2023-02-21 16:49:16.977] [SilKitAdapterQemu] [debug] SIL Kit >> Demo: ACK for ETH Message with transmitId=2
+    [2023-02-21 16:49:16.977] [SilKitAdapterQemu] [debug] QEMU >> SIL Kit: Ethernet frame (98 bytes, txId=2)
+    [2023-02-21 16:49:16.985] [SilKitAdapterQemu] [debug] SIL Kit >> QEMU: Ethernet frame (98 bytes)
+    [2023-02-21 16:49:17.978] [SilKitAdapterQemu] [debug] SIL Kit >> Demo: ACK for ETH Message with transmitId=3
+    [2023-02-21 16:49:17.979] [SilKitAdapterQemu] [debug] QEMU >> SIL Kit: Ethernet frame (98 bytes, txId=3)
+    [2023-02-21 16:49:17.986] [SilKitAdapterQemu] [debug] SIL Kit >> QEMU: Ethernet frame (98 bytes)
+    [2023-02-21 16:49:18.981] [SilKitAdapterQemu] [debug] SIL Kit >> Demo: ACK for ETH Message with transmitId=4
+    [2023-02-21 16:49:18.981] [SilKitAdapterQemu] [debug] QEMU >> SIL Kit: Ethernet frame (98 bytes, txId=4)
+    [2023-02-21 16:49:18.989] [SilKitAdapterQemu] [debug] SIL Kit >> QEMU: Ethernet frame (98 bytes)
 
     
 And output similar to the following from the ``SilKitDemoEthernetIcmpEchoDevice`` application:

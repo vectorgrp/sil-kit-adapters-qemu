@@ -2,6 +2,7 @@
 
 #include "ChardevSocketToPubSubAdapter.hpp"
 #include "adapter/Exceptions.hpp"
+#include "adapter/Parsing.hpp"
 
 #include <asio/ts/buffer.hpp>
 #include <asio/ts/io_context.hpp>
@@ -13,19 +14,19 @@
 
 using namespace SilKit::Services::PubSub;
 using namespace std::chrono_literals;
-using namespace demo;
-using namespace demo::chardev;
+using namespace adapters;
+using namespace adapters::chardev;
 
 void ChardevSocketToPubSubAdapter::DoReceiveFrameFromSocket()
 {
     asio::async_read_until(_socket, asio::dynamic_buffer(_data_buffer_in), '\n',
                            [this](const std::error_code ec, const std::size_t bytes_received) {
                                if (ec)
-                                   throw demo::IncompleteReadError{};
+                                   throw IncompleteReadError{};
 
                                auto eol_it = std::find(_data_buffer_in.begin(), _data_buffer_in.end(), '\n');
                                if (eol_it == _data_buffer_in.end())
-                                   throw demo::IncompleteReadError{};
+                                   throw IncompleteReadError{};
 
                                auto line_len = eol_it - _data_buffer_in.begin() + 1;
 
@@ -86,7 +87,8 @@ void extractAndEraseNamespaceAndDefaultnameFrom(std::string& topicname,
                                    std::string& defaultname,
                                    std::string& ns)
 {
-    auto splitTopic = Utils::split(topicname, '~');
+    auto splitTopic = Utils::split(topicname, "~");
+
     if (splitTopic.size() == 2)
     {
         defaultname = splitTopic[1];
@@ -101,8 +103,9 @@ void extractAndEraseNamespaceAndDefaultnameFrom(std::string& topicname,
     splitTopic = Utils::split(topicname, ":");
     if (splitTopic.size() == 3 && splitTopic[1] == "")
     {
-        topicname = splitTopic[2];
         ns = splitTopic[0];
+        throwInvalidCliIf(ns == "");
+        topicname = splitTopic[2];
         return;
     }
     else if (splitTopic.size() == 1)
@@ -123,15 +126,6 @@ inline typename std::iterator_traits<typename iterable::const_iterator>::differe
 {
     return std::count(s.begin(), s.end(), c);
 };
-
-/// <summary>
-/// Small utility function to quickly check if "it" is not "cont.end()"
-/// </summary>
-template <typename iterator, typename container>
-void assertAdditionalIterator(const iterator& it, const container& cont)
-{
-    throwInvalidCliIf(it == cont.end());
-}
 
 void extractTopicLabels(const std::vector<std::string>& args, std::vector<std::string>::iterator& arg_iter,
                     SilKit::Services::PubSub::PubSubSpec& dataSpec)
@@ -165,13 +159,13 @@ std::string generatePublisherNameFrom(const std::string& participantName)
     return static_cast<std::ostringstream&>(publisherName << base << count++).str();
 }
 
-ChardevSocketToPubSubAdapter* demo::chardev::parseChardevSocketArgument(
-    char** chardevSocketTransmitterArg, std::set<std::string>& alreadyProvidedSockets,
+ChardevSocketToPubSubAdapter* adapters::chardev::parseChardevSocketArgument(
+    char* chardevSocketTransmitterArg, std::set<std::string>& alreadyProvidedSockets,
     const std::string& participantName, asio::io_context& ioContext,
     SilKit::IParticipant* participant, SilKit::Services::Logging::ILogger* logger)
 {
-    demo::chardev::ChardevSocketToPubSubAdapter* newAdapter;
-    auto args = Utils::split(*chardevSocketTransmitterArg, ",");
+    ChardevSocketToPubSubAdapter* newAdapter;
+    auto args = Utils::split(chardevSocketTransmitterArg, ",");
     auto arg_iter = args.begin();
 
     //handle <address>:<port>

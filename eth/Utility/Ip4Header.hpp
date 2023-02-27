@@ -47,12 +47,12 @@ inline auto ParseIp4Header(asio::const_buffer data) -> ParseResult<Ip4Header>
 
     if (ipVersion != 4)
     {
-        throw InvalidIp4PacketError{};
+        throw adapters::InvalidIp4PacketError{};
     }
 
     if (internetHeaderLength < 20 || internetHeaderLength > 60 || data.size() < internetHeaderLength)
     {
-        throw InvalidIp4PacketError{};
+        throw adapters::InvalidIp4PacketError{};
     }
 
     // NOTE: We ignore byte1 (typeOfService)
@@ -61,7 +61,7 @@ inline auto ParseIp4Header(asio::const_buffer data) -> ParseResult<Ip4Header>
     const auto totalLength = reader.ReadBe<std::uint16_t>();
     if (internetHeaderLength <= totalLength && data.size() < totalLength)
     {
-        throw InvalidIp4PacketError{};
+        throw adapters::InvalidIp4PacketError{};
     }
 
     const auto identification = reader.ReadBe<std::uint16_t>();
@@ -69,7 +69,7 @@ inline auto ParseIp4Header(asio::const_buffer data) -> ParseResult<Ip4Header>
     const auto flagsAndFragmentOffset = reader.ReadBe<std::uint16_t>();
     if ((flagsAndFragmentOffset & 0b001) != 0)
     {
-        throw InvalidIp4PacketError{};
+        throw adapters::InvalidIp4PacketError{};
     }
 
     const bool dontFragment = (flagsAndFragmentOffset & 0b0100'0000'0000'0000) != 0;

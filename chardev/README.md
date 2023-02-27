@@ -44,10 +44,10 @@ wsl$ ./path/to/SilKit-x.y.z-$platform/SilKit/bin/sil-kit-registry --listen-uri '
 After following the common steps above, launch the following two processes in separate windows:
 
 ``` 
-wsl$ ./build/bin/SilKitAdapter --socket-to-chardev localhost:23456,Namespace::qemuInbound,VirtualNetwork=Default,Instance=EchoDevice,Namespace::qemuOutbound,VirtualNetwork:Default,Instance:Adapter --log Debug
-Creating participant 'ChardevAdapter' at silkit://localhost:8501
-[2022-08-31 18:06:27.674] [ChardevAdapter] [info] Creating participant 'ChardevAdapter' at 'silkit://localhost:8501', SIL Kit version: 4.0.7
-[2022-08-31 18:06:27.790] [ChardevAdapter] [info] Connected to registry at 'tcp://127.0.0.1:8501' via 'tcp://127.0.0.1:49224' (silkit://localhost:8501)
+wsl$ ./build/bin/SilKitAdapterQemu --socket-to-chardev localhost:23456,Namespace::qemuInbound,VirtualNetwork=Default,Instance=EchoDevice,Namespace::qemuOutbound,VirtualNetwork:Default,Instance:Adapter --log Debug
+Creating participant 'SilKitAdapterQemu' at silkit://localhost:8501
+[2022-08-31 18:06:27.674] [SilKitAdapterQemu] [info] Creating participant 'SilKitAdapterQemu' at 'silkit://localhost:8501', SIL Kit version: 4.0.7
+[2022-08-31 18:06:27.790] [SilKitAdapterQemu] [info] Connected to registry at 'tcp://127.0.0.1:8501' via 'tcp://127.0.0.1:49224' (silkit://localhost:8501)
 connect success
     ...
 
@@ -59,7 +59,7 @@ Press enter to stop the process...
     ...
 ```
 
-Finally, you can test sending characters to ``/dev/ttyS1`` inside QEMU, which will be received by SilKitAdapterQemuChardev
+Finally, you can test sending characters to ``/dev/ttyS1`` inside QEMU, which will be received by SilKitAdapterQemu
 out of the socket port 23456, sent to SilKitDemoChardevEchoDevice which will send them back, before finally be resent
 through the QEMU socket connection and you'll see them printed by the ``cat`` command launched during the setup.
 
@@ -74,7 +74,7 @@ root@silkit-qemu-demos-guest:~# echo message11 > /dev/ttyS1 ; sleep 0.1
 message11
 ```
 
-You should see output similar to the following from the SilKitAdapterQemuChardev application:
+You should see output similar to the following from the SilKitAdapterQemu application:
 ```
 QEMU >> SIL Kit: message1
 SIL Kit >> QEMU: message1
@@ -95,15 +95,15 @@ SIL Kit >> SIL Kit: message11
 In the following diagram you can see the whole setup. It illustrates the data flow going through each component involved.
 
 ```
-+--[ QEMU ]--+                              SIL Kit  topics:
-| Debian  11 |                        
-|   ttyS1    |                              > qemuOutbound >  
-+------------+                             ------------------
-     |             +----[SIL Kit]----+    /                  \      +----[SIL Kit]----+
-      \____________| ChardevAdapter  |----                    ------|  ChardevDevice  |
-      < socket >   +-----------------+    \                  /      +-----------------+
-        23456                              ------------------
-                                            < qemuInbound < 
++--[ QEMU ]--+                                  SIL Kit  topics:
+| Debian  11 |                            
+|   ttyS1    |                                  > qemuOutbound >  
++------------+                                 ------------------
+     |             +------[SIL Kit]------+    /                  \      +----[SIL Kit]----+
+      \____________|  SilKitAdapterQemu  |----                    ------|  ChardevDevice  |
+      < socket >   +---------------------+    \                  /      +-----------------+
+        23456                                  ------------------
+                                                < qemuInbound < 
 ```
 
 Please note that you can compile and run the demos on Windows even if QEMU is running in WSL.

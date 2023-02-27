@@ -97,7 +97,7 @@ private:
     {
         if ((_buffer + offset).size() < byteCount)
         {
-            throw InvalidBufferSize{};
+            throw adapters::InvalidBufferSize{};
         }
     }
 

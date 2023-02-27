@@ -4,7 +4,7 @@
 
 #include <stdexcept>
 
-namespace demo {
+namespace adapters {
 
 struct IncompleteReadError : std::runtime_error
 {

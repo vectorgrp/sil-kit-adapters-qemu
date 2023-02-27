@@ -4,16 +4,20 @@
 #include <iostream>
 #include <algorithm>
 
+
+std::string adapters::ethArg = "--socket-to-ethernet";
+
+std::string adapters::chardevArg = "--socket-to-chardev";
+
 void adapters::print_help(bool userRequested)
 {
     std::cout
         << "Usage (defaults in curly braces if you omit the switch):" << std::endl
-        << "SilKitAdapterQemuChardev [--name <participant's name{ChardevAdapter}>]\n"
+        << "SilKitAdapterQemu [--name <participant's name{SilKitAdapterQemu}>]\n"
            "  [--registry-uri silkit://<host{localhost}>:<port{8501}>]\n"
            "  [--log <Trace|Debug|Warn|{Info}|Error|Critical|off>]\n"
-           //left for future unification. Print that both are "optional" but add a line about at least of them to be present.
-           //"   --socket-to-ethernet <host>:<port>,network=<network's name>[~<controller's name>]\n"
-           " [[--socket-to-chardev\n"
+           " [["<<ethArg<<" <host>:<port>,network=<network's name>[:<controller's name>]]]\n"
+           " [["<<chardevArg<<"\n"
            "     <host>:<port>,\n"
            "    [<namespace>::]<inbound topic name>[~<subscriber's name>]\n"
            "       [[,<label key>:<optional label value>\n"
@@ -25,10 +29,10 @@ void adapters::print_help(bool userRequested)
            "       ]]\n"
            " ]]\n"
            "\n"
-           "There needs to be at least one --socket-to-chardev. Each socket must be unique.\n";
+           "There needs to be at least one --socket-to-chardev or --socket-to-ethernet argument. Each socket must be unique.\n";
     std::cout << "\n"
                  "Example:\n"
-                 "SilKitAdapterQemuChardev --name ChardevAdapter2 "
+                 "SilKitAdapterQemu --name ChardevAdapter "
                  "--socket-to-chardev localhost:12345,"
                  "Namespace::inboundQemu,VirtualNetwork=Default,"
                  "outboundQemu,Namespace:Namespace,VirtualNetwork:Default\n";
@@ -57,6 +61,7 @@ char** adapters::findArgOf(int argc, char** argv, const std::string& argument, c
     }
     return NULL;
 };
+
 std::string adapters::getArgDefault(int argc, char** argv, const std::string& argument, const std::string& defaultValue)
 {
     auto found = findArgOf(argc, argv, argument, argv);
@@ -65,3 +70,4 @@ std::string adapters::getArgDefault(int argc, char** argv, const std::string& ar
     else
         return defaultValue;
 };
+

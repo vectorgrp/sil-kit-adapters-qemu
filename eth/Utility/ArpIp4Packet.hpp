@@ -33,25 +33,25 @@ inline auto ParseArpIp4Packet(asio::const_buffer data) -> ArpIp4Packet
     const auto htype = ReadUintBe<std::uint16_t>(data + 0);
     if (htype != 1)
     {
-        throw InvalidArpPacketError{};
+        throw adapters::InvalidArpPacketError{};
     }
 
     const auto ptype = ReadUintBe<std::uint16_t>(data + 2);
     if (ptype != 0x0800)
     {
-        throw InvalidArpPacketError{};
+        throw adapters::InvalidArpPacketError{};
     }
 
     const auto hlen = ReadUintBe<std::uint8_t>(data + 4);
     if (hlen != 6)
     {
-        throw InvalidArpPacketError{};
+        throw adapters::InvalidArpPacketError{};
     }
 
     const auto plen = ReadUintBe<std::uint8_t>(data + 5);
     if (plen != 4)
     {
-        throw InvalidArpPacketError{};
+        throw adapters::InvalidArpPacketError{};
     }
 
     const auto operation = ReadUintBe<ArpOperation>(data + 6);
@@ -59,7 +59,7 @@ inline auto ParseArpIp4Packet(asio::const_buffer data) -> ArpIp4Packet
     {
     case ArpOperation::Request:
     case ArpOperation::Reply: break;
-    default: throw InvalidArpPacketError{};
+    default: throw adapters::InvalidArpPacketError{};
     }
 
     const auto sha = ReadEthernetAddress(data + 8);

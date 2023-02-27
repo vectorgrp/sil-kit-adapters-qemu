@@ -36,37 +36,53 @@ The adapters and demos are built using ``cmake``:
     cmake -S. -Bbuild -DSILKIT_PACKAGE_DIR=/path/to/SilKit-x.y.z-$platform/ -D CMAKE_BUILD_TYPE=Release
     cmake --build build --parallel
 
-The adapters and demo executables will be available in ``build/bin`` (depending on the configured build directory).
+The adapter and demo executables will be available in ``build/bin`` (depending on the configured build directory).
 Additionally the ``SilKit`` shared library (e.g., ``SilKit[d].dll`` on Windows) is copied to that directory
 automatically.
 
-**Note:** There is a experimental adapter for the Chardev interface of QEMU. To enable the target in the CMake build system, add ``-DBUILD_QEMU_CHARDEV_ADAPTER=ON`` to the ``cmake`` command line. Like in the following command:
-
-    cmake -S. -Bbuild -DSILKIT_PACKAGE_DIR=/path/to/SilKit-x.y.z-$platform/ -DBUILD_QEMU_CHARDEV_ADAPTER=ON -D CMAKE_BUILD_TYPE=Release
-
-### Run the SilKitAdapterQemuEthernet
-This application allows the user to attach simulated ethernet interface (``nic``) of a QEMU virtual machine to the
+### Run the SilKitAdapterQemu
+This application allows the user to attach simulated ethernet interface (``nic``) and/or character devices (e.g. ``SPI``) of a QEMU virtual machine to the
 SIL Kit.
 
 The application uses the *socket* backend provided by QEMU.
-It can be configured for the QEMU virtual machine using the following command line argument of QEMU:
+It can be configured for the QEMU virtual machine using the following command line arguments of QEMU:
 
-    -nic socket,listen=:12345
+    -netdev socket,listen=:12345
+    -chardev socket,server=on,wait=off,host=0.0.0.0,port=23456
 
-The argument of ``listen=`` specifies a TCP socket endpoint on which QEMU will listen for incoming connections.
+The arguments of ``listen=`` and ``hots=``&``port=`` specifies a TCP socket endpoint on which QEMU will listen for incoming connections, 
+which SilKitAdapterQemu will establish.
 
 All *outgoing* ethernet frames on that particular virtual ethernet interface inside of the virtual machine are sent to
 all connected clients.
 Any *incoming* data from any connected clients is presented to the virtual machine as an incoming ethernet frame on the
 virtual interface.
+All characters sent to the SPI associated to the chardev will be sent to the topic specified to SilKitAdapterQemu.
+All characters published on the subscribed topic by SilKitAdapterQemu will be sent to the SPI of the guest.
 
 Before you start the adapter there always needs to be a sil-kit-registry running already. Start it e.g. like this:
 
     ./path/to/SilKit-x.y.z-$platform/SilKit/bin/sil-kit-registry --listen-uri 'silkit://0.0.0.0:8501'
 
-The application *optionally* takes the hostname and port of the configured socket as command line arguments:
+The application takes the following command line arguments:
 
-    ./build/bin/SilKitAdapterQemuEthernet [hostname] [port]
+    SilKitAdapterQemu [--name <participant's name>]
+      [--registry-uri silkit://<host>:<port>]
+      [--log <Trace|Debug|Warn|Info|Error|Critical|off>]
+     [[--socket-to-ethernet <host>:<port>,network=<network's name>[:<controller's name>]]]
+     [[--socket-to-chardev
+         <host>:<port>,
+        [<namespace>::]<inbound topic name>[~<subscriber's name>]
+           [[,<label key>:<optional label value>
+            |,<label key>=<mandatory label value>
+           ]],
+        [<namespace>::]<outbound topic name>[~<publisher's name>]
+           [[,<label key>:<optional label value>
+            |,<label key>=<mandatory label value>
+           ]]
+     ]]
+
+There needs to be at least one ``--socket-to-chardev`` or ``--socket-to-ethernet`` argument. Each socket must be unique.
 
 **Note:** Be aware that the QEMU image needs to be running already before you start the adapter application.
 
@@ -78,7 +94,6 @@ The aim of this demo is to showcase a simple adapter forwarding ethernet traffic
 Vector SIL Kit. Traffic being exchanged are ping (ICMP) requests, and the answering device replies only to them.
 
 This demo is further explained in [eth/README.md](eth/README.md).
-
 
 ## Chardev Demo
 This demo application allows the user to attach a simulated character device (chardev) interface (pipe) of a QEMU image to the SIL Kit in the form of a DataPublisher/DataSubscriber.

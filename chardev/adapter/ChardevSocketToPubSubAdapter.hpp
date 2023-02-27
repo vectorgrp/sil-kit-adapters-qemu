@@ -14,7 +14,7 @@ namespace asio {
 class io_context;
 }
 
-namespace demo {
+namespace adapters {
 namespace chardev {
 
 class ChardevSocketToPubSubAdapter
@@ -56,7 +56,7 @@ private:
 /// <param name="participant">Passed to constructor of class ChardevSocketToPubSubAdapter.</param>
 /// <param name="logger">Used for printing logging info.</param>
 /// <returns>A pointer to the created ChardevSocketToPubSubAdapter.</returns>
-ChardevSocketToPubSubAdapter* parseChardevSocketArgument(char** chardevSocketTransmitterArg,
+ChardevSocketToPubSubAdapter* parseChardevSocketArgument(char* chardevSocketTransmitterArg,
                                                          std::set<std::string>& alreadyProvidedSockets,
                                                          const std::string& participantName,
                                                          asio::io_context& ioContext,
@@ -65,4 +65,4 @@ ChardevSocketToPubSubAdapter* parseChardevSocketArgument(char** chardevSocketTra
 
 
 } // namespace chardev
-} // namespace demo
+} // namespace adapters

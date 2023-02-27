@@ -2,7 +2,7 @@
 
 #pragma once
 
-namespace demo {
+namespace adapters {
 
   enum ReturnCode
 {

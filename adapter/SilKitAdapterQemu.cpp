@@ -1,6 +1,6 @@
 // Copyright (c) Vector Informatik GmbH. All rights reserved.
 
-#include "SilKitAdapter.hpp"
+#include "SilKitAdapterQemu.hpp"
 
 #include <iostream>
 #include <string>
@@ -12,6 +12,7 @@
 #include "Exceptions.hpp"
 #include "Parsing.hpp"
 #include "../chardev/adapter/ChardevSocketToPubSubAdapter.hpp"
+#include "../eth/adapter/EthSocketToEthControllerAdapter.hpp"
 
 #include "silkit/SilKit.hpp"
 #include "silkit/config/all.hpp"
@@ -23,15 +24,15 @@
 
 using namespace SilKit::Services::PubSub;
 using namespace adapters;
-using namespace demo;
-using namespace demo::chardev;
+using namespace adapters::chardev;
+using namespace adapters::ethernet;
 using namespace std::chrono_literals;
 
 int main(int argc, char** argv)
 {
     if (findArg(argc, argv, "--help", argv) != NULL)
     {
-        adapters::print_help(true);
+        print_help(true);
         return NO_ERROR;
     }
 
@@ -41,7 +42,7 @@ int main(int argc, char** argv)
 
     asio::io_context ioContext;
 
-    const std::string participantName = getArgDefault(argc, argv, "--name", "ChardevAdapter");
+    const std::string participantName = getArgDefault(argc, argv, "--name", "SilKitAdapterQemu");
 
     const std::string registryURI = getArgDefault(argc, argv, "--registry-uri", "silkit://localhost:8501");
 
@@ -57,22 +58,24 @@ int main(int argc, char** argv)
 
         auto logger = participant->GetLogger();
 
-        std::vector<ChardevSocketToPubSubAdapter*> transmitters;
-        char** chardevSocketTransmitterArg = NULL;
+        std::vector<ChardevSocketToPubSubAdapter*> chardevSocketTransmitters;
 
         //set to ensure the provided sockets are unique (text-based)
         std::set<std::string> alreadyProvidedSockets;
 
-        for (chardevSocketTransmitterArg = findArgOf(argc, argv, "--socket-to-chardev", argv);
-             chardevSocketTransmitterArg != NULL;
-             chardevSocketTransmitterArg =
-                 findArgOf(argc, argv, "--socket-to-chardev", chardevSocketTransmitterArg + 1))
-        {
+        foreachArgDo(argc, argv, chardevArg, [&](char* arg) -> void {
             ++numberOfRequestedAdaptations;
-            transmitters.push_back(parseChardevSocketArgument(
-                chardevSocketTransmitterArg, alreadyProvidedSockets,
-                participantName, ioContext, participant, logger));
-        }
+            chardevSocketTransmitters.push_back(parseChardevSocketArgument(arg, alreadyProvidedSockets, participantName,
+                                                                           ioContext, participant, logger));
+        });
+
+        std::vector<EthSocketToEthControllerAdapter*> ethernetSocketTransmitters;
+
+        foreachArgDo(argc, argv, ethArg, [&](char* arg) -> void {
+            ++numberOfRequestedAdaptations;
+            ethernetSocketTransmitters.push_back(parseEthernetSocketArgument(
+                arg, alreadyProvidedSockets, participantName, ioContext, participant, logger));
+        });
 
         throwInvalidCliIf(numberOfRequestedAdaptations == 0);
 

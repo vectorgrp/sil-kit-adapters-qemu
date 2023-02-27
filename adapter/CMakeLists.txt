@@ -1,24 +1,27 @@
 
-add_executable(SilKitAdapter
-    "SilKitAdapter.cpp" 
+add_executable(SilKitAdapterQemu
+    "SilKitAdapterQemu.cpp" 
     "Parsing.cpp" )
-target_link_libraries(SilKitAdapter
+
+target_link_libraries(SilKitAdapterQemu
     PRIVATE
         Utility
         ChardevSocketToPubSubAdapter
+        EthSocketToEthControllerAdapter
         asio
         SilKit::SilKit
 )
-target_include_directories(SilKitAdapter 
+
+target_include_directories(SilKitAdapterQemu 
     PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
-set_target_properties(SilKitAdapter PROPERTIES
+set_target_properties(SilKitAdapterQemu PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY $<$<BOOL:ALWAYS>:${SILKIT_ADAPTERS_QEMU_OUTPUT_DIRECTORY}>
 )
+
 add_custom_command(
-    TARGET SilKitAdapter
+    TARGET SilKitAdapterQemu
     POST_BUILD
     COMMAND ${CMAKE_COMMAND}
     ARGS -E copy $<TARGET_PROPERTY:SilKit::SilKit,LOCATION> ${SILKIT_ADAPTERS_QEMU_OUTPUT_DIRECTORY}
 )
-

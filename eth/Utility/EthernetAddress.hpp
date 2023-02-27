@@ -26,7 +26,7 @@ inline auto ReadEthernetAddress(asio::const_buffer buffer) -> EthernetAddress
     EthernetAddress address = {};
     if (asio::buffer_copy(asio::buffer(address.data), buffer) != 6)
     {
-        throw InvalidBufferSize{};
+        throw adapters::InvalidBufferSize{};
     }
     return address;
 }
@@ -35,7 +35,7 @@ inline auto WriteEthernetAddress(asio::mutable_buffer target, const EthernetAddr
 {
     if (asio::buffer_copy(target, asio::buffer(ethernetAddress.data)) != 6)
     {
-        throw InvalidBufferSize{};
+        throw adapters::InvalidBufferSize{};
     }
 
     return 6;

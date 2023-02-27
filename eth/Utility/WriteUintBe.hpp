@@ -16,7 +16,7 @@ auto WriteUintBe(asio::mutable_buffer buffer, const T value)
 {
     if (buffer.size() < sizeof(T))
     {
-        throw InvalidBufferSize{};
+        throw adapters::InvalidBufferSize{};
     }
 
     const auto bytes = static_cast<unsigned char*>(buffer.data());
