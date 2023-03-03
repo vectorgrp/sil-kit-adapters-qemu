@@ -19,32 +19,41 @@ using namespace adapters::chardev;
 
 void ChardevSocketToPubSubAdapter::DoReceiveFrameFromSocket()
 {
-    asio::async_read_until(_socket, asio::dynamic_buffer(_data_buffer_in), '\n',
-                           [this](const std::error_code ec, const std::size_t bytes_received) {
-                               if (ec)
-                                   throw IncompleteReadError{};
+    asio::async_read_until(
+        _socket, asio::dynamic_buffer(_data_buffer_outbound), '\n',
+        [this](const std::error_code ec, const std::size_t bytes_received) {
+            if (ec)
+                throw IncompleteReadError{};
 
-                               auto eol_it = std::find(_data_buffer_in.begin(), _data_buffer_in.end(), '\n');
-                               if (eol_it == _data_buffer_in.end())
-                                   throw IncompleteReadError{};
+            auto eol_it = std::find(_data_buffer_outbound.begin(), _data_buffer_outbound.end(), '\n');
+            if (eol_it == _data_buffer_outbound.end())
+                throw IncompleteReadError{};
 
-                               auto line_len = eol_it - _data_buffer_in.begin() + 1;
+            auto line_len_with_eol = (eol_it - _data_buffer_outbound.begin()) + 1;
 
-                               _logger->Debug("QEMU >> SIL Kit: " + std::string(_data_buffer_in.data(), line_len));
+            _logger->Debug("QEMU >> SIL Kit: "
+                           + std::string(reinterpret_cast<const char*>(_data_buffer_outbound.data()), line_len_with_eol-1));
 
-                               //Prefix data with big endian size. This is for CANoe.
-                               _data_buffer_out.clear();
-                               _data_buffer_out.reserve(4 + line_len);
-                               for (int byte_index = 0; byte_index < 4; byte_index++)
-                                   _data_buffer_out.push_back((line_len >> (8 * byte_index)) & 0xFF);
-                               std::copy(_data_buffer_in.begin(), eol_it + 1, std::back_inserter(_data_buffer_out));
-                               _publisher->Publish(SilKit::Util::Span<uint8_t>(_data_buffer_out));
+            //put everything past EOL inside _data_buffer_outbound_extra
+            _data_buffer_outbound_extra.resize(_data_buffer_outbound.size() - line_len_with_eol);
+            if (_data_buffer_outbound_extra.size() > 0)
+            {
+                std::copy(_data_buffer_outbound.begin() + line_len_with_eol, _data_buffer_outbound.end(),
+                          _data_buffer_outbound_extra.begin());
+                _data_buffer_outbound.erase(line_len_with_eol + _data_buffer_outbound.begin(), _data_buffer_outbound.end());
+            }
 
-                               //clean buffer of the read line; asio doesn't do it on next invocation
-                               _data_buffer_in.erase(_data_buffer_in.begin(), eol_it + 1);
+            _serializer.Serialize(_data_buffer_outbound);
+            _publisher->Publish(_serializer.ReleaseBuffer());
 
-                               DoReceiveFrameFromSocket();
-                           });
+            //clean _data_buffer_outbound of the read line; asio doesn't do it on next invocation
+            _data_buffer_outbound.clear();
+
+            //restore _data_buffer_outbound_extra content to _data_buffer_outbound (if any)
+            _data_buffer_outbound.swap(_data_buffer_outbound_extra);
+
+            DoReceiveFrameFromSocket();
+        });
 }
 
 ChardevSocketToPubSubAdapter::ChardevSocketToPubSubAdapter(asio::io_context& io_context, const std::string& host,
@@ -58,11 +67,15 @@ ChardevSocketToPubSubAdapter::ChardevSocketToPubSubAdapter(asio::io_context& io_
     , _subscriber{participant->CreateDataSubscriber(
           subscriberName, subDataSpec,
           [&](SilKit::Services::PubSub::IDataSubscriber* subscriber, const DataMessageEvent& dataMessageEvent) {
-              //remove size which is added by CANoe.
-              const auto data =
-                  std::string_view((const char*)dataMessageEvent.data.data() + 4, dataMessageEvent.data.size() - 4);
-              _logger->Debug("SIL Kit >> QEMU: '" + std::string(data));
-              SendToSocket(data);
+              _deserializer.Reset(SilKit::Util::ToStdVector(dataMessageEvent.data));
+              this->_data_buffer_inbound.resize(_deserializer.BeginArray());
+              for (auto& val : _data_buffer_inbound)
+              {
+                  val = _deserializer.Deserialize<uint8_t>(8);
+              }
+              _logger->Debug("SIL Kit >> QEMU: '"
+                             + std::string((const char*)_data_buffer_inbound.data(), _data_buffer_inbound.size()) + "'");
+              SendToSocket(_data_buffer_inbound);
           })}
 {
     asio::connect(_socket, asio::ip::tcp::resolver{io_context}.resolve(host, service));

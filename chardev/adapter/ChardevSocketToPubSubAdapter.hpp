@@ -8,6 +8,8 @@
 #include "silkit/SilKit.hpp"
 #include "silkit/services/pubsub/all.hpp"
 #include "../Utility/StringUtils.hpp"
+#include "silkit/util/serdes/Deserializer.hpp"
+#include "silkit/util/serdes/Serializer.hpp"
 #include "adapter/Exceptions.hpp"
 
 namespace asio {
@@ -40,10 +42,13 @@ private:
 private:
     asio::ip::tcp::socket _socket;
     SilKit::Services::Logging::ILogger* _logger;
-    std::vector<char> _data_buffer_in = {};
-    std::vector<uint8_t> _data_buffer_out = {};
+    std::vector<uint8_t> _data_buffer_outbound = {};
+    std::vector<uint8_t> _data_buffer_outbound_extra = {};
+    std::vector<uint8_t> _data_buffer_inbound = {};
     SilKit::Services::PubSub::IDataPublisher* _publisher;
     SilKit::Services::PubSub::IDataSubscriber* _subscriber;
+    SilKit::Util::SerDes::Serializer _serializer;
+    SilKit::Util::SerDes::Deserializer _deserializer;
 };
 
 /// <summary>

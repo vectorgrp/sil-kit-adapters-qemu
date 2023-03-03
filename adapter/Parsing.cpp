@@ -33,7 +33,7 @@ void adapters::print_help(bool userRequested)
     std::cout << "\n"
                  "Example:\n"
                  "SilKitAdapterQemu --name ChardevAdapter "
-                 "--socket-to-chardev localhost:12345,"
+                 <<chardevArg<<" localhost:12345,"
                  "Namespace::inboundQemu,VirtualNetwork=Default,"
                  "outboundQemu,Namespace:Namespace,VirtualNetwork:Default\n";
     if (!userRequested)

@@ -65,8 +65,8 @@ int main(int argc, char** argv)
 
         foreachArgDo(argc, argv, chardevArg, [&](char* arg) -> void {
             ++numberOfRequestedAdaptations;
-            chardevSocketTransmitters.push_back(parseChardevSocketArgument(arg, alreadyProvidedSockets, participantName,
-                                                                           ioContext, participant, logger));
+            chardevSocketTransmitters.push_back(parseChardevSocketArgument(
+                arg, alreadyProvidedSockets, participantName, ioContext, participant, logger));
         });
 
         std::vector<EthSocketToEthControllerAdapter*> ethernetSocketTransmitters;
