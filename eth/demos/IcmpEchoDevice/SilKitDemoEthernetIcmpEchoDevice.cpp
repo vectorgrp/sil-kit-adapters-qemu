@@ -58,7 +58,7 @@ int main(int argc, char**)
         auto* ethController = participant->CreateEthernetController(ethernetControllerName, ethernetNetworkName);
 
         static constexpr auto ethernetAddress = demo::EthernetAddress{0x01, 0x23, 0x45, 0x67, 0x89, 0xab};
-        static constexpr auto ip4Address = demo::Ip4Address{192, 168, 12, 35};
+        static constexpr auto ip4Address = demo::Ip4Address{192, 168, 7, 35};
         auto demoDevice = demo::Device{ethernetAddress, ip4Address, [ethController](std::vector<std::uint8_t> data) {
                                            const auto frameSize = data.size();
                                            static intptr_t transmitId = 0;
