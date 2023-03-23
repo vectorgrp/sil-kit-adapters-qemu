@@ -39,7 +39,7 @@ It automatically assigns the static IP ``192.168.7.2/24`` to the interface.
 
 Apart from SSH you can also log into the QEMU guest with the user ``root`` with password ``root``.
 
-Then ping the demo device four times:
+Then ping the demo device:
 
     root@silkit-qemu-demos-guest:~# ping 192.168.7.35
 
@@ -72,7 +72,7 @@ And output similar to the following from the ``SilKitDemoEthernetIcmpEchoDevice`
 ## Adding CANoe (16 SP3 or newer) as a participant
 If CANoe is connected to the SIL Kit, all ethernet traffic is visible there as well. You can also execute a test unit which checks if the ICMP Ping and Pong is happening as expected.
 
-Before you can connect CANoe to the SIL Kit network you should adapt the ``RegistryUri`` in ``demos/SilKitConfig_CANoe.silkit.json`` to the IP address of your system where your sil-kit-registry is running (in case of a WSL Ubuntu image e.g. the IP address of Eth0). The configuration file is referenced by both following CANoe use cases (Desktop Edition and Server Edition).
+Before you can connect CANoe to the SIL Kit network you should adapt the ``RegistryUri`` in ``demos/SilKitConfig_CANoe.silkit.yaml`` to the IP address of your system where your sil-kit-registry is running (in case of a WSL Ubuntu image e.g. the IP address of Eth0). The configuration file is referenced by both following CANoe use cases (Desktop Edition and Server Edition).
 
 ### CANoe Desktop Edition
 Load the ``Qemu_Ethernet_adapter_CANoe.cfg`` from the ``demos/CANoe`` directory and start the measurement. Optionally you can also start the test unit execution of included test configuration. While the demo is running these tests should be successful.
