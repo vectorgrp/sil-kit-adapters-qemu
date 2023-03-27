@@ -22,33 +22,41 @@
 
 #include "../chardev/Utility/StringUtils.hpp"
 
-using namespace SilKit::Services::PubSub;
 using namespace adapters;
 using namespace adapters::chardev;
 using namespace adapters::ethernet;
 using namespace std::chrono_literals;
 
+void promptForExit()
+{
+    std::cout << "Press enter to stop the process..." << std::endl;
+    std::cin.ignore();
+}
+
 int main(int argc, char** argv)
 {
-    if (findArg(argc, argv, "--help", argv) != NULL)
+
+    if (findArg(argc, argv, helpArg, argv) != NULL)
     {
         print_help(true);
         return NO_ERROR;
     }
 
-    const std::string loglevel = getArgDefault(argc, argv, "--log", "Info");
+    const std::string loglevel = getArgDefault(argc, argv, logLevelArg, "Info");
     const std::string participantConfigurationString =
         R"({ "Logging": { "Sinks": [ { "Type": "Stdout", "Level": ")" + loglevel + R"("} ] } })";
 
     asio::io_context ioContext;
 
-    const std::string participantName = getArgDefault(argc, argv, "--name", "SilKitAdapterQemu");
+    const std::string participantName = getArgDefault(argc, argv, participantNameArg, "SilKitAdapterQemu");
 
-    const std::string registryURI = getArgDefault(argc, argv, "--registry-uri", "silkit://localhost:8501");
+    const std::string registryURI = getArgDefault(argc, argv, regUriArg, "silkit://localhost:8501");
 
     unsigned numberOfRequestedAdaptations = 0;
     try
     {
+        throwInvalidCliIf(thereAreUnknownArguments(argc, argv));  
+
         auto participantConfiguration =
             SilKit::Config::ParticipantConfigurationFromString(participantConfigurationString);
 
@@ -81,29 +89,26 @@ int main(int argc, char** argv)
 
         ioContext.run();
 
-        std::cout << "Press enter to stop the process..." << std::endl;
-        std::cin.ignore();
+        promptForExit();
     }
     catch( const SilKit::ConfigurationError& error )
     {
         std::cerr << "Invalid configuration: " << error.what() << std::endl;
-        std::cout << "Press enter to stop the process..." << std::endl;
-        std::cin.ignore();
+        promptForExit();
         return CONFIGURATION_ERROR;
     }
     catch( const InvalidCli& )
     {
-        std::cerr << "Invalid command line arguments." << std::endl;
         adapters::print_help();
-        std::cout << "Press enter to stop the process..." << std::endl;
-        std::cin.ignore();
+        std::cerr << std::endl
+                  << "Invalid command line arguments." << std::endl;
+        promptForExit();
         return CLI_ERROR;
     }
     catch( const std::exception& error )
     {
         std::cerr << "Something went wrong: " << error.what() << std::endl;
-        std::cout << "Press enter to stop the process..." << std::endl;
-        std::cin.ignore();
+        promptForExit();
         return OTHER_ERROR;
     }
 

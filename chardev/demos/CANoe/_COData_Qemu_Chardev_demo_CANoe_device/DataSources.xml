@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DataSourceDescription xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+  <DataSources>
+    <DataSource xmlns="" i:type="FileDataSource">
+      <Files>
+        <File>
+          <FileType>evCDL</FileType>
+          <LastModifiedTime>2023-03-24T15:19:54.3285873+01:00</LastModifiedTime>
+          <Path>Datasource_device.vcdl</Path>
+          <ReferenceHashValue>JuI6DHpH1zAIcLCml1i8+o/LZkS1IG6UjBAANMtcK5s=</ReferenceHashValue>
+        </File>
+      </Files>
+      <ID>2</ID>
+      <ImportParameters>{
+  "$id": "1",
+  "ImportParametersMap": {
+    "$id": "2",
+    "vCDL": {
+      "$id": "3",
+      "IncludeFiles": [],
+      "FileType": 3,
+      "Version": 0,
+      "Networks": [],
+      "FileInfos": [
+        {
+          "$id": "4",
+          "Type": 3,
+          "Path": "D:\\vfs\\SilKit\\sil-kit-adapters-qemu\\chardev\\demos\\CANoe\\Datasource_device.vcdl",
+          "Name": "Datasource_device.vcdl",
+          "Version": "1.4"
+        }
+      ],
+      "DummyServiceFEPPrefix": "CANoe",
+      "DummyParticipantPrefix": "CANoe",
+      "SystemNamespace": "",
+      "NameSpaceDataTypesCOM": "DataTypes",
+      "NameSpaceDataObjectsCOM": "CommunicationObjects",
+      "NameSpaceParticipants": "Participants",
+      "NameSpaceTimings": "Timings",
+      "NameSpaceBindings": "BindingInfo",
+      "NameSpaceEncodings": "Encodings",
+      "CreateDummyParticipants": true,
+      "CreateDummyServiceFEPs": true,
+      "OEMType": 0,
+      "EnablePreprocessing": false
+    }
+  }
+}</ImportParameters>
+      <ImportStatus>eImported</ImportStatus>
+      <Name></Name>
+      <ReferencedFiles />
+    </DataSource>
+  </DataSources>
+  <FormatVersion>
+    <Major>16</Major>
+    <Minor>0</Minor>
+    <Running>4</Running>
+  </FormatVersion>
+</DataSourceDescription>

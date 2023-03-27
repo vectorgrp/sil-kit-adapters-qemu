@@ -3,19 +3,62 @@
 #include "Parsing.hpp"
 #include <iostream>
 #include <algorithm>
+#include <array>
+#include <cstring>
 
 
-std::string adapters::ethArg = "--socket-to-ethernet";
+const std::string adapters::ethArg = "--socket-to-ethernet";
 
-std::string adapters::chardevArg = "--socket-to-chardev";
+const std::string adapters::chardevArg = "--socket-to-chardev";
+
+const std::string adapters::regUriArg = "--registry-uri";
+
+const std::string adapters::logLevelArg = "--log";
+
+const std::string adapters::participantNameArg = "--name";
+
+const std::string adapters::helpArg = "--help";
+
+const std::array<std::string, 5> switchesWithArgument = {adapters::ethArg, adapters::chardevArg, adapters::regUriArg,
+                                            adapters::logLevelArg, adapters::participantNameArg};
+
+const std::array<std::string, 1> switchesWithoutArguments = {adapters::helpArg};
+
+bool adapters::thereAreUnknownArguments(int argc, char** argv)
+{
+    //skip the executable calling:
+    argc -= 1;
+    argv += 1;
+    while( argc )
+    {
+        if( strncmp(*argv, "--", 2) != 0 )
+            return true;
+        if( std::find(switchesWithArgument.begin(), switchesWithArgument.end(), *argv) != switchesWithArgument.end() )
+        {
+            //switches with argument have an argument to ignore, so skip "2"
+            argc -= 2;
+            argv += 2;
+        }
+        else if (std::find(switchesWithoutArguments.begin(), switchesWithoutArguments.end(), *argv)
+                 != switchesWithoutArguments.end())
+        {
+            //switches without argument don't have an argument to ignore, so skip "1"
+            argc -= 1;
+            argv += 1;
+        }
+        else
+            return true;
+    }
+    return false;
+}
 
 void adapters::print_help(bool userRequested)
 {
     std::cout
         << "Usage (defaults in curly braces if you omit the switch):" << std::endl
-        << "SilKitAdapterQemu [--name <participant's name{SilKitAdapterQemu}>]\n"
-           "  [--registry-uri silkit://<host{localhost}>:<port{8501}>]\n"
-           "  [--log <Trace|Debug|Warn|{Info}|Error|Critical|off>]\n"
+              << "SilKitAdapterQemu ["<<participantNameArg<<" <participant's name{SilKitAdapterQemu}>]\n"
+           "  ["<<regUriArg<<" silkit://<host{localhost}>:<port{8501}>]\n"
+           "  ["<<logLevelArg<<" <Trace|Debug|Warn|{Info}|Error|Critical|off>]\n"
            " [["<<ethArg<<" <host>:<port>,network=<network's name>[:<controller's name>]]]\n"
            " [["<<chardevArg<<"\n"
            "     <host>:<port>,\n"
@@ -29,16 +72,16 @@ void adapters::print_help(bool userRequested)
            "       ]]\n"
            " ]]\n"
            "\n"
-           "There needs to be at least one --socket-to-chardev or --socket-to-ethernet argument. Each socket must be unique.\n";
+           "There needs to be at least one "<<chardevArg<<" or "<<ethArg<<" argument. Each socket must be unique.\n";
     std::cout << "\n"
                  "Example:\n"
-                 "SilKitAdapterQemu --name ChardevAdapter "
+                 "SilKitAdapterQemu "<<participantNameArg<<" ChardevAdapter "
                  <<chardevArg<<" localhost:12345,"
                  "Namespace::inboundQemu,VirtualNetwork=Default,"
                  "outboundQemu,Namespace:Namespace,VirtualNetwork:Default\n";
     if (!userRequested)
         std::cout << "\n"
-                     "Pass --help to get this message.\n";
+                     "Pass "<<helpArg<<" to get this message.\n";
 };
 
 char** adapters::findArg(int argc, char** argv, const std::string& argument, char** args)
