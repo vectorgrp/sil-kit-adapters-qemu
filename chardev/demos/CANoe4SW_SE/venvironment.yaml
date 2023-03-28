@@ -1,0 +1,14 @@
+version: 1.1.0
+
+global-settings:
+ time-source: internal-realtime
+
+sil-kit:
+  participant-name: CANoe4SW_SE
+  config-file-path: ../SilKitConfig_CANoe.silkit.yaml
+
+datasources:
+  input-files:
+  - file-path: ../CANoe/Datasource_observer.vcdl
+
+      

@@ -108,11 +108,11 @@ In the following diagram you can see the whole setup. It illustrates the data fl
 
 Please note that you can compile and run the demos on Windows even if QEMU is running in WSL.
 
-### Using the demo with CANoe
+## Adding CANoe (16 SP3 or newer) as a participant
 
-You can also start ``CANoe 16 SP3`` or newer and load the ``Qemu_Chardev_demo_CANoe_observer.cfg`` from the ``CANoe`` directory 
-and start the measurement after setting the demo as above. Note that if necessary, you must provide the associated 
-``Datasource_observer.vcdl`` file to CANoe.
+You can also start ``CANoe 16 SP3`` or newer, Desktop or Server edition. 
+
+Before you can connect any CANoe to the SIL Kit network, you should adapt the ``RegistryUri`` in ``demos/SilKitConfig_CANoe.silkit.yaml`` to the IP address of your system where your sil-kit-registry is running (e.g. in case of a WSL Ubuntu image, the IP address of Eth0).
 
 CANoe's Publisher/Subscriber counterpart are Distributed Objects. By nature, they are meant to convey their state to and from
 CANoe, but not simultaneously. Therefore, the CANoe demo will contain 2 such objects in order to demonstrate the
@@ -131,3 +131,22 @@ Here is a small drawing to illustrate how CANoe observes the topics (the observa
                                                    \
                                                 CANoe Observation
 ```
+
+### CANoe Desktop Edition
+Load the ``Qemu_Chardev_demo_CANoe_observer.cfg`` from the ``demos/CANoe`` directory and start the measurement.
+
+Note that if necessary, you must provide the associated ``Datasource_observer.vcdl`` file to CANoe.
+
+In rare cases, you may also have to add the ``SilKitConfig_CANoe.silkit.yaml`` file to the options.
+
+### Tests in CANoe Desktop Edition
+Optionally you can also start the test unit execution of included test configuration. While the demo is running these tests should be successful. The advised way to "run" the demo for the test to be successful while you focus on it is to execute the following commands in the QEMU image:
+
+    root@silkit-qemu-demos-guest:~# stty -echo raw -F /dev/ttyS1
+    root@silkit-qemu-demos-guest:~# while true; do echo test > /dev/ttyS1; sleep 1; done
+
+### CANoe4SW Server Edition (Windows)
+You can also run the same test set with ``CANoe4SW SE`` by executing the following PowerShell script ``demos/CANoe4SW_SE/run.ps1``. The test cases are executed automatically and you should see a short test report in PowerShell after execution.
+
+### CANoe4SW Server Edition (Linux)
+You can also run the same test set with ``CANoe4SW SE (Linux)``. At first you have to execute the powershell script ``demos/CANoe4SW_SE/createEnvForLinux.ps1`` on your windows system by using tools of ``CANoe4SW SE (Windows)`` to prepare your test environment for Linux. In ``demos/CANoe4SW_SE/run.sh`` you should set ``canoe4sw_se_install_dir`` to the path of your ``CANoe4SW SE`` installation in your WSL. Afterwards you can execute ``demos/CANoe4SW_SE/run.sh`` in your WSL. The test cases are executed automatically and you should see a short test report in your terminal after execution.

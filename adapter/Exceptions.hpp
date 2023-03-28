@@ -67,4 +67,4 @@ void throwIf(bool b)
 
 inline auto& throwInvalidCliIf = throwIf<InvalidCli>;
 
-} // namespace demo
+} // namespace adapters
