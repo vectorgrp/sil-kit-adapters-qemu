@@ -73,8 +73,8 @@ ChardevSocketToPubSubAdapter::ChardevSocketToPubSubAdapter(asio::io_context& io_
               {
                   val = _deserializer.Deserialize<uint8_t>(8);
               }
-              _logger->Debug("SIL Kit >> QEMU: '"
-                             + std::string((const char*)_data_buffer_inbound.data(), _data_buffer_inbound.size()) + "'");
+              _logger->Debug("SIL Kit >> QEMU: "
+                             + std::string((const char*)_data_buffer_inbound.data(), _data_buffer_inbound.size()));
               SendToSocket(_data_buffer_inbound);
           })}
 {

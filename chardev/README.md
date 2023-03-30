@@ -76,20 +76,26 @@ message11
 
 You should see output similar to the following from the SilKitAdapterQemu application:
 ```
-QEMU >> SIL Kit: message1
-SIL Kit >> QEMU: message1
-QEMU >> SIL Kit: message10
-SIL Kit >> QEMU: message10
-QEMU >> SIL Kit: message11
-SIL Kit >> QEMU: message11
+[2023-03-30 11:17:54.376] [SilKitAdapterQemu] [debug] QEMU >> SIL Kit: message1
+[2023-03-30 11:17:54.377] [SilKitAdapterQemu] [debug] SIL Kit >> QEMU: message1
+
+[2023-03-30 11:17:57.136] [SilKitAdapterQemu] [debug] QEMU >> SIL Kit: message10
+[2023-03-30 11:17:57.136] [SilKitAdapterQemu] [debug] SIL Kit >> QEMU: message10
+
+[2023-03-30 11:17:59.695] [SilKitAdapterQemu] [debug] QEMU >> SIL Kit: message11
+[2023-03-30 11:17:59.695] [SilKitAdapterQemu] [debug] SIL Kit >> QEMU: message11
+
 ```
 
 
 And you should see output similar to the following from the SilKitDemoChardevEchoDevice application:
 ```
 SIL Kit >> SIL Kit: message1
+
 SIL Kit >> SIL Kit: message10
+
 SIL Kit >> SIL Kit: message11
+
 ```
 
 In the following diagram you can see the whole setup. It illustrates the data flow going through each component involved.
