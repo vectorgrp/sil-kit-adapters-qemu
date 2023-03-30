@@ -1,6 +1,6 @@
 Description: Configuration for CANoe participant for SIL Kit Adapter QEMU (Eth) demo
 Middleware:
-  RegistryUri: silkit://172.26.191.170:8501
+  RegistryUri: silkit://172.29.10.167:8501
 # Logging:
   # Sinks:
   # - Type: File

@@ -1,0 +1,26 @@
+/*@!Encoding:1252*/
+includes
+{
+  
+}
+
+variables
+{
+  distObjRef EchoDeviceIf out_object = `Namespace::EchoDevice;
+  char textBuffer[1024];
+}
+
+on start {
+  out_object.Connect();
+}
+
+on sysvar_update UIVariables::SendRequested
+{
+  if( @UIVariables::SendRequested == 0)
+  {
+     sysGetVariableString("UIVariables","TextToSend",textBuffer,elcount(textBuffer)-3);
+     strncat(textBuffer,"\n",elcount(textBuffer));
+     $out_object.qemuInbound = textBuffer;
+  }
+}
+

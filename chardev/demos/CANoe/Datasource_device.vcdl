@@ -1,0 +1,22 @@
+version 1.4;
+import module "SilKit";
+
+namespace Namespace
+{
+  [Binding="SilKit"]
+  interface EchoDeviceIf
+  {
+    provided data string qemuInbound;
+  }
+  
+  object EchoDevice : EchoDeviceIf;
+  
+  [Binding="SilKit"]
+  interface AdapterIf
+  {
+    consumed data string qemuOutbound;
+  }
+  
+  object Adapter : AdapterIf;
+}
+
