@@ -57,10 +57,10 @@ void ChardevSocketToPubSubAdapter::DoReceiveFrameFromSocket()
 }
 
 ChardevSocketToPubSubAdapter::ChardevSocketToPubSubAdapter(asio::io_context& io_context, const std::string& host,
-                                                         const std::string& service,
-                             const std::string& publisherName, const std::string& subscriberName,
-                             const PubSubSpec& pubDataSpec, const PubSubSpec& subDataSpec,
-                             SilKit::IParticipant* participant)
+                                                           const std::string& service,
+                                                           const std::string& publisherName, const std::string& subscriberName,
+                                                           const PubSubSpec& pubDataSpec, const PubSubSpec& subDataSpec,
+                                                           SilKit::IParticipant* participant)
     : _socket{io_context}
     , _logger{participant->GetLogger()}
     , _publisher{participant->CreateDataPublisher(publisherName, pubDataSpec)}
