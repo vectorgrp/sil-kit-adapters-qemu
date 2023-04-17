@@ -20,7 +20,7 @@ on sysvar_update UIVariables::SendRequested
   {
      sysGetVariableString("UIVariables","TextToSend",textBuffer,elcount(textBuffer)-3);
      strncat(textBuffer,"\n",elcount(textBuffer));
-     $out_object.qemuInbound = textBuffer;
+     $out_object.toChardev = textBuffer;
   }
 }
 

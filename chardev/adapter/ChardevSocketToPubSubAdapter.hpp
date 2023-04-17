@@ -42,9 +42,9 @@ private:
 private:
     asio::ip::tcp::socket _socket;
     SilKit::Services::Logging::ILogger* _logger;
-    std::vector<uint8_t> _data_buffer_outbound = {};
-    std::vector<uint8_t> _data_buffer_outbound_extra = {};
-    std::vector<uint8_t> _data_buffer_inbound = {};
+    std::vector<uint8_t> _data_buffer_fromChardev = {};
+    std::vector<uint8_t> _data_buffer_fromChardev_extra = {};
+    std::vector<uint8_t> _data_buffer_toChardev = {};
     SilKit::Services::PubSub::IDataPublisher* _publisher;
     SilKit::Services::PubSub::IDataSubscriber* _subscriber;
     SilKit::Util::SerDes::Serializer _serializer;

@@ -25,13 +25,13 @@ void CheckTestResult(char testName[], int result)
 export testcase DO_WaitForQemuMessage()
 {
   out_object.Connect();
-  result = testWaitForUpdate(Namespace::Adapter.qemuOutbound,timeout);
+  result = testWaitForUpdate(Namespace::Adapter.fromChardev,timeout);
   CheckTestResult("DO_WaitForQemuMessage", result);
 }
 
 export testcase DO_WaitForEchoMessage()
 {
   in_object.Connect();
-  result = testWaitForUpdate(Namespace::EchoDevice.qemuInbound,timeout);
+  result = testWaitForUpdate(Namespace::EchoDevice.toChardev,timeout);
   CheckTestResult("DO_WaitForEchoMessage", result);
 }

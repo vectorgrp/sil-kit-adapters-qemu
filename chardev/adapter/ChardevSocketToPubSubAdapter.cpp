@@ -20,37 +20,37 @@ using namespace adapters::chardev;
 void ChardevSocketToPubSubAdapter::DoReceiveFrameFromSocket()
 {
     asio::async_read_until(
-        _socket, asio::dynamic_buffer(_data_buffer_outbound), '\n',
+        _socket, asio::dynamic_buffer(_data_buffer_fromChardev), '\n',
         [this](const std::error_code ec, const std::size_t bytes_received) {
             if (ec)
                 throw IncompleteReadError{};
 
-            auto eol_it = std::find(_data_buffer_outbound.begin(), _data_buffer_outbound.end(), '\n');
-            if (eol_it == _data_buffer_outbound.end())
+            auto eol_it = std::find(_data_buffer_fromChardev.begin(), _data_buffer_fromChardev.end(), '\n');
+            if (eol_it == _data_buffer_fromChardev.end())
                 throw IncompleteReadError{};
 
-            auto line_len_with_eol = (eol_it - _data_buffer_outbound.begin()) + 1;
+            auto line_len_with_eol = (eol_it - _data_buffer_fromChardev.begin()) + 1;
 
             _logger->Debug("QEMU >> SIL Kit: "
-                           + std::string(reinterpret_cast<const char*>(_data_buffer_outbound.data()), line_len_with_eol));
+                           + std::string(reinterpret_cast<const char*>(_data_buffer_fromChardev.data()), line_len_with_eol));
 
             //put everything past EOL inside _data_buffer_outbound_extra
-            _data_buffer_outbound_extra.resize(_data_buffer_outbound.size() - line_len_with_eol);
-            if (_data_buffer_outbound_extra.size() > 0)
+            _data_buffer_fromChardev_extra.resize(_data_buffer_fromChardev.size() - line_len_with_eol);
+            if (_data_buffer_fromChardev_extra.size() > 0)
             {
-                std::copy(_data_buffer_outbound.begin() + line_len_with_eol, _data_buffer_outbound.end(),
-                          _data_buffer_outbound_extra.begin());
-                _data_buffer_outbound.erase(line_len_with_eol + _data_buffer_outbound.begin(), _data_buffer_outbound.end());
+                std::copy(_data_buffer_fromChardev.begin() + line_len_with_eol, _data_buffer_fromChardev.end(),
+                          _data_buffer_fromChardev_extra.begin());
+                _data_buffer_fromChardev.erase(line_len_with_eol + _data_buffer_fromChardev.begin(), _data_buffer_fromChardev.end());
             }
 
-            _serializer.Serialize(_data_buffer_outbound);
+            _serializer.Serialize(_data_buffer_fromChardev);
             _publisher->Publish(_serializer.ReleaseBuffer());
 
             //clean _data_buffer_outbound of the read line; asio doesn't do it on next invocation
-            _data_buffer_outbound.clear();
+            _data_buffer_fromChardev.clear();
 
             //restore _data_buffer_outbound_extra content to _data_buffer_outbound (if any)
-            _data_buffer_outbound.swap(_data_buffer_outbound_extra);
+            _data_buffer_fromChardev.swap(_data_buffer_fromChardev_extra);
 
             DoReceiveFrameFromSocket();
         });
@@ -68,14 +68,14 @@ ChardevSocketToPubSubAdapter::ChardevSocketToPubSubAdapter(asio::io_context& io_
           subscriberName, subDataSpec,
           [&](SilKit::Services::PubSub::IDataSubscriber* subscriber, const DataMessageEvent& dataMessageEvent) {
               _deserializer.Reset(SilKit::Util::ToStdVector(dataMessageEvent.data));
-              this->_data_buffer_inbound.resize(_deserializer.BeginArray());
-              for (auto& val : _data_buffer_inbound)
+              this->_data_buffer_toChardev.resize(_deserializer.BeginArray());
+              for (auto& val : _data_buffer_toChardev)
               {
                   val = _deserializer.Deserialize<uint8_t>(8);
               }
               _logger->Debug("SIL Kit >> QEMU: "
-                             + std::string((const char*)_data_buffer_inbound.data(), _data_buffer_inbound.size()));
-              SendToSocket(_data_buffer_inbound);
+                             + std::string((const char*)_data_buffer_toChardev.data(), _data_buffer_toChardev.size()));
+              SendToSocket(_data_buffer_toChardev);
           })}
 {
     asio::connect(_socket, asio::ip::tcp::resolver{io_context}.resolve(host, service));

@@ -24,7 +24,7 @@ int main(int argc, char**)
     const std::string participantConfigurationString =
         R"({ "Logging": { "Sinks": [ { "Type": "Stdout", "Level": "Info" } ] } })";
 
-    const std::string participantName = "ChardevDevice";
+    const std::string participantName = "EchoDevice";
     const std::string registryURI = "silkit://localhost:8501";
 
     const auto create_pubsubspec = [](const std::string& topic_name,
@@ -35,10 +35,10 @@ int main(int argc, char**)
         return r;
     };
 
-    PubSubSpec subDataSpec = create_pubsubspec("qemuOutbound", SilKit::Services::MatchingLabel::Kind::Mandatory);
+    PubSubSpec subDataSpec = create_pubsubspec("fromChardev", SilKit::Services::MatchingLabel::Kind::Mandatory);
     subDataSpec.AddLabel("Instance", "Adapter", SilKit::Services::MatchingLabel::Kind::Mandatory);
 
-    PubSubSpec pubDataSpec = create_pubsubspec("qemuInbound", SilKit::Services::MatchingLabel::Kind::Optional);
+    PubSubSpec pubDataSpec = create_pubsubspec("toChardev", SilKit::Services::MatchingLabel::Kind::Optional);
     pubDataSpec.AddLabel("Instance", "EchoDevice", SilKit::Services::MatchingLabel::Kind::Optional);
 
     try

@@ -62,11 +62,11 @@ void adapters::print_help(bool userRequested)
            " [["<<ethArg<<" <host>:<port>,network=<network's name>[:<controller's name>]]]\n"
            " [["<<chardevArg<<"\n"
            "     <host>:<port>,\n"
-           "    [<namespace>::]<inbound topic name>[~<subscriber's name>]\n"
+           "    [<namespace>::]<toChardev topic name>[~<subscriber's name>]\n"
            "       [[,<label key>:<optional label value>\n"
            "        |,<label key>=<mandatory label value>\n"
            "       ]],\n"
-           "    [<namespace>::]<outbound topic name>[~<publisher's name>]\n"
+           "    [<namespace>::]<fromChardev topic name>[~<publisher's name>]\n"
            "       [[,<label key>:<optional label value>\n"
            "        |,<label key>=<mandatory label value>\n"
            "       ]]\n"
@@ -77,8 +77,8 @@ void adapters::print_help(bool userRequested)
                  "Example:\n"
                  "SilKitAdapterQemu "<<participantNameArg<<" ChardevAdapter "
                  <<chardevArg<<" localhost:12345,"
-                 "Namespace::inboundQemu,VirtualNetwork=Default,"
-                 "outboundQemu,Namespace:Namespace,VirtualNetwork:Default\n";
+                 "Namespace::toChardev,VirtualNetwork=Default,"
+                 "fromChardev,Namespace:Namespace,VirtualNetwork:Default\n";
     if (!userRequested)
         std::cout << "\n"
                      "Pass "<<helpArg<<" to get this message.\n";

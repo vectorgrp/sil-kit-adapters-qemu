@@ -45,7 +45,7 @@ wsl$ ./path/to/SilKit-x.y.z-$platform/SilKit/bin/sil-kit-registry --listen-uri '
 Finally, launch the adapter, which connects to the registry (to connect to other partitipants) and to QEMU,
 to transmit the serial data written to ``/dev/ttyS1`` inside QEMU through SIL Kit, and vice-versa:
 ```
-wsl$ ./build/bin/SilKitAdapterQemu --socket-to-chardev localhost:23456,Namespace::qemuInbound,VirtualNetwork=Default,Instance=EchoDevice,Namespace::qemuOutbound,VirtualNetwork:Default,Instance:Adapter --log Debug
+wsl$ ./build/bin/SilKitAdapterQemu --socket-to-chardev localhost:23456,Namespace::toChardev,VirtualNetwork=Default,Instance=EchoDevice,Namespace::fromChardev,VirtualNetwork:Default,Instance:Adapter --log Debug
 Creating participant 'SilKitAdapterQemu' at silkit://localhost:8501
 [2022-08-31 18:06:27.674] [SilKitAdapterQemu] [info] Creating participant 'SilKitAdapterQemu' at 'silkit://localhost:8501', SIL Kit version: 4.0.19
 [2022-08-31 18:06:27.790] [SilKitAdapterQemu] [info] Connected to registry at 'tcp://127.0.0.1:8501' via 'tcp://127.0.0.1:49224' (silkit://localhost:8501)
@@ -58,9 +58,9 @@ After following the common steps above, launch the following process in separate
 
 ``` 
 wsl$ ./build/bin/SilKitDemoChardevEchoDevice
-Creating participant 'ChardevDevice' at silkit://localhost:8501
-[2022-08-31 18:07:03.818] [ChardevDevice] [info] Creating participant 'ChardevDevice' at 'silkit://localhost:8501', SIL Kit version: 4.0.19
-[2022-08-31 18:07:03.935] [ChardevDevice] [info] Connected to registry at 'tcp://127.0.0.1:8501' via 'tcp://127.0.0.1:49242' (silkit://localhost:8501)
+Creating participant 'EchoDevice' at silkit://localhost:8501
+[2022-08-31 18:07:03.818] [EchoDevice] [info] Creating participant 'EchoDevice' at 'silkit://localhost:8501', SIL Kit version: 4.0.19
+[2022-08-31 18:07:03.935] [EchoDevice] [info] Connected to registry at 'tcp://127.0.0.1:8501' via 'tcp://127.0.0.1:49242' (silkit://localhost:8501)
 Press enter to stop the process...
     ...
 ```
@@ -113,13 +113,13 @@ In the following diagram you can see the whole setup. It illustrates the data fl
 ```
 +--[ QEMU ]--+                                  SIL Kit  topics:
 | Debian  11 |                            
-|   ttyS1    |                                  > qemuOutbound >  
+|   ttyS1    |                                  > fromChardev >  
 +------------+                                 ------------------
      |             +------[SIL Kit]------+    /                  \      +----[SIL Kit]----+
-      \____________|  SilKitAdapterQemu  |----                    ------|  ChardevDevice  |
+      \____________|  SilKitAdapterQemu  |----                    ------|    EchoDevice   |
       < socket >   +---------------------+    \                  /      +-----------------+
         23456                                  ------------------
-                                                < qemuInbound < 
+                                                <  toChardev  < 
 ```
 
 Please note that you can compile and run the demos on Windows even if QEMU is running in WSL.
@@ -138,11 +138,11 @@ Here is a small drawing to illustrate how CANoe observes the topics (the observa
 ```
       CANoe Observation
                    \
-+----[SIL Kit]----+ \        > qemuOutbound >        +----[SIL Kit]----+
++----[SIL Kit]----+ \        > fromChardev >         +----[SIL Kit]----+
 |                 |__)_______________________________|                 |
-| ChardevAdapter  |                                  |  ChardevDevice  |    
+| ChardevAdapter  |                                  |    EchoDevice   |    
 |                 |__________________________________|                 |
-|                 |          < qemuInbound <       / |                 |
+|                 |          <  toChardev  <       / |                 |
 +-----------------+                               (  +-----------------+
                                                    \
                                                 CANoe Observation
@@ -170,8 +170,8 @@ You need to use CANoe 16 SP3 or newer.
 
 Before you can connect CANoe to the SIL Kit network you should adapt the RegistryUri in /chardev/demos/SilKitConfig_CANoe.silkit.yaml to the IP address of your system where your sil-kit-registry is running (in case of a WSL2 Ubuntu image e.g. the IP address of Eth0).
 
-When you will start the measurement, CANoe will subscribe only to the ``qemuOutbound`` topic and set itself up as
-a publisher on the other, ``qemuInbound``.
+When you will start the measurement, CANoe will subscribe only to the ``fromChardev`` topic and set itself up as
+a publisher on the other, ``toChardev``.
 
 After following the common steps above, launch ``CANoe 16 SP3`` or newer and load the
 ``Qemu_Chardev_demo_CANoe_device.cfg`` from the ``demos/CANoe`` directory. Note that if necessary, you must provide the
@@ -179,14 +179,14 @@ associated ``Datasource_device.vcdl`` file to CANoe.
 
 Here is a small drawing to illustrate how CANoe is connected to QEMU:
 ```
-+----[SIL Kit]----+          > qemuOutbound >        +----[SIL Kit]----+
++----[SIL Kit]----+          > fromChardev >         +----[SIL Kit]----+
 |                 |__________________________________|                 |
 | ChardevAdapter  |                                  |      CANoe      |    
 |                 |__________________________________|                 |
-|                 |          < qemuInbound <         |                 |
+|                 |          <  toChardev  <         |                 |
 +-----------------+                                  +-----------------+
 ```
 
 Similarly to the previous demo, any text sent to the ``/dev/ttyS1`` file inside QEMU will show up in 
-CANoe as data in the small widget for ``qemuOutbound``. While text inputted in CANoe's ``qemuInbound``
+CANoe as data in the small widget for ``fromChardev``. While text inputted in CANoe's ``toChardev``
 field will be outputted by the ``cat`` inside QEMU once you press the "Send" button.

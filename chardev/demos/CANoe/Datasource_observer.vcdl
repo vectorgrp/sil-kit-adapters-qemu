@@ -6,7 +6,7 @@ namespace Namespace
   [Binding="SilKit"]
   interface EchoDeviceIf
   {
-    consumed data string qemuInbound;
+    consumed data string toChardev;
   }
   
   object EchoDevice : EchoDeviceIf;
@@ -14,7 +14,7 @@ namespace Namespace
   [Binding="SilKit"]
   interface AdapterIf
   {
-    consumed data string qemuOutbound;
+    consumed data string fromChardev;
   }
   
   object Adapter : AdapterIf;

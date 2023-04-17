@@ -37,15 +37,15 @@
       <Property Name="Name">GroupBoxControl1</Property>
       <Property Name="Size">305, 96</Property>
       <Property Name="Location">5, 63</Property>
-      <Property Name="Text">Adapter.qemuInbound</Property>
+      <Property Name="Text">Adapter.toChardev</Property>
       <Property Name="TabIndex">2</Property>
     </Object>
     <Object Type="Vector.CANalyzer.Panels.Design.EventControl, Vector.CANalyzer.Panels.CommonControls, Version=16.4.4.0, Culture=neutral, PublicKeyToken=null" Name="EventControl2" Children="Controls" ControlName="Complex Data Control 2">
       <Property Name="Name">EventControl2</Property>
       <Property Name="Size">305, 268</Property>
       <Property Name="Location">5, 164</Property>
-      <Property Name="DescriptionText">Adapter.qemuOutbound</Property>
-      <Property Name="SymbolConfiguration">8;4096;Namespace;Adapter.qemuOutbound;;1;4;;;-1;;;;;;8</Property>
+      <Property Name="DescriptionText">Adapter.fromChardev</Property>
+      <Property Name="SymbolConfiguration">8;4096;Namespace;Adapter.fromChardev;;1;4;;;-1;;;;;;8</Property>
     </Object>
     <Property Name="Name">Panel</Property>
     <Property Name="Size">314, 438</Property>
