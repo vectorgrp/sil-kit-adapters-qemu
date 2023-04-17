@@ -28,13 +28,25 @@ Otherwise clone the standalone version of asio manually:
     git clone --branch asio-1-18-2 https://github.com/chriskohlhoff/asio.git third_party/asio
 
 ### Build the Adapters and Demos
-To build the adapters and demos, you'll need a SIL Kit package ``SilKit-x.y.z-$platform`` for your platform. You can download them directly from [Vector SIL Kit Releases](https://github.com/vectorgrp/sil-kit/releases). The easiest way would be to download it with your web browser, unzip it and place it on your Windows file system, where it also can be accessed by WSL.
+To build the adapters and demos, you'll need a SIL Kit package ``SilKit-x.y.z-$platform`` for your platform. You can download them directly from [Vector SIL Kit Releases](https://github.com/vectorgrp/sil-kit/releases). 
+The easiest way would be to download it with your web browser, unzip it and place it on your Windows file system, where it also can be accessed by WSL.
 
 The adapters and demos are built using ``cmake``:
 
     mkdir build
     cmake -S. -Bbuild -DSILKIT_PACKAGE_DIR=/path/to/SilKit-x.y.z-$platform/ -D CMAKE_BUILD_TYPE=Release
     cmake --build build --parallel
+
+**Note (1):** If you have installed a self-built version of SIL Kit, you can build the adapter against it by setting `SILKIT_PACKAGE_DIR` to the installation path, where the `bin`, `include` and `lib` directories are. 
+
+**Note (2)(for Windows only):** SIL Kit (v4.0.19 and above) is available on Windows with an (.msi) installation file.
+If you want to build the adapters agains this installed version of SIL Kit, you can generate the build files without specifying any path for SIL Kit as it will be found automatically by CMAKE, e.g: 
+    
+     mkdir build
+     cmake -S. -Bbuild
+     cmake --build build --parallel
+
+If you want to force building the adapter against a specific version of SIL Kit (e.g. a downloaded SIL Kit released package), you can do this by setting the SILKIT_PACKAGE_DIR variable according to your preference as shown in the default case. 
 
 The adapter and demo executables will be available in ``build/bin`` (depending on the configured build directory).
 Additionally the ``SilKit`` shared library (e.g., ``SilKit[d].dll`` on Windows) is copied to that directory
