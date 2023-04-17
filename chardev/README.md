@@ -84,12 +84,15 @@ message11
 You should see output similar to the following from the SilKitAdapterQemu application:
 ```
 [2023-03-30 11:17:54.376] [SilKitAdapterQemu] [debug] QEMU >> SIL Kit: message1
+
 [2023-03-30 11:17:54.377] [SilKitAdapterQemu] [debug] SIL Kit >> QEMU: message1
 
 [2023-03-30 11:17:57.136] [SilKitAdapterQemu] [debug] QEMU >> SIL Kit: message10
+
 [2023-03-30 11:17:57.136] [SilKitAdapterQemu] [debug] SIL Kit >> QEMU: message10
 
 [2023-03-30 11:17:59.695] [SilKitAdapterQemu] [debug] QEMU >> SIL Kit: message11
+
 [2023-03-30 11:17:59.695] [SilKitAdapterQemu] [debug] SIL Kit >> QEMU: message11
 
 ```

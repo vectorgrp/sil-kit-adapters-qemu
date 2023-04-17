@@ -32,7 +32,7 @@ void ChardevSocketToPubSubAdapter::DoReceiveFrameFromSocket()
             auto line_len_with_eol = (eol_it - _data_buffer_outbound.begin()) + 1;
 
             _logger->Debug("QEMU >> SIL Kit: "
-                           + std::string(reinterpret_cast<const char*>(_data_buffer_outbound.data()), line_len_with_eol-1));
+                           + std::string(reinterpret_cast<const char*>(_data_buffer_outbound.data()), line_len_with_eol));
 
             //put everything past EOL inside _data_buffer_outbound_extra
             _data_buffer_outbound_extra.resize(_data_buffer_outbound.size() - line_len_with_eol);
