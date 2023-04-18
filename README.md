@@ -99,10 +99,10 @@ There needs to be at least one ``--socket-to-chardev`` or ``--socket-to-ethernet
 **Example:**
 Here is an example that runs the Chardev adapter and demonstrates several forms of parameters that the adapter takes into account: 
 
-    SilKitAdapterQemu --name ChardevAdapter --socket-to-chardev localhost:12345,Namespace::toChardev,VirtualNetwork=Default,fromChardev,Namespace:Namespace,VirtualNetwork:Default
+    SilKitAdapterQemu --name ChardevAdapter --socket-to-chardev localhost:12345,ChardevDemo::toChardev,VirtualNetwork=Default,ChardevDemo::fromChardev,VirtualNetwork:Default
 
 In the example, `localhost` and port `12345` are used to establish a socket connection between the adapter and the QEMU instance where the Character Device is running. On SIL Kit side, the adapter has `ChardevAdapter` as a participant name and uses the default values for the SIL Kit URI connection. It subscribes to `toChardev` topic and publishes on `fromChardev` topic.     
-Both subscriber and publisher are configured with `VirtualNetwork` label set to `Default` value. For the subscriber it is a `Required` label due to the `=` while the publisher one is `Optional` due to the `:`. The publisher has the optional `Namespace` label set to `Namespace` value. The subscriber requires the `Namespace` label be set to `Namespace` (using syntactic sugar. Using the same formulation on the publisher would have made it an optional label)  
+Both subscriber and publisher are configured with `VirtualNetwork` label set to `Default` value. For the subscriber it is a `Required` label due to the `=` while the publisher one is `Optional` due to the `:`. The subscriber requires the `Namespace` label be set to `ChardevDemo`. The publisher has the optional `Namespace` label set to `ChardevDemo` as well. 
 
 **Note:** Be aware that the QEMU image needs to be running already before you start the adapter application.
 
