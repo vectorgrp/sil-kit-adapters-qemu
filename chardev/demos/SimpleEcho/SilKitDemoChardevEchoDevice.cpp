@@ -55,7 +55,7 @@ int main(int argc, char**)
             participantName + "_sub", subDataSpec,
             [&](SilKit::Services::PubSub::IDataSubscriber* subscriber, const DataMessageEvent& dataMessageEvent) {
                 std::cout << "SIL Kit >> SIL Kit: "
-                          << std::string_view(reinterpret_cast<const char*>(dataMessageEvent.data.data()+4),
+                          << std::string(reinterpret_cast<const char*>(dataMessageEvent.data.data()+4),
                                               dataMessageEvent.data.size()-4)
                           << std::endl;
                 dataPublisher->Publish(dataMessageEvent.data);

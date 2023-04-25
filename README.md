@@ -7,10 +7,10 @@ This repository contains instructions to create, set up, and launch a QEMU image
 The main contents are working examples of necessary software to connect the running system to a SIL Kit environment,
 as well as complimentary demo applications for some communication to happen.
 
-## Getting Started
+# Getting Started
 Those instructions assume you use WSL (Ubuntu) or a Linux OS for running QEMU and building and running the adapter (nevertheless it is also possible to do this directly on a Windows system, with the exception of setting up the QEMU image), and use ``bash`` as your interactive
 shell.
-
+## a) Getting Started with self build Adapters and Demos
 This section specifies steps you should do if you have just cloned the repository.
 
 Before any of those topics, please change your current directory to the top-level in the ``sil-kit-adapters-qemu``
@@ -48,9 +48,16 @@ If you want to build the adapters agains this installed version of SIL Kit, you 
 
 If you want to force building the adapter against a specific version of SIL Kit (e.g. a downloaded SIL Kit released package), you can do this by setting the SILKIT_PACKAGE_DIR variable according to your preference as shown in the default case. 
 
+**Note (3):** If no SILKIT_PACKAGE_DIR is provided and no installed SIL Kit package is found, a SIL Kit release package [SilKit-4.0.17-ubuntu-18.04-x86_64-gcc] will be fetched from github.com and the adapter will be built against it. 
+
 The adapter and demo executables will be available in ``build/bin`` (depending on the configured build directory).
 Additionally the ``SilKit`` shared library (e.g., ``SilKit[d].dll`` on Windows) is copied to that directory
 automatically.
+
+## b) Getting Started with pre-built Adapters and Demos
+Download a preview or release of the Adapters directly from [Vector SIL Kit QEMU Releases](https://github.com/vectorgrp/sil-kit-adapters-qemu/releases).
+
+If not already existent on your system you should also download a SIL Kit Release directly from [Vector SIL Kit Releases](https://github.com/vectorgrp/sil-kit/releases). You will need this for being able to start a sil-kit-registry.
 
 ### Run the SilKitAdapterQemu
 This application allows the user to attach simulated ethernet interface (``nic``) and/or character devices (e.g. ``SPI``) of a QEMU virtual machine to the
