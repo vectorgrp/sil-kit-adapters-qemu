@@ -100,6 +100,9 @@ void extractAndEraseNamespaceAndDefaultnameFrom(std::string& topicname,
                                    std::string& defaultname,
                                    std::string& ns)
 {
+    //reject mandatory labels as topic names:
+    throwInvalidCliIf(topicname.find_first_of("=") != std::string::npos);
+
     auto splitTopic = Utils::split(topicname, "~");
 
     if (splitTopic.size() == 2)
