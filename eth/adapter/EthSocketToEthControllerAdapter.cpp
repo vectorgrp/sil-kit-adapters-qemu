@@ -45,7 +45,18 @@ adapters::ethernet::EthSocketToEthControllerAdapter::EthSocketToEthControllerAda
     }))
 {
     asio::ip::tcp::resolver resolver{io_context};
-    const auto onReceiveEthernetFrameFromQemu = asio::connect(_socket, resolver.resolve(host, service));
+    try
+    {
+      const auto onReceiveEthernetFrameFromQemu = asio::connect(_socket, resolver.resolve(host, service));
+    }
+    catch (std::exception& e)
+    {
+      std::ostringstream error_message;
+      error_message << e.what() << std::endl;
+      error_message << "Error encountered while trying to connect to QEMU with \"" << ethArg << "\" at \"" << host
+                    << ':' << service << '"';
+      throw std::runtime_error(error_message.str());
+    }
     _logger->Info("Connect success");
     DoReceiveFrameFromQemu();
 

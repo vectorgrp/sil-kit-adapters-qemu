@@ -78,7 +78,18 @@ ChardevSocketToPubSubAdapter::ChardevSocketToPubSubAdapter(asio::io_context& io_
               SendToSocket(_data_buffer_toChardev);
           })}
 {
-    asio::connect(_socket, asio::ip::tcp::resolver{io_context}.resolve(host, service));
+    try
+    {
+        asio::connect(_socket, asio::ip::tcp::resolver{io_context}.resolve(host, service));
+    }
+    catch (std::exception& e)
+    {
+        std::ostringstream error_message;
+        error_message << e.what() << std::endl;
+        error_message << "Error encountered while trying to connect to QEMU with \"" << chardevArg << "\" at \"" 
+                      << host << ':' << service << '"';
+        throw std::runtime_error(error_message.str());
+    }
     _logger->Info("Socket connect success");
     DoReceiveFrameFromSocket();
 }
