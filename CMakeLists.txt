@@ -35,7 +35,7 @@ endif()
 ##			"cmake -S. -Bbuild -DSILKIT_PACKAGE_DIR=/path/to/self-installed/package/"
 
 if(DEFINED SILKIT_PACKAGE_DIR)
-# if the user forces using a specific SIL Kit package, use it
+    # if the user forces using a specific SIL Kit package, use it
 	message(STATUS "SILKIT_PACKAGE_DIR has been set to: ${SILKIT_PACKAGE_DIR}, CMAKE will look for a SIL Kit package in that directory")
 	find_package(SilKit 4.0.7
 		REQUIRED 
@@ -44,14 +44,15 @@ if(DEFINED SILKIT_PACKAGE_DIR)
 		NO_DEFAULT_PATH 
 		PATHS "${SILKIT_PACKAGE_DIR}")
 else()
-# otherwise, look for an installed version of SIL Kit (.msi file) 
-	message(STATUS "SILKIT_PACKAGE_DIR has not been set by user. Attempting to find an msi-installed version of SIL Kit")
-	find_package(SilKit 4.0.7
-		CONFIG)
-		
-	if(NOT SilKit_FOUND)
-	# if installed SIL Kit is not found, fetch it from github.com
-		message(STATUS "No installed version of SIL Kit was found. Attempting to fetch [SilKit-${SILKIT_VERSION}-${SILKIT_FLAVOR}] from github.com")
+    if (WIN32)
+        # otherwise, look for an installed version of SIL Kit (.msi file) 
+        message(STATUS "SILKIT_PACKAGE_DIR has not been set by user. Attempting to find an msi-installed version of SIL Kit")
+        find_package(SilKit 4.0.7
+            CONFIG)
+    endif()
+        
+    if(NOT SilKit_FOUND)
+        message(STATUS "No version of SIL Kit present. Attempting to fetch [SilKit-${SILKIT_VERSION}-${SILKIT_FLAVOR}] from github.com")
         FetchContent_Declare(
                 silkit
                 URL https://github.com/vectorgrp/sil-kit/releases/download/sil-kit%2Fv${SILKIT_VERSION}/SilKit-${SILKIT_VERSION}-${SILKIT_FLAVOR}.zip
