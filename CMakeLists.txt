@@ -112,6 +112,16 @@ install(
 
 install(
     DIRECTORY            
+        ${CMAKE_CURRENT_SOURCE_DIR}/tools            
+
+    DESTINATION .
+    COMPONENT source
+    REGEX "\.git$" EXCLUDE
+    REGEX "\.github$" EXCLUDE    
+)
+
+install(
+    DIRECTORY            
         ${CMAKE_CURRENT_SOURCE_DIR}/eth            
 
     DESTINATION .
