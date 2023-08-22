@@ -1,0 +1,59 @@
+/*@!Encoding:1252*/
+includes
+{
+  
+}
+
+variables
+{
+  distObjRef EchoDeviceIf out_object = `Namespace::EchoDevice;
+  distObjRef AdapterIf in_object = `Namespace::Adapter;
+  char EchoDeviceTextBuffer[4096];
+  char AdapterTextBuffer[4096];
+}
+
+on start {
+  out_object.Connect();
+  in_object.Connect();
+  EchoDeviceTextBuffer[0]=0;
+  AdapterTextBuffer[0]=0;
+}
+
+
+on value_update `Namespace::EchoDevice.toChardev
+{
+  long cur_len;
+  long newline_pos;
+  cur_len = strlen(EchoDeviceTextBuffer);
+  // copying the received message to the buffer.
+  strncat(EchoDeviceTextBuffer,$out_object.toChardev,elcount(EchoDeviceTextBuffer));
+  
+  //locating the end of string, if any:
+  newline_pos = strstr_off(EchoDeviceTextBuffer,cur_len,"\n");
+  //on full line received, show it in the UI
+  if( newline_pos != -1 )
+  {
+     sysSetVariableString("UIVariables","TextReceivedFromEchoDevice",EchoDeviceTextBuffer);
+     //then copy the rest of the buffer back to the beginning, if any.
+     substr_cpy(EchoDeviceTextBuffer,EchoDeviceTextBuffer,newline_pos+1,strlen(EchoDeviceTextBuffer)-(newline_pos+1),elcount(EchoDeviceTextBuffer)-(newline_pos+1));
+  }
+}
+
+on value_update `Namespace::Adapter.fromChardev
+{
+  long cur_len;
+  long newline_pos;
+  cur_len = strlen(AdapterTextBuffer);
+  // copying the received message to the buffer.
+  strncat(AdapterTextBuffer,$in_object.fromChardev,elcount(AdapterTextBuffer));
+  
+  //locating the end of string, if any:
+  newline_pos = strstr_off(AdapterTextBuffer,cur_len,"\n");
+  //on full line received, show it in the UI
+  if( newline_pos != -1 )
+  {
+     sysSetVariableString("UIVariables","TextReceivedFromChardev",AdapterTextBuffer);
+     //then copy the rest of the buffer back to the beginning, if any.
+     substr_cpy(AdapterTextBuffer,AdapterTextBuffer,newline_pos+1,strlen(AdapterTextBuffer)-(newline_pos+1),elcount(AdapterTextBuffer)-(newline_pos+1));
+  }
+}

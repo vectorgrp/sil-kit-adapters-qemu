@@ -25,11 +25,6 @@ class ChardevSocketToPubSubAdapter
     typedef SilKit::Services::PubSub::PubSubSpec PubSubSpec;
 
 public:
-    //the template parameter is here to allow anything which can be converted to asio::buffer
-    //If the elements are not byte-wide, the behavior is unspecified. If it even compiles.
-    template <class vector_like_container>
-    void SendToSocket(const vector_like_container& data);
-
     ChardevSocketToPubSubAdapter(asio::io_context& io_context, const string& host, const string& service,
                                  const string& publisherName, const string& subscriberName,
                                  const PubSubSpec& pubDataSpec, const PubSubSpec& subDataSpec,
@@ -42,8 +37,7 @@ private:
 private:
     asio::ip::tcp::socket _socket;
     SilKit::Services::Logging::ILogger* _logger;
-    std::vector<uint8_t> _data_buffer_fromChardev = {};
-    std::vector<uint8_t> _data_buffer_fromChardev_extra = {};
+    std::array<uint8_t,4096> _data_buffer_fromChardev = {};
     std::vector<uint8_t> _data_buffer_toChardev = {};
     SilKit::Services::PubSub::IDataPublisher* _publisher;
     SilKit::Services::PubSub::IDataSubscriber* _subscriber;

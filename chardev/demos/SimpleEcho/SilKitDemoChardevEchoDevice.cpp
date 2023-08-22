@@ -50,14 +50,29 @@ int main(int argc, char**)
         auto participant = SilKit::CreateParticipant(participantConfiguration, participantName, registryURI);
 
         auto dataPublisher = participant->CreateDataPublisher(participantName + "_pub", pubDataSpec);
+
+        std::string line_buffer;
         
         auto dataSubscriber = participant->CreateDataSubscriber(
             participantName + "_sub", subDataSpec,
             [&](SilKit::Services::PubSub::IDataSubscriber* subscriber, const DataMessageEvent& dataMessageEvent) {
-                std::cout << "SIL Kit >> SIL Kit: "
-                          << std::string(reinterpret_cast<const char*>(dataMessageEvent.data.data()+4),
-                                              dataMessageEvent.data.size()-4)
-                          << std::endl;
+                if (dataMessageEvent.data.size() <= 4)
+                {
+                    std::cerr << "warning: message received probably wasn't following SAB format."<<std::endl;
+                    line_buffer += std::string(reinterpret_cast<const char*>(dataMessageEvent.data.data()),
+                                               dataMessageEvent.data.size());
+                }
+                else
+                {
+                    line_buffer += std::string(reinterpret_cast<const char*>(dataMessageEvent.data.data() + 4),
+                                               dataMessageEvent.data.size() - 4);
+                }
+                std::string::size_type newline_pos;
+                while ( (newline_pos = line_buffer.find_first_of('\n')) != std::string::npos)
+                {
+                    std::cout << "SIL Kit >> SIL Kit: " << line_buffer.substr(0,newline_pos) << std::endl;
+                    line_buffer.erase(0, newline_pos + 1);
+                }
                 dataPublisher->Publish(dataMessageEvent.data);
             });
 

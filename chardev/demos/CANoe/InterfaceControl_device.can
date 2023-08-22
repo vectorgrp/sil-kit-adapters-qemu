@@ -1,0 +1,47 @@
+/*@!Encoding:1252*/
+includes
+{
+  
+}
+
+variables
+{
+  distObjRef EchoDeviceIf out_object = `Namespace::EchoDevice;
+  distObjRef AdapterIf in_object = `Namespace::Adapter;
+  char outputTextBuffer[1024];
+  char inputTextBuffer[4096];
+}
+
+on start {
+  out_object.Connect();
+  inputTextBuffer[0]=0;
+}
+
+on sysvar_update UIVariables::SendRequested
+{
+  if( @UIVariables::SendRequested == 0)
+  {
+     sysGetVariableString("UIVariables","TextToSend",outputTextBuffer,elcount(outputTextBuffer)-3);
+     strncat(outputTextBuffer,"\n",elcount(outputTextBuffer));
+     $out_object.toChardev = outputTextBuffer;
+  }
+}
+
+on value_update `Namespace::Adapter.fromChardev
+{
+  long cur_len;
+  long newline_pos;
+  cur_len = strlen(inputTextBuffer);
+  // copying the received message to the buffer.
+  strncat(inputTextBuffer,$in_object.fromChardev,elcount(inputTextBuffer));
+  
+  //locating the end of string, if any:
+  newline_pos = strstr_off(inputTextBuffer,cur_len,"\n");
+  //on full line received, show it in the UI
+  if( newline_pos != -1 )
+  {
+     sysSetVariableString("UIVariables","TextReceived",inputTextBuffer);
+     //then copy the rest of the buffer back to the beginning, if any.
+     substr_cpy(inputTextBuffer,inputTextBuffer,newline_pos+1,strlen(inputTextBuffer)-(newline_pos+1),elcount(inputTextBuffer)-(newline_pos+1));
+  }
+}

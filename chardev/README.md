@@ -15,7 +15,7 @@ Please note that use of QEMU in ``-nographics`` is however in competition with t
 keep ``-serial mon:stdio`` in the arguments before the ``-device isa-serial`` to be able to interact with the system
 when QEMU boots it.
 
-## Demos Commons Steps
+## Demos Common Steps
 
 When the QEMU emulator boots the debian image, the serial devices are in ``cooked echo`` mode, which sends back input
 received (the ``echo`` part) and transforms input instead of keeping it ``raw`` (the ``cooked`` part). While this is
@@ -25,10 +25,10 @@ it is advised to deactivate it. It is also advised to toggle into raw mode, beca
 newline characters by two characters: carriage return and line feed, as well as other behavioral problem with
 accidental control codes.
 
-So first, inside the QEMU image, setup the ``ttyS1`` pseudo file for raw mode and remove echo:
+So first, inside the QEMU image, setup the ``ttyS1`` pseudo file for raw mode, remove echo and maximum speed (115200 bauds):
 
 ```
-root@silkit-qemu-demos-guest:~# stty raw -echo -F /dev/ttyS1
+root@silkit-qemu-demos-guest:~# stty raw -echo 115200 -F /dev/ttyS1
 ```
 
 Then, you can start a dump of data sent through the link from the outside:
@@ -96,7 +96,12 @@ You should see output similar to the following from the SilKitAdapterQemu applic
 [2023-03-30 11:17:59.695] [SilKitAdapterQemu] [debug] SIL Kit >> QEMU: message11
 
 ```
+Take note that timing and other considerations may split the message, as thus:
+```
+[2023-03-30 11:17:54.376] [SilKitAdapterQemu] [debug] QEMU >> SIL Kit: m
+[2023-03-30 11:17:54.376] [SilKitAdapterQemu] [debug] QEMU >> SIL Kit: essage1
 
+```
 
 And you should see output similar to the following from the SilKitDemoChardevEchoDevice application:
 ```
@@ -149,7 +154,6 @@ Here is a small drawing to illustrate how CANoe observes the topics (the observa
 ```
 ### CANoe Desktop Edition
 Load the ``Qemu_Chardev_demo_CANoe_observer.cfg`` from the ``demos/CANoe`` directory and start the measurement.
-Note that if necessary, you must provide the associated ``Datasource_observer.vcdl`` file to CANoe.
 #### Tests in CANoe Desktop Edition
 Optionally you can also start the test unit execution of included test configuration. While the demo is running, these tests should be successful. The advised way to "run" the demo for the test to be successful while you focus on it is to execute the following commands in the QEMU image:
 ```
@@ -174,8 +178,7 @@ When you will start the measurement, CANoe will subscribe only to the ``fromChar
 a publisher on the other, ``toChardev``.
 
 After following the common steps above, launch ``CANoe 16 SP3`` or newer and load the
-``Qemu_Chardev_demo_CANoe_device.cfg`` from the ``demos/CANoe`` directory. Note that if necessary, you must provide the
-associated ``Datasource_device.vcdl`` file to CANoe.
+``Qemu_Chardev_demo_CANoe_device.cfg`` from the ``demos/CANoe`` directory.
 
 Here is a small drawing to illustrate how CANoe is connected to QEMU:
 ```

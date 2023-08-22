@@ -19,38 +19,23 @@ using namespace adapters::chardev;
 
 void ChardevSocketToPubSubAdapter::DoReceiveFrameFromSocket()
 {
-    asio::async_read_until(
-        _socket, asio::dynamic_buffer(_data_buffer_fromChardev), '\n',
+    _socket.async_read_some(
+        asio::buffer(_data_buffer_fromChardev, _data_buffer_fromChardev.size()),
         [this](const std::error_code ec, const std::size_t bytes_received) {
             if (ec)
                 throw IncompleteReadError{};
 
-            auto eol_it = std::find(_data_buffer_fromChardev.begin(), _data_buffer_fromChardev.end(), '\n');
-            if (eol_it == _data_buffer_fromChardev.end())
-                throw IncompleteReadError{};
+            _logger->Debug(
+                "QEMU >> SIL Kit: "
+                + std::string(reinterpret_cast<const char*>(_data_buffer_fromChardev.data()), bytes_received));
 
-            auto line_len_with_eol = (eol_it - _data_buffer_fromChardev.begin()) + 1;
-
-            _logger->Debug("QEMU >> SIL Kit: "
-                           + std::string(reinterpret_cast<const char*>(_data_buffer_fromChardev.data()), line_len_with_eol));
-
-            //put everything past EOL inside _data_buffer_outbound_extra
-            _data_buffer_fromChardev_extra.resize(_data_buffer_fromChardev.size() - line_len_with_eol);
-            if (_data_buffer_fromChardev_extra.size() > 0)
-            {
-                std::copy(_data_buffer_fromChardev.begin() + line_len_with_eol, _data_buffer_fromChardev.end(),
-                          _data_buffer_fromChardev_extra.begin());
-                _data_buffer_fromChardev.erase(line_len_with_eol + _data_buffer_fromChardev.begin(), _data_buffer_fromChardev.end());
-            }
-
-            _serializer.Serialize(_data_buffer_fromChardev);
-            _publisher->Publish(_serializer.ReleaseBuffer());
-
-            //clean _data_buffer_outbound of the read line; asio doesn't do it on next invocation
-            _data_buffer_fromChardev.clear();
-
-            //restore _data_buffer_outbound_extra content to _data_buffer_outbound (if any)
-            _data_buffer_fromChardev.swap(_data_buffer_fromChardev_extra);
+            _serializer.BeginArray(bytes_received);
+            auto publish_buffer = _serializer.ReleaseBuffer();
+            auto publish_array_size = publish_buffer.size();
+            publish_buffer.reserve(publish_buffer.size() + bytes_received);
+            publish_buffer.insert(publish_buffer.end(), _data_buffer_fromChardev.begin(),
+                                  _data_buffer_fromChardev.begin() + bytes_received);
+            _publisher->Publish(std::move(publish_buffer));
 
             DoReceiveFrameFromSocket();
         });
@@ -75,7 +60,7 @@ ChardevSocketToPubSubAdapter::ChardevSocketToPubSubAdapter(asio::io_context& io_
               }
               _logger->Debug("SIL Kit >> QEMU: "
                              + std::string((const char*)_data_buffer_toChardev.data(), _data_buffer_toChardev.size()));
-              SendToSocket(_data_buffer_toChardev);
+              _socket.write_some(asio::buffer(_data_buffer_toChardev.data(), _data_buffer_toChardev.size()));
           })}
 {
     try
@@ -92,12 +77,6 @@ ChardevSocketToPubSubAdapter::ChardevSocketToPubSubAdapter(asio::io_context& io_
     }
     _logger->Info("Socket connect success");
     DoReceiveFrameFromSocket();
-}
-
-template <class vector_like_container>
-void ChardevSocketToPubSubAdapter::SendToSocket(const vector_like_container& data)
-{
-    asio::write(_socket, asio::buffer(data.data(), data.size()));
 }
 
 /// <summary>
