@@ -13,14 +13,16 @@ const std::string adapters::chardevArg = "--socket-to-chardev";
 
 const std::string adapters::regUriArg = "--registry-uri";
 
+const std::string adapters::configurationArg = "--configuration";
+
 const std::string adapters::logLevelArg = "--log";
 
 const std::string adapters::participantNameArg = "--name";
 
 const std::string adapters::helpArg = "--help";
 
-const std::array<std::string, 5> switchesWithArgument = {adapters::ethArg, adapters::chardevArg, adapters::regUriArg,
-                                            adapters::logLevelArg, adapters::participantNameArg};
+const std::array<std::string, 6> switchesWithArgument = {adapters::ethArg, adapters::chardevArg, adapters::regUriArg,
+                                            adapters::logLevelArg, adapters::participantNameArg, adapters::configurationArg};
 
 const std::array<std::string, 1> switchesWithoutArguments = {adapters::helpArg};
 
@@ -57,6 +59,7 @@ void adapters::print_help(bool userRequested)
     std::cout
         << "Usage (defaults in curly braces if you omit the switch):" << std::endl
               << "SilKitAdapterQemu ["<<participantNameArg<<" <participant's name{SilKitAdapterQemu}>]\n"
+           "  ["<<configurationArg<<" <path to .silkit.yaml or .json configuration file>]\n"
            "  ["<<regUriArg<<" silkit://<host{localhost}>:<port{8501}>]\n"
            "  ["<<logLevelArg<<" <Trace|Debug|Warn|{Info}|Error|Critical|off>]\n"
            " [["<<ethArg<<" <host>:<port>,network=<network's name>[:<controller's name>]]]\n"
@@ -72,7 +75,8 @@ void adapters::print_help(bool userRequested)
            "       ]]\n"
            " ]]\n"
            "\n"
-           "There needs to be at least one "<<chardevArg<<" or "<<ethArg<<" argument. Each socket must be unique.\n";
+           "There needs to be at least one "<<chardevArg<<" or "<<ethArg<<" argument. Each socket must be unique.\n"
+           "SIL Kit-specific CLI arguments will be overwritten by the config file passed by "<<configurationArg<<".\n";
     std::cout << "\n"
                  "Example:\n"
                  "SilKitAdapterQemu "<<participantNameArg<<" ChardevAdapter "

@@ -41,10 +41,8 @@ int main(int argc, char** argv)
         print_help(true);
         return NO_ERROR;
     }
-
-    const std::string loglevel = getArgDefault(argc, argv, logLevelArg, "Info");
-    const std::string participantConfigurationString =
-        R"({ "Logging": { "Sinks": [ { "Type": "Stdout", "Level": ")" + loglevel + R"("} ] } })";
+    
+    const std::string configurationFile = getArgDefault(argc, argv, configurationArg, "");
 
     asio::io_context ioContext;
 
@@ -57,8 +55,36 @@ int main(int argc, char** argv)
     {
         throwInvalidCliIf(thereAreUnknownArguments(argc, argv));  
 
-        auto participantConfiguration =
-            SilKit::Config::ParticipantConfigurationFromString(participantConfigurationString);
+        std::shared_ptr<SilKit::Config::IParticipantConfiguration> participantConfiguration;
+        if (!configurationFile.empty())
+        {
+            participantConfiguration = SilKit::Config::ParticipantConfigurationFromFile(configurationFile);
+            static const auto conflictualArguments = {
+                &logLevelArg,
+                /* others are correctly handled by SilKit if one is overwritten.*/};
+            for (const auto* conflictualArgument : conflictualArguments)
+            {
+                if (findArg(argc, argv, *conflictualArgument, argv) != NULL)
+                {
+                    auto configFileName = configurationFile;
+                    if( configurationFile.find_last_of( "/\\" ) != std::string::npos )
+                    {
+                        configFileName = configurationFile.substr(configurationFile.find_last_of("/\\")+1);
+                    }
+                    std::cout << "[info] Be aware that argument given with " << *conflictualArgument
+                              << " can be overwritten by a different value defined in the given configuration file "
+                              << configFileName << std::endl;
+                }
+            }
+        }
+        else
+        {
+            const std::string loglevel = getArgDefault(argc, argv, logLevelArg, "Info");
+            const std::string participantConfigurationString =
+                R"({ "Logging": { "Sinks": [ { "Type": "Stdout", "Level": ")" + loglevel + R"("} ] } })";
+            participantConfiguration =
+                SilKit::Config::ParticipantConfigurationFromString(participantConfigurationString);
+        }
 
         std::cout << "Creating participant '" << participantName << "' at " << registryURI << std::endl;
         std::unique_ptr<SilKit::IParticipant> p_container = SilKit::CreateParticipant(participantConfiguration, participantName, registryURI);
@@ -91,7 +117,7 @@ int main(int argc, char** argv)
 
         promptForExit();
     }
-    catch( const SilKit::ConfigurationError& error )
+    catch (const SilKit::ConfigurationError& error)
     {
         std::cerr << "Invalid configuration: " << error.what() << std::endl;
         promptForExit();
@@ -104,6 +130,12 @@ int main(int argc, char** argv)
                   << "Invalid command line arguments." << std::endl;
         promptForExit();
         return CLI_ERROR;
+    }
+    catch (const SilKit::SilKitError& error)
+    {
+        std::cerr << "SIL Kit runtime error: " << error.what() << std::endl;
+        promptForExit();
+        return OTHER_ERROR;
     }
     catch( const std::exception& error )
     {

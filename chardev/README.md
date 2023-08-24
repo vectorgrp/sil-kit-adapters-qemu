@@ -45,7 +45,7 @@ wsl$ ./path/to/SilKit-x.y.z-$platform/SilKit/bin/sil-kit-registry --listen-uri '
 Finally, launch the adapter, which connects to the registry (to connect to other partitipants) and to QEMU,
 to transmit the serial data written to ``/dev/ttyS1`` inside QEMU through SIL Kit, and vice-versa:
 ```
-wsl$ ./build/bin/SilKitAdapterQemu --socket-to-chardev localhost:23456,Namespace::toChardev,VirtualNetwork=Default,Instance=EchoDevice,Namespace::fromChardev,VirtualNetwork:Default,Instance:Adapter --log Debug
+wsl$ ./build/bin/SilKitAdapterQemu --socket-to-chardev localhost:23456,Namespace::toChardev,VirtualNetwork=Default,Instance=EchoDevice,Namespace::fromChardev,VirtualNetwork:Default,Instance:Adapter --configuration ./chardev/demos/SilKitConfig_Adapter.silkit.yaml
 Creating participant 'SilKitAdapterQemu' at silkit://localhost:8501
 [2022-08-31 18:06:27.674] [SilKitAdapterQemu] [info] Creating participant 'SilKitAdapterQemu' at 'silkit://localhost:8501', SIL Kit version: 4.0.19
 [2022-08-31 18:06:27.790] [SilKitAdapterQemu] [info] Connected to registry at 'tcp://127.0.0.1:8501' via 'tcp://127.0.0.1:49224' (silkit://localhost:8501)

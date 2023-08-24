@@ -1,0 +1,8 @@
+Description: Configuration for Adapter participant for SIL Kit Adapter QEMU (chardev) demo
+ParticipantName: SilKitAdapterQemu
+Middleware:
+  RegistryUri: silkit://localhost:8501
+Logging:
+  Sinks:
+  - Type: Stdout
+    Level: Debug

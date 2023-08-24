@@ -86,6 +86,7 @@ Before you start the adapter there always needs to be a sil-kit-registry running
 The application takes the following command line arguments (defaults in curly braces if you omit the switch):
 
     SilKitAdapterQemu [--name <participant's name{SilKitAdapterQemu}>]
+      [--configuration <path to .silkit.yaml or .json configuration file>]
       [--registry-uri silkit://<host{localhost}>:<port{8501}>]
       [--log <Trace|Debug|Warn|{Info}|Error|Critical|off>]
      [[--socket-to-ethernet <host>:<port>,network=<network's name>[:<controller's name>]]]
@@ -102,6 +103,8 @@ The application takes the following command line arguments (defaults in curly br
      ]]
 
 There needs to be at least one ``--socket-to-chardev`` or ``--socket-to-ethernet`` argument. Each socket must be unique.
+
+SIL Kit-specific CLI arguments will be overwritten by the config file passed by ``--configuration``.
 
 **Example:**
 Here is an example that runs the Chardev adapter and demonstrates several forms of parameters that the adapter takes into account: 
