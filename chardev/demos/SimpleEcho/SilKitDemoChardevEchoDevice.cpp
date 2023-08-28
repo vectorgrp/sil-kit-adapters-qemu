@@ -10,6 +10,8 @@
 #include "silkit/config/all.hpp"
 #include "silkit/services/pubsub/all.hpp"
 #include "silkit/util/serdes/Serialization.hpp"
+#include "../../adapter/Parsing.hpp"
+using namespace adapters;
 
 using namespace SilKit::Services::PubSub;
 
@@ -19,13 +21,22 @@ using namespace std::chrono_literals;
  * Main Function
  **************************************************************************************************/
 
-int main(int argc, char**)
+int main(int argc, char** argv)
 {
-    const std::string participantConfigurationString =
-        R"({ "Logging": { "Sinks": [ { "Type": "Stdout", "Level": "Info" } ] } })";
+    if (findArg(argc, argv, "--help", argv) != nullptr)
+    {
+        std::cout << "Usage (defaults in curly braces if you omit the switch):" << std::endl
+                  << "SilKitDemoChardevEchoDevice [" << participantNameArg << " <participant's name{EchoDevice}>]\n"
+                     "  ["<<regUriArg<<" silkit://<host{localhost}>:<port{8501}>]\n"
+                     "  ["<<logLevelArg<<" <Trace|Debug|Warn|{Info}|Error|Critical|off>]\n";
+    }
 
-    const std::string participantName = "EchoDevice";
-    const std::string registryURI = "silkit://localhost:8501";
+    const std::string loglevel = getArgDefault(argc, argv, logLevelArg, "Info");
+    const std::string participantName = getArgDefault(argc, argv, participantNameArg, "EchoDevice");
+    const std::string registryURI = getArgDefault(argc, argv, regUriArg, "silkit://localhost:8501");
+
+    const std::string participantConfigurationString =
+        R"({ "Logging": { "Sinks": [ { "Type": "Stdout", "Level": ")" + loglevel + R"("} ] } })";
 
     const auto create_pubsubspec = [](const std::string& topic_name,
                                 SilKit::Services::MatchingLabel::Kind matching_mode) {
@@ -39,7 +50,7 @@ int main(int argc, char**)
     subDataSpec.AddLabel("Instance", "Adapter", SilKit::Services::MatchingLabel::Kind::Mandatory);
 
     PubSubSpec pubDataSpec = create_pubsubspec("toChardev", SilKit::Services::MatchingLabel::Kind::Optional);
-    pubDataSpec.AddLabel("Instance", "EchoDevice", SilKit::Services::MatchingLabel::Kind::Optional);
+    pubDataSpec.AddLabel("Instance", participantName, SilKit::Services::MatchingLabel::Kind::Optional);
 
     try
     {

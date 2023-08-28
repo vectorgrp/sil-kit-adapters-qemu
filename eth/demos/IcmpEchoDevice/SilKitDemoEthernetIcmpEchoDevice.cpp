@@ -10,7 +10,8 @@
 #include "silkit/config/all.hpp"
 #include "silkit/services/ethernet/all.hpp"
 #include "silkit/services/ethernet/string_utils.hpp"
-
+#include "../../adapter/Parsing.hpp"
+using namespace adapters;
 
 using namespace SilKit::Services::Ethernet;
 
@@ -36,13 +37,22 @@ void EthAckCallback(IEthernetController* /*controller*/, const EthernetFrameTran
  * Main Function
  **************************************************************************************************/
 
-int main(int argc, char**)
+int main(int argc, char** argv)
 {
-    const std::string participantConfigurationString =
-        R"({ "Logging": { "Sinks": [ { "Type": "Stdout", "Level": "Info" } ] } })";
+    if (findArg(argc, argv, "--help", argv) != nullptr)
+    {
+        std::cout << "Usage (defaults in curly braces if you omit the switch):" << std::endl
+                  << "SilKitDemoEthernetIcmpEchoDevice [" << participantNameArg << " <participant's name{EthernetDevice}>]\n"
+                     "  [" << regUriArg << " silkit://<host{localhost}>:<port{8501}>]\n"
+                     "  [" << logLevelArg << " <Trace|Debug|Warn|{Info}|Error|Critical|off>]\n";
+    }
+    
+    const std::string loglevel = getArgDefault(argc, argv, logLevelArg, "Info");
+    const std::string participantName = getArgDefault(argc, argv, participantNameArg, "EthernetDevice");
+    const std::string registryURI = getArgDefault(argc, argv, regUriArg, "silkit://localhost:8501");
 
-    const std::string participantName = "EthernetDevice";
-    const std::string registryURI = "silkit://localhost:8501";
+    const std::string participantConfigurationString =
+        R"({ "Logging": { "Sinks": [ { "Type": "Stdout", "Level": ")" + loglevel + R"("} ] } })";
 
     const std::string ethernetControllerName = participantName + "_Eth1";
     const std::string ethernetNetworkName ="qemu_demo";
@@ -59,14 +69,14 @@ int main(int argc, char**)
 
         static constexpr auto ethernetAddress = demo::EthernetAddress{0x01, 0x23, 0x45, 0x67, 0x89, 0xab};
         static constexpr auto ip4Address = demo::Ip4Address{192, 168, 7, 35};
-        auto demoDevice = demo::Device{ethernetAddress, ip4Address, [ethController](std::vector<std::uint8_t> data) {
-                                           const auto frameSize = data.size();
-                                           static intptr_t transmitId = 0;
-                                           ethController->SendFrame(EthernetFrame{std::move(data)},
-                                                                    reinterpret_cast<void*>(++transmitId));
-                                           std::cout << "Demo >> SIL Kit: Ethernet frame (" << frameSize
-                                                     << " bytes, txId=" << transmitId << ")" << std::endl;
-                                       }};
+        demo::Device demoDevice{ethernetAddress, ip4Address, [ethController](std::vector<std::uint8_t> data) {
+                                    const auto frameSize = data.size();
+                                    static intptr_t transmitId = 0;
+                                    ethController->SendFrame(EthernetFrame{std::move(data)},
+                                                             reinterpret_cast<void*>(++transmitId));
+                                    std::cout << "Demo >> SIL Kit: Ethernet frame (" << frameSize
+                                              << " bytes, txId=" << transmitId << ")" << std::endl;
+                               }};
 
         ethController->AddFrameHandler(
             [&demoDevice](IEthernetController* /*controller*/, const EthernetFrameEvent& msg) {

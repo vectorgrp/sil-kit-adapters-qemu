@@ -1,8 +1,7 @@
 
 add_executable(SilKitDemoChardevEchoDevice
     "SilKitDemoChardevEchoDevice.cpp"
-    
-    
+    ${CMAKE_SOURCE_DIR}/adapter/Parsing.cpp
 )
 target_link_libraries(SilKitDemoChardevEchoDevice
     PRIVATE
