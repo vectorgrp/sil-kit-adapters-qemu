@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FunctionBusLibrary Version="2" FormatMajorVersion="1" FormatMinorVersion="3" FormatFeatureVersion="14">
+  <Namespaces>
+    <Namespace IsDefinedAsHidden="False" IsSystemDefined="False" Name="Namespace">
+      <DOInterfaces>
+        <DOInterface IsAbstract="False" Name="SensorTempIf">
+          <AttributeValues>
+            <AttributeValue Definition="_SystemAttributes::Binding" InitialValue="SilKit" InitialValueType="String" />
+          </AttributeValues>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+          <DataMembers>
+            <DOIFDataMember LocalDirection="Consumed" Name="degrees_sensor">
+              <DataType DataType="_SystemDataTypes::Bytes" />
+            </DOIFDataMember>
+          </DataMembers>
+        </DOInterface>
+      </DOInterfaces>
+      <DistributedObjects>
+        <DistributedObject GenerateDotNetAPI="True" Name="SensorTemp">
+          <DataType>
+            <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="Namespace::SensorTempIf" />
+          </DataType>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+        </DistributedObject>
+      </DistributedObjects>
+    </Namespace>
+  </Namespaces>
+  <ModuleDependencies>
+    <ModuleDependency Module="SilKit" />
+  </ModuleDependencies>
+</FunctionBusLibrary>

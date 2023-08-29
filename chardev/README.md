@@ -1,4 +1,4 @@
-# Chardev adapter and demo
+﻿# Chardev adapter and demos
 
 This demo application allows the user to attach a simulated SPI interface (``pipe``) of a QEMU virtual machine to the
 SIL Kit in the form of a DataPublisher/DataSubscriber.
@@ -31,18 +31,15 @@ So first, inside the QEMU image, setup the ``ttyS1`` pseudo file for raw mode, r
 root@silkit-qemu-demos-guest:~# stty raw -echo 115200 -F /dev/ttyS1
 ```
 
-Then, you can start a dump of data sent through the link from the outside:
-```
-root@silkit-qemu-demos-guest:~# cat /dev/ttyS1&
-```
-
 Then (or before) you have to setup the SIL Kit environment:
 
 ```
 wsl$ ./path/to/SilKit-x.y.z-$platform/SilKit/bin/sil-kit-registry --listen-uri 'silkit://0.0.0.0:8501'
 ```
 
-Finally, launch the adapter, which connects to the registry (to connect to other partitipants) and to QEMU,
+
+## Basic Chardev Echo
+After following the common steps above, first launch the adapter, which connects to the registry (to connect to other participants) and to QEMU,
 to transmit the serial data written to ``/dev/ttyS1`` inside QEMU through SIL Kit, and vice-versa:
 ```
 wsl$ ./build/bin/SilKitAdapterQemu --socket-to-chardev localhost:23456,Namespace::toChardev,VirtualNetwork=Default,Instance=EchoDevice,Namespace::fromChardev,VirtualNetwork:Default,Instance:Adapter --configuration ./chardev/demos/SilKitConfig_Adapter.silkit.yaml
@@ -53,9 +50,12 @@ connect success
     ...
 ```
 
-## Basic Chardev Echo
-After following the common steps above, launch the following process in separate window:
+Then, you can start a dump of data sent through the link from the outside:
+```
+root@silkit-qemu-demos-guest:~# cat /dev/ttyS1&
+```
 
+Then, launch the following helping process in separate window:
 ``` 
 wsl$ ./build/bin/SilKitDemoChardevEchoDevice
 Creating participant 'EchoDevice' at silkit://localhost:8501
@@ -177,7 +177,22 @@ Before you can connect CANoe to the SIL Kit network you should adapt the Registr
 When you will start the measurement, CANoe will subscribe only to the ``fromChardev`` topic and set itself up as
 a publisher on the other, ``toChardev``.
 
-After following the common steps above, launch ``CANoe 16 SP3`` or newer and load the
+After following the common demo steps above, first launch the adapter, which connects to the registry (to connect to other participants) and to QEMU,
+to transmit the serial data written to ``/dev/ttyS1`` inside QEMU through SIL Kit, and vice-versa:
+```
+wsl$ ./build/bin/SilKitAdapterQemu --socket-to-chardev localhost:23456,Namespace::toChardev,VirtualNetwork=Default,Instance=EchoDevice,Namespace::fromChardev,VirtualNetwork:Default,Instance:Adapter --configuration ./chardev/demos/SilKitConfig_Adapter.silkit.yaml
+Creating participant 'SilKitAdapterQemu' at silkit://localhost:8501
+[2022-08-31 18:06:27.674] [SilKitAdapterQemu] [info] Creating participant 'SilKitAdapterQemu' at 'silkit://localhost:8501', SIL Kit version: 4.0.19
+[2022-08-31 18:06:27.790] [SilKitAdapterQemu] [info] Connected to registry at 'tcp://127.0.0.1:8501' via 'tcp://127.0.0.1:49224' (silkit://localhost:8501)
+connect success
+    ...
+```
+
+Then, you can start a dump of data sent through the link from the outside:
+```
+root@silkit-qemu-demos-guest:~# cat /dev/ttyS1&
+```
+Finally, launch ``CANoe 16 SP3`` or newer and load the
 ``Qemu_Chardev_demo_CANoe_device.cfg`` from the ``demos/CANoe`` directory.
 
 Here is a small drawing to illustrate how CANoe is connected to QEMU:
@@ -193,3 +208,70 @@ Here is a small drawing to illustrate how CANoe is connected to QEMU:
 Similarly to the previous demo, any text sent to the ``/dev/ttyS1`` file inside QEMU will show up in 
 CANoe as data in the small widget for ``fromChardev``. While text inputted in CANoe's ``toChardev``
 field will be outputted by the ``cat`` inside QEMU once you press the "Send" button.
+
+## Byte-oriented demos
+
+These demos showcase binary transfer and conversion from the chardev channel to a DataPublisher-DataSubscriber pair for CANoe communication.
+
+You need to use CANoe 16 SP3 or newer.
+
+Before you can connect CANoe to the SIL Kit network you should adapt the ``RegistryUri`` in /chardev/demos/SilKitConfig_CANoe.silkit.yaml to the IP address of your system where your sil-kit-registry is running (in case of a WSL2 Ubuntu image e.g. the IP address of Eth0).
+
+Then launch the adapter prepare to dialog with CANoe on its byte-oriented topics:
+```
+wsl$ ./build/bin/SilKitAdapterQemu --socket-to-chardev localhost:23456,Namespace::degrees_user,VirtualNetwork=Default,Instance=UserTemp,Namespace::degrees_sensor,VirtualNetwork:Default,Instance:SensorTemp --registry-uri silkit://localhost:8501 --log Debug
+```
+
+### Temperature control demo
+
+In this demo, CANoe is sending a temperature value through the SPI link.
+
+After following the common steps for all demos as well as steps for byte-oriented demo, you can setup your QEMU terminal to print the values received through the SPI link:
+```
+root@silkit-qemu-demos-guest:~# od -An -tu2 -w2 -v /dev/ttyS1 &
+```
+
+Then you can launch ``CANoe 16 SP3`` or newer and load the ``Qemu_Chardev_demo_CANoe_temperature_control.cfg`` from the ``demos/CANoe`` directory. When you will start the measurement, CANoe will set itself up as a publisher on ``degrees_user`` topic.
+
+After starting the simulation, you can input a value in celsius in the panel named ``TemperaturePanel`` and click on send, you'll see the value being printed in the console of QEMU in Kelvins. This is what you would see if you send "27" twice, then "0" with CANoe:
+```
+root@silkit-qemu-demos-guest:~# od -An -tu2 -w2 -v /dev/ttyS1
+  300
+  300
+  273
+```
+
+And here is what you'll see in the Adapter's log (note that binary values are not always printable):
+```
+[2023-08-03 17:26:50.875] [SilKitAdapterQemu] [debug] SIL Kit >> QEMU: ,☺
+[2023-08-03 17:26:51.031] [SilKitAdapterQemu] [debug] SIL Kit >> QEMU: ,☺
+[2023-08-03 17:26:53.571] [SilKitAdapterQemu] [debug] SIL Kit >> QEMU: ◄☺
+```
+
+### Temperature sensing demo
+
+In this demo, CANoe is receiving a temperature value through the SPI link.
+
+After following the common steps for all demos as well as steps for byte-oriented demo, you may setup the following bash function to send binary conversion of a given temperature value :
+```
+root@silkit-qemu-demos-guest:~# send () { printf $(printf '\%03o' $(($1&255)) $(($1>>8&255))) > /dev/ttyS1; }
+```
+
+This way, calling e.g. ``send 333`` from qemu console will send number ``333`` through the link by splitting it in MSB and LSB, printing octal commands with a first ``printf``, whose result will be interpreted by a second ``printf``.
+
+Then you can launch ``CANoe 16 SP3`` or newer and load the ``Qemu_Chardev_demo_CANoe_temperature_sensing.cfg`` from the ``demos/CANoe`` directory. When you will start the measurement, CANoe will subscribe to the ``degrees_sensor`` topic.
+
+When you start the simulation, the value in the panel named ``TemperaturePanel`` will reflect what being typed in the console of QEMU in Kelvins. For instance if you type the following commands:
+```
+root@silkit-qemu-demos-guest:~# send 273
+root@silkit-qemu-demos-guest:~# send 300
+```
+CANoe would show "0" and "27" in the panel.
+
+And here is what you'll see in the Adapter's log (note that binary values are not always printable):
+```
+[2023-08-03 17:39:59.938] [SilKitAdapterQemu] [debug] QEMU >> SIL Kit: ◄☺
+[2023-08-03 17:40:02.137] [SilKitAdapterQemu] [debug] QEMU >> SIL Kit: ,☺
+```
+
+Take note that timing and other considerations may split the message.

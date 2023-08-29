@@ -1,0 +1,14 @@
+version 1.4;
+import module "SilKit";
+
+namespace Namespace
+{  
+  [Binding="SilKit"]
+  interface SensorTempIf
+  {
+    consumed data bytes degrees_sensor;
+  }
+  
+  object SensorTemp : SensorTempIf;
+}
+

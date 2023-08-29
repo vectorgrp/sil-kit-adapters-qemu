@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FunctionBusLibrary Version="2" FormatMajorVersion="1" FormatMinorVersion="3" FormatFeatureVersion="14">
+  <Namespaces>
+    <Namespace IsDefinedAsHidden="False" IsSystemDefined="False" Name="Namespace">
+      <DOInterfaces>
+        <DOInterface IsAbstract="False" Name="UserTempIf">
+          <AttributeValues>
+            <AttributeValue Definition="_SystemAttributes::Binding" InitialValue="SilKit" InitialValueType="String" />
+          </AttributeValues>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+          <DataMembers>
+            <DOIFDataMember Name="degrees_user">
+              <DataType DataType="Namespace::message" />
+            </DOIFDataMember>
+          </DataMembers>
+        </DOInterface>
+      </DOInterfaces>
+      <DistributedObjects>
+        <DistributedObject GenerateDotNetAPI="True" Name="UserTemp">
+          <DataType>
+            <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="Namespace::UserTempIf" />
+          </DataType>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+        </DistributedObject>
+      </DistributedObjects>
+      <DataTypes>
+        <StructDataType Bitcount="0" RawBitcount="0" HasFixedBinaryLayout="False" HasMotorolaByteOrder="False" Name="message">
+          <Fields>
+            <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="size">
+              <DataType DataType="_SystemDataTypes::UInt32" />
+            </DataTypeField>
+            <DataTypeField RelativeBitOffset="0" IsOptional="False" IsHidden="False" Name="value">
+              <DataType DataType="_SystemDataTypes::UInt16" />
+            </DataTypeField>
+          </Fields>
+        </StructDataType>
+      </DataTypes>
+    </Namespace>
+  </Namespaces>
+  <ModuleDependencies>
+    <ModuleDependency Module="SilKit" />
+  </ModuleDependencies>
+</FunctionBusLibrary>

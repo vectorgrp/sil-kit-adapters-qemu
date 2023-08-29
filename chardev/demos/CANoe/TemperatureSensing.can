@@ -1,0 +1,38 @@
+/*@!Encoding:1252*/
+includes
+{
+  
+}
+
+
+variables
+{
+  distObjRef SensorTempIf in_object = `Namespace::SensorTemp;
+  enum ArrayState{Complete,Incomplete} arrayState;
+  byte in_buffer;
+}
+
+on start {
+  in_object.Connect();
+  arrayState = Complete;
+}
+
+on value_update `Namespace::SensorTemp.degrees_sensor
+{
+  dword numbytes;
+  byte in_data[50];
+  long i;
+  numbytes = elcount($in_object.degrees_sensor);
+  memcpy(in_data,$in_object.degrees_sensor);
+  for( i = 0; i < numbytes && i < elcount(in_data); i++){
+    if(arrayState == Complete){
+      in_buffer = in_data[i];
+      arrayState = Incomplete;
+    } else {
+      int read_value;
+      read_value = in_buffer+256*in_data[i];
+      sysSetVariableInt("Temperatures","SensorTemperature",read_value-273);
+      arrayState = Complete;
+    }
+  }
+}

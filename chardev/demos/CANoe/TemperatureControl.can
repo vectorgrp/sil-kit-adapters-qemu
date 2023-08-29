@@ -1,0 +1,27 @@
+/*@!Encoding:1252*/
+includes
+{
+  
+}
+
+
+variables
+{
+  distObjRef UserTempIf out_object = `Namespace::UserTemp;
+  long temp;
+}
+
+on start {
+  out_object.Connect();
+}
+
+
+on sysvar_update sysvar::UIButton::SendUserTemperature
+{
+  if( @UIButton::SendUserTemperature == 0)
+  {
+     sysGetVariableInt("Temperatures","UserTemperature",temp);
+     $out_object.degrees_user.size = 2;
+     $out_object.degrees_user.value = temp+273;
+  }
+}

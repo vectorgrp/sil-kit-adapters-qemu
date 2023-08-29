@@ -1,0 +1,19 @@
+version 1.4;
+import module "SilKit";
+
+namespace Namespace
+{
+  struct message {
+    uint32 size;
+    uint16 value;
+  }
+  
+  [Binding="SilKit"]
+  interface UserTempIf
+  {
+    provided data message degrees_user;
+  }
+  
+  object UserTemp : UserTempIf;
+}
+
