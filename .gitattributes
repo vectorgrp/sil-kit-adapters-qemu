@@ -2,3 +2,5 @@
 * text eol=lf
 #ensure CANoe configs don't get their line endings converted
 *.cfg -text
+#configure .vtuexe files as binary files
+*.vtuexe binary
