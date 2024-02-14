@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FunctionBusLibrary Version="27" FormatMajorVersion="3">
+  <Namespaces>
+    <Namespace IsDefinedAsHidden="False" IsSystemDefined="False" Name="Namespace">
+      <DOInterfaces>
+        <DOInterface IsAbstract="False" Name="CANoeIf">
+          <AttributeValues>
+            <AttributeValue Definition="_SystemAttributes::Binding" InitialValue="SilKit" InitialValueType="String" />
+          </AttributeValues>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+          <DataMembers>
+            <DOIFDataMember Name="toQMP">
+              <DataType DataType="_SystemDataTypes::UTF8String" />
+            </DOIFDataMember>
+          </DataMembers>
+        </DOInterface>
+        <DOInterface IsAbstract="False" Name="AdapterIf">
+          <AttributeValues>
+            <AttributeValue Definition="_SystemAttributes::Binding" InitialValue="SilKit" InitialValueType="String" />
+          </AttributeValues>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+          <DataMembers>
+            <DOIFDataMember LocalDirection="Consumed" Name="fromQMP">
+              <DataType DataType="_SystemDataTypes::UTF8String" />
+            </DOIFDataMember>
+          </DataMembers>
+        </DOInterface>
+      </DOInterfaces>
+      <DistributedObjects>
+        <DistributedObject GenerateDotNetAPI="True" Name="CANoe">
+          <DataType>
+            <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="Namespace::CANoeIf" />
+          </DataType>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+        </DistributedObject>
+        <DistributedObject GenerateDotNetAPI="True" Name="Adapter">
+          <DataType>
+            <ModifiedDOIF Reverse="False" IsDOReference="False" Interface="Namespace::AdapterIf" />
+          </DataType>
+          <MemberData>
+            <DOMemberDataHolder Name="MemberData" />
+          </MemberData>
+        </DistributedObject>
+      </DistributedObjects>
+    </Namespace>
+  </Namespaces>
+  <ModuleDependencies>
+    <ModuleDependency Module="SilKit" />
+  </ModuleDependencies>
+</FunctionBusLibrary>

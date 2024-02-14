@@ -130,4 +130,9 @@ This demo application allows the user to attach a simulated character device (ch
 
 This demo is further explained in [chardev/README.md](chardev/README.md).
 
+## SUT remote control Demo
+This demo is based on the ethernet demo from above. In addition it also makes use of the SIL Kit Adapters QEMU chardev option to connect the Adapter to QEMUs QMP (QEMU Machine Protocol) interface. This makes it possible to remote control the QEMU SUT via SIL Kit. How that can be done exactly is showcased by this demo.
+
+This demo is further explained in [qmp/README.md](qmp/README.md).
+
 

@@ -1,0 +1,29 @@
+version: "2.2.0"
+
+global-settings:
+ time-source: internal-realtime
+ default-network-mapping: external-sil-kit
+
+datasources:
+  input-files:
+  - file-path: ../Datasource_qmp.vcdl
+
+sil-kit:
+  participant-name: CANoe4SW_SE
+  config-file-path: ../SilKitConfig_CANoe.silkit.yaml
+
+ethernet-networks:
+  - name: qemu_demo
+
+simulation-nodes:
+  - name: SilKitDummyNode
+    database-node: false
+    network-assignments:
+      - network: qemu_demo
+        tcp-ip-stack-adapter:
+          ipv4-settings: 
+            address-configuration: static
+            addresses:
+             - address: "192.168.7.34"
+               subnet-mask: "255.255.255.0"
+               

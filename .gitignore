@@ -2,6 +2,14 @@
 /out/
 /.vs/
 /build/
+/_build/
+*.build*
+*.vector
+*Default.venvironment*
+*working-dir*
 /*/build/
+/*/_build/
 /CMakeSettings.json
 /build_wsl
+qmp/demos/CANoe4SW_SE/testPingViaQmp.vtestunit/*
+qmp/demos/CANoe/.run/*

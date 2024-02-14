@@ -1,0 +1,234 @@
+<?xml version="1.0"?>
+<Panel Type="Vector.CANalyzer.Panels.PanelSerializer, Vector.CANalyzer.Panels.Serializer, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null">
+  <Object Type="Vector.CANalyzer.Panels.Runtime.Panel, Vector.CANalyzer.Panels.Common, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="Panel" Children="Controls" ControlName="DemoPanel">
+    <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="ButtonControl23" Children="Controls" ControlName="Button 2">
+      <Property Name="Name">ButtonControl23</Property>
+      <Property Name="Size">165, 23</Property>
+      <Property Name="Location">126, 122</Property>
+      <Property Name="Text">Screenshot of SUT (PNG)</Property>
+      <Property Name="SymbolConfiguration">8;16;UIVariables;;;ScreenshotSutPng;1;;;-1;;;;;;0</Property>
+      <Property Name="TabIndex">27</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="ButtonControl22" Children="Controls" ControlName="SendCtrlC">
+      <Property Name="Name">ButtonControl22</Property>
+      <Property Name="Size">191, 23</Property>
+      <Property Name="Location">432, 35</Property>
+      <Property Name="Text">Send Ctrl + C</Property>
+      <Property Name="SymbolConfiguration">8;16;UIVariables;;;SendCtrlC;1;;;-1;;;;;;0</Property>
+      <Property Name="TabIndex">26</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="ButtonControl21" Children="Controls" ControlName="Send0">
+      <Property Name="Name">ButtonControl21</Property>
+      <Property Name="Size">85, 23</Property>
+      <Property Name="Location">296, 122</Property>
+      <Property Name="Text">0</Property>
+      <Property Name="SymbolConfiguration">8;16;UIVariables;;;Send0;1;;;-1;;;;;;0</Property>
+      <Property Name="TabIndex">25</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="ButtonControl18" Children="Controls" ControlName="Send1">
+      <Property Name="Name">ButtonControl18</Property>
+      <Property Name="Size">39, 23</Property>
+      <Property Name="Location">296, 93</Property>
+      <Property Name="Text">1</Property>
+      <Property Name="SymbolConfiguration">8;16;UIVariables;;;Send1;1;;;-1;;;;;;0</Property>
+      <Property Name="TabIndex">22</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="ButtonControl19" Children="Controls" ControlName="Send3">
+      <Property Name="Name">ButtonControl19</Property>
+      <Property Name="Size">39, 23</Property>
+      <Property Name="Location">387, 93</Property>
+      <Property Name="Text">3</Property>
+      <Property Name="SymbolConfiguration">8;16;UIVariables;;;Send3;1;;;-1;;;;;;0</Property>
+      <Property Name="TabIndex">24</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="ButtonControl20" Children="Controls" ControlName="Send2">
+      <Property Name="Name">ButtonControl20</Property>
+      <Property Name="Size">39, 23</Property>
+      <Property Name="Location">342, 93</Property>
+      <Property Name="Text">2</Property>
+      <Property Name="SymbolConfiguration">8;16;UIVariables;;;Send2;1;;;-1;;;;;;0</Property>
+      <Property Name="TabIndex">23</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="ButtonControl15" Children="Controls" ControlName="Send6">
+      <Property Name="Name">ButtonControl15</Property>
+      <Property Name="Size">39, 23</Property>
+      <Property Name="Location">386, 64</Property>
+      <Property Name="Text">6</Property>
+      <Property Name="SymbolConfiguration">8;16;UIVariables;;;Send6;1;;;-1;;;;;;0</Property>
+      <Property Name="TabIndex">21</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="ButtonControl16" Children="Controls" ControlName="Send4">
+      <Property Name="Name">ButtonControl16</Property>
+      <Property Name="Size">39, 23</Property>
+      <Property Name="Location">297, 64</Property>
+      <Property Name="Text">4</Property>
+      <Property Name="SymbolConfiguration">8;16;UIVariables;;;Send4;1;;;-1;;;;;;0</Property>
+      <Property Name="TabIndex">19</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="ButtonControl17" Children="Controls" ControlName="Send5">
+      <Property Name="Name">ButtonControl17</Property>
+      <Property Name="Size">39, 23</Property>
+      <Property Name="Location">342, 64</Property>
+      <Property Name="Text">5</Property>
+      <Property Name="SymbolConfiguration">8;16;UIVariables;;;Send5;1;;;-1;;;;;;0</Property>
+      <Property Name="TabIndex">20</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="ButtonControl14" Children="Controls" ControlName="Send9">
+      <Property Name="Name">ButtonControl14</Property>
+      <Property Name="Size">39, 23</Property>
+      <Property Name="Location">387, 33</Property>
+      <Property Name="Text">9</Property>
+      <Property Name="SymbolConfiguration">8;16;UIVariables;;;Send9;1;;;-1;;;;;;0</Property>
+      <Property Name="TabIndex">18</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="ButtonControl13" Children="Controls" ControlName="Send8">
+      <Property Name="Name">ButtonControl13</Property>
+      <Property Name="Size">39, 23</Property>
+      <Property Name="Location">342, 33</Property>
+      <Property Name="Text">8</Property>
+      <Property Name="SymbolConfiguration">8;16;UIVariables;;;Send8;1;;;-1;;;;;;0</Property>
+      <Property Name="TabIndex">17</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="ButtonControl12" Children="Controls" ControlName="Send7">
+      <Property Name="Name">ButtonControl12</Property>
+      <Property Name="Size">39, 23</Property>
+      <Property Name="Location">296, 33</Property>
+      <Property Name="Text">7</Property>
+      <Property Name="SymbolConfiguration">8;16;UIVariables;;;Send7;1;;;-1;;;;;;0</Property>
+      <Property Name="TabIndex">16</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="ButtonControl11" Children="Controls" ControlName="SendDot">
+      <Property Name="Name">ButtonControl11</Property>
+      <Property Name="Size">39, 23</Property>
+      <Property Name="Location">387, 122</Property>
+      <Property Name="Text">.</Property>
+      <Property Name="SymbolConfiguration">8;16;UIVariables;;;SendDot;1;;;-1;;;;;;0</Property>
+      <Property Name="TabIndex">15</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="ButtonControl10" Children="Controls" ControlName="SendPing">
+      <Property Name="Name">ButtonControl10</Property>
+      <Property Name="Size">190, 23</Property>
+      <Property Name="Location">432, 4</Property>
+      <Property Name="Text">Send Ping</Property>
+      <Property Name="SymbolConfiguration">8;16;UIVariables;;;SendPingOnly;1;;;-1;;;;;;0</Property>
+      <Property Name="TabIndex">14</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="ButtonControl9" Children="Controls" ControlName="SendBackspace">
+      <Property Name="Name">ButtonControl9</Property>
+      <Property Name="Size">191, 23</Property>
+      <Property Name="Location">431, 64</Property>
+      <Property Name="Text">Send Backspace</Property>
+      <Property Name="SymbolConfiguration">8;16;UIVariables;;;SendBackspace;1;;;-1;;;;;;0</Property>
+      <Property Name="TabIndex">13</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="ButtonControl8" Children="Controls" ControlName="SendEnter">
+      <Property Name="Name">ButtonControl8</Property>
+      <Property Name="Size">190, 54</Property>
+      <Property Name="Location">432, 91</Property>
+      <Property Name="Text">Send Enter</Property>
+      <Property Name="SymbolConfiguration">8;16;UIVariables;;;SendEnter;1;;;-1;;;;;;0</Property>
+      <Property Name="TabIndex">12</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="ButtonControl7" Children="Controls" ControlName="QueryCommands">
+      <Property Name="Name">ButtonControl7</Property>
+      <Property Name="Size">165, 23</Property>
+      <Property Name="Location">124, 33</Property>
+      <Property Name="Text">Query Commands</Property>
+      <Property Name="SymbolConfiguration">8;16;UIVariables;;;QueryCommands;1;;;-1;;;;;;0</Property>
+      <Property Name="TabIndex">11</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="ButtonControl6" Children="Controls" ControlName="EnterCommandMode">
+      <Property Name="Name">ButtonControl6</Property>
+      <Property Name="Size">165, 23</Property>
+      <Property Name="Location">124, 4</Property>
+      <Property Name="Text">Enter Command Mode</Property>
+      <Property Name="SymbolConfiguration">8;16;UIVariables;;;EnterCommandMode;1;;;-1;;;;;;0</Property>
+      <Property Name="TabIndex">10</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="ButtonControl5" Children="Controls" ControlName="ScreeshotSut">
+      <Property Name="Name">ButtonControl5</Property>
+      <Property Name="Size">165, 23</Property>
+      <Property Name="Location">124, 93</Property>
+      <Property Name="Text">Screenshot of SUT (PPM)</Property>
+      <Property Name="SymbolConfiguration">8;16;UIVariables;;;ScreenshotSut;1;;;-1;;;;;;0</Property>
+      <Property Name="TabIndex">9</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="ButtonControl3" Children="Controls" ControlName="LoginSut">
+      <Property Name="Name">ButtonControl3</Property>
+      <Property Name="Size">129, 23</Property>
+      <Property Name="Location">297, 2</Property>
+      <Property Name="Text">Login to SUT</Property>
+      <Property Name="SymbolConfiguration">8;16;UIVariables;;;LoginSut;1;;;-1;;;;;;0</Property>
+      <Property Name="TabIndex">7</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="ButtonControl2" Children="Controls" ControlName="RestartSut">
+      <Property Name="Name">ButtonControl2</Property>
+      <Property Name="Size">165, 23</Property>
+      <Property Name="Location">124, 64</Property>
+      <Property Name="Text">Restart SUT</Property>
+      <Property Name="SymbolConfiguration">8;16;UIVariables;;;RestartSut;1;;;-1;;;;;;0</Property>
+      <Property Name="TabIndex">6</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="GroupBoxControl2" Children="Controls" ControlName="Group Box 2">
+      <Object Type="Vector.CANalyzer.Panels.Design.HexEditorControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="HexEditorControl1" Children="Controls" ControlName="Hex/Text Editor 1">
+        <Property Name="Name">HexEditorControl1</Property>
+        <Property Name="Size">580, 598</Property>
+        <Property Name="Location">7, 20</Property>
+        <Property Name="ColumnCount">78</Property>
+        <Property Name="ViewLayout">OnlyTextfield</Property>
+        <Property Name="SymbolDataType">String</Property>
+        <Property Name="SymbolConfiguration">8;16;UIVariables;;;TextReceived;4;;;-1;;;;;;0</Property>
+        <Property Name="TabIndex">0</Property>
+        <Property Name="TabStopActive">False</Property>
+        <Property Name="ReadOnlyControl">True</Property>
+      </Object>
+      <Property Name="Name">GroupBoxControl2</Property>
+      <Property Name="Size">623, 623</Property>
+      <Property Name="Location">5, 266</Property>
+      <Property Name="Text">Adapter.fromQMP</Property>
+      <Property Name="TabIndex">4</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.StartStopControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="StartStopControl1" Children="Controls" ControlName="Start Stop Control 1">
+      <Property Name="Name">StartStopControl1</Property>
+      <Property Name="Size">112, 56</Property>
+      <Property Name="Location">5, 4</Property>
+      <Property Name="TabIndex">3</Property>
+    </Object>
+    <Object Type="Vector.CANalyzer.Panels.Design.GroupBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="GroupBoxControl1" Children="Controls" ControlName="Group Box 1">
+      <Object Type="Vector.CANalyzer.Panels.Design.TextBoxControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="TextBoxControl1" Children="Controls" ControlName="Input/Output Box 1">
+        <Property Name="Name">TextBoxControl1</Property>
+        <Property Name="Size">612, 18</Property>
+        <Property Name="Location">5, 28</Property>
+        <Property Name="AlarmUpperTextColor">WindowText</Property>
+        <Property Name="ValueDecimalPlaces">0</Property>
+        <Property Name="AlarmLowerBkgColor">Salmon</Property>
+        <Property Name="ValueDisplay">Text</Property>
+        <Property Name="AlarmUpperBkgColor">IndianRed</Property>
+        <Property Name="AlarmLowerTextColor">WindowText</Property>
+        <Property Name="AlarmGeneralSettings">1;2;0;1</Property>
+        <Property Name="DisplayLabel">Left</Property>
+        <Property Name="DescriptionText">TextToSend:</Property>
+        <Property Name="DescriptionSize">65, 18</Property>
+        <Property Name="UsedValueTable">PhysicalValue</Property>
+        <Property Name="SymbolConfiguration">8;16;UIVariables;;;TextToSend;4;;;-1;;;;;;0</Property>
+        <Property Name="TabIndex">2</Property>
+      </Object>
+      <Object Type="Vector.CANalyzer.Panels.Design.ButtonControl, Vector.CANalyzer.Panels.CommonControls, Version=17.3.91.0, Culture=neutral, PublicKeyToken=null" Name="ButtonControl1" Children="Controls" ControlName="Button 1">
+        <Property Name="Name">ButtonControl1</Property>
+        <Property Name="Size">72, 23</Property>
+        <Property Name="Location">545, 54</Property>
+        <Property Name="Text">Send</Property>
+        <Property Name="SymbolConfiguration">8;16;UIVariables;;;SendRequested;1;;;-1;;;;;;0</Property>
+        <Property Name="TabIndex">1</Property>
+      </Object>
+      <Property Name="Name">GroupBoxControl1</Property>
+      <Property Name="Size">623, 81</Property>
+      <Property Name="Location">3, 179</Property>
+      <Property Name="Text">CANoe.toQMP</Property>
+      <Property Name="TabIndex">2</Property>
+    </Object>
+    <Property Name="Name">Panel</Property>
+    <Property Name="Size">639, 897</Property>
+    <Property Name="BackColor">White</Property>
+  </Object>
+</Panel>

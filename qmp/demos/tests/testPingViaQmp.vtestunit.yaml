@@ -1,0 +1,8 @@
+version: 2.0.0
+
+test-unit-information:
+  description: This test unit tests the basic functionality of the remote control of a QEMU SUT via the QEMU QMP interface
+  
+test-unit-implementation:
+  - source-file-path: testPingViaQmp.can
+  - source-file-path: testPingViaQmp.vtesttree.yaml

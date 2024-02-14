@@ -1,0 +1,243 @@
+/*@!Encoding:1252*/
+includes
+{
+  
+}
+
+variables
+{
+  distObjRef CANoeIf out_object = `Namespace::CANoe;
+  distObjRef AdapterIf in_object = `Namespace::Adapter;
+  char outputTextBuffer[1024];
+  char inputTextBuffer[40096];
+  byte output[1024];
+  msTimer loginTimer;  
+  char credentialsAsKeyStrokes[1000] = "{ \"execute\": \"send-key\", \"arguments\": { \"hold-time\": 150, \"keys\": [ { \"type\": \"qcode\", \"data\": \"r\" }, { \"type\": \"qcode\", \"data\": \"o\" }, { \"type\": \"qcode\", \"data\": \"o\" }, { \"type\": \"qcode\", \"data\": \"t\" }, { \"type\": \"qcode\", \"data\": \"kp_enter\" }  ] } }";   
+}
+
+on start {
+  out_object.Connect();
+  inputTextBuffer[0]=0;
+}
+
+on sysvar_update UIVariables::SendRequested
+{
+  if( @UIVariables::SendRequested == 0)
+  {
+    sysGetVariableString("UIVariables","TextToSend",outputTextBuffer,elcount(outputTextBuffer)-3);
+    strncat(outputTextBuffer,"\n",elcount(outputTextBuffer));
+    $out_object.toQMP = outputTextBuffer;
+  }
+}
+
+on sysvar_update UIVariables::SendPingOnly
+{  
+  if( @UIVariables::SendPingOnly == 0)
+  {  
+    char temp[1000] = 
+    "{ \"execute\": \"send-key\", \"arguments\": { \"hold-time\": 150, \"keys\": [ { \"type\": \"qcode\", \"data\": \"p\" }, { \"type\": \"qcode\", \"data\": \"i\" }, { \"type\": \"qcode\", \"data\": \"n\" }, { \"type\": \"qcode\", \"data\": \"g\" }, { \"type\": \"qcode\", \"data\": \"spc\" }] } }";  
+    $out_object.toQMP = temp;   
+  }
+}
+
+on sysvar_update UIVariables::LoginSut
+{  
+  if( @UIVariables::LoginSut == 0)
+  {    
+    // enter username "root"
+    $out_object.toQMP = credentialsAsKeyStrokes;    
+    setTimer(loginTimer,150);
+  }
+}
+
+on timer loginTimer
+{
+  // enter PW "root"
+  $out_object.toQMP = credentialsAsKeyStrokes;    
+}
+
+on sysvar_update UIVariables::SendCtrlC
+{  
+  if( @UIVariables::SendCtrlC == 0)
+  {  
+    char temp[1000] = "{ \"execute\": \"send-key\", \"arguments\": { \"hold-time\": 150, \"keys\": [  { \"type\": \"qcode\", \"data\": \"ctrl\" }, { \"type\": \"qcode\", \"data\": \"c\" } ] } }";
+    $out_object.toQMP = temp;   
+  }
+}
+
+on sysvar_update UIVariables::SendBackspace
+{  
+  if( @UIVariables::SendBackspace == 0)
+  {  
+    char temp[1000] = "{ \"execute\": \"send-key\", \"arguments\": { \"hold-time\": 150, \"keys\": [  { \"type\": \"qcode\", \"data\": \"backspace\" } ] } }";
+    $out_object.toQMP = temp;
+  }
+}
+
+on sysvar_update UIVariables::SendDot
+{  
+  if( @UIVariables::SendDot == 0)
+  {  
+    char temp[1000] = "{ \"execute\": \"send-key\", \"arguments\": { \"hold-time\": 150, \"keys\": [  { \"type\": \"qcode\", \"data\": \"dot\" } ] } }";
+    $out_object.toQMP = temp;   
+  }
+}
+
+on sysvar_update UIVariables::Send0
+{  
+  if( @UIVariables::Send0 == 0)
+  {  
+    char temp[1000] = "{ \"execute\": \"send-key\", \"arguments\": { \"hold-time\": 150, \"keys\": [  { \"type\": \"qcode\", \"data\": \"0\" } ] } }";
+    $out_object.toQMP = temp;   
+  }
+}
+
+on sysvar_update UIVariables::Send1
+{  
+  if( @UIVariables::Send1 == 0)
+  {  
+    char temp[1000] = "{ \"execute\": \"send-key\", \"arguments\": { \"hold-time\": 150, \"keys\": [  { \"type\": \"qcode\", \"data\": \"1\" } ] } }";
+    $out_object.toQMP = temp;   
+  }
+}
+
+on sysvar_update UIVariables::Send2
+{  
+  if( @UIVariables::Send2 == 0)
+  {  
+    char temp[1000] = "{ \"execute\": \"send-key\", \"arguments\": { \"hold-time\": 150, \"keys\": [  { \"type\": \"qcode\", \"data\": \"2\" } ] } }";
+    $out_object.toQMP = temp;   
+  }
+}
+
+on sysvar_update UIVariables::Send3
+{  
+  if( @UIVariables::Send3 == 0)
+  {  
+    char temp[1000] = "{ \"execute\": \"send-key\", \"arguments\": { \"hold-time\": 150, \"keys\": [  { \"type\": \"qcode\", \"data\": \"3\" } ] } }";
+    $out_object.toQMP = temp;   
+  }
+}
+
+on sysvar_update UIVariables::Send4
+{  
+  if( @UIVariables::Send4 == 0)
+  {  
+    char temp[1000] = "{ \"execute\": \"send-key\", \"arguments\": { \"hold-time\": 150, \"keys\": [  { \"type\": \"qcode\", \"data\": \"4\" } ] } }";
+    $out_object.toQMP = temp;   
+  }
+}
+
+on sysvar_update UIVariables::Send5
+{  
+  if( @UIVariables::Send5 == 0)
+  {  
+    char temp[1000] = "{ \"execute\": \"send-key\", \"arguments\": { \"hold-time\": 150, \"keys\": [  { \"type\": \"qcode\", \"data\": \"5\" } ] } }";
+    $out_object.toQMP = temp;   
+  }
+}
+
+on sysvar_update UIVariables::Send6
+{  
+  if( @UIVariables::Send6 == 0)
+  {  
+    char temp[1000] = "{ \"execute\": \"send-key\", \"arguments\": { \"hold-time\": 150, \"keys\": [  { \"type\": \"qcode\", \"data\": \"6\" } ] } }";
+    $out_object.toQMP = temp;   
+  }
+}
+
+on sysvar_update UIVariables::Send7
+{  
+  if( @UIVariables::Send7 == 0)
+  {  
+    char temp[1000] = "{ \"execute\": \"send-key\", \"arguments\": { \"hold-time\": 150, \"keys\": [  { \"type\": \"qcode\", \"data\": \"7\" } ] } }";
+    $out_object.toQMP = temp;   
+  }
+}
+
+on sysvar_update UIVariables::Send8
+{  
+  if( @UIVariables::Send8 == 0)
+  {  
+    char temp[1000] = "{ \"execute\": \"send-key\", \"arguments\": { \"hold-time\": 150, \"keys\": [  { \"type\": \"qcode\", \"data\": \"8\" } ] } }";
+    $out_object.toQMP = temp;
+  }
+}
+
+on sysvar_update UIVariables::Send9
+{  
+  if( @UIVariables::Send9 == 0)
+  {  
+    char temp[1000] = "{ \"execute\": \"send-key\", \"arguments\": { \"hold-time\": 150, \"keys\": [  { \"type\": \"qcode\", \"data\": \"9\" } ] } }";
+    $out_object.toQMP = temp;   
+  }
+}
+
+on sysvar_update UIVariables::SendEnter
+{  
+  if( @UIVariables::SendEnter == 0)
+  {  
+    char temp[1000] = "{ \"execute\": \"send-key\", \"arguments\": { \"hold-time\": 150, \"keys\": [  { \"type\": \"qcode\", \"data\": \"kp_enter\" } ] } }";
+    $out_object.toQMP = temp;   
+  }
+}
+
+on sysvar_update UIVariables::EnterCommandMode
+{  
+  if( @UIVariables::EnterCommandMode == 0)
+  {   
+    $out_object.toQMP = "{ \"execute\": \"qmp_capabilities\" }";   
+  }
+}
+
+on sysvar_update UIVariables::ScreenshotSut
+{  
+  if( @UIVariables::ScreenshotSut == 0)
+  {   
+    $out_object.toQMP = "{ \"execute\": \"screendump\", \"arguments\": { \"filename\": \"/mnt/d/QEMUscreenCapture.ppm\" } }";
+  }
+}
+
+on sysvar_update UIVariables::ScreenshotSutPng
+{  
+  if( @UIVariables::ScreenshotSutPng == 0)
+  {   
+    $out_object.toQMP = "{ \"execute\": \"screendump\", \"arguments\": { \"format\": \"png\", \"filename\": \"/mnt/d/QEMUscreenCapture.png\" } }";
+    SetPictureBoxImage("TerminalScreenshot", "TerminalScreenshotPictureBox", "D:\\QEMUscreenCapture.png");
+  }
+}
+
+on sysvar_update UIVariables::RestartSut
+{  
+  if( @UIVariables::RestartSut == 0)
+  {   
+    $out_object.toQMP = "{ \"execute\": \"system_reset\" }";   
+  }
+}
+
+on sysvar_update UIVariables::QueryCommands
+{  
+  if( @UIVariables::QueryCommands == 0)
+  {   
+    $out_object.toQMP = "{ \"execute\": \"query-commands\" }";   
+  }
+}
+
+on value_update `Namespace::Adapter.fromQMP
+{
+  long cur_len;
+  long newline_pos;
+  cur_len = strlen(inputTextBuffer);
+  // copying the received message to the buffer.
+  strncat(inputTextBuffer,$in_object.fromQMP,elcount(inputTextBuffer));
+  
+  //locating the end of string, if any:
+  newline_pos = strstr_off(inputTextBuffer,cur_len,"\n");
+  //on full line received, show it in the UI
+  if( newline_pos != -1 )
+  {
+     sysSetVariableString("UIVariables","TextReceived",inputTextBuffer);
+     //then copy the rest of the buffer back to the beginning, if any.
+     substr_cpy(inputTextBuffer,inputTextBuffer,newline_pos+1,strlen(inputTextBuffer)-(newline_pos+1),elcount(inputTextBuffer)-(newline_pos+1));
+  }
+}

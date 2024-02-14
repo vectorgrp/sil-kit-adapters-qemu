@@ -1,0 +1,9 @@
+version: 2.1.0
+test-tree:
+  - test-fixture: QemuQmpTestFixture    
+    capl-preparation: PepareTestscenario
+    elements:
+      - capl-test-case: Ethernet_WaitForQemuMessage
+      - capl-test-case: Ethernet_WaitForEchoMessage
+    capl-completion: StopToPingSut
+    

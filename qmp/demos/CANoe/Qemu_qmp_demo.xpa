@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ProtocolAnalyzerSettings version="1">
+  <DeactivatedRules />
+  <Settings enabled="false" startAtMeasurementStart="true">
+    <option name="showWarnings" value="true" />
+    <option name="showInfos" value="true" />
+    <option name="defaultLogFilePath" value="" />
+    <option name="chronologicalView" value="false" />
+  </Settings>
+</ProtocolAnalyzerSettings>

@@ -1,0 +1,79 @@
+﻿/*@!Encoding:65001*/
+includes
+{
+  
+}
+
+variables
+{
+  int result;
+  char networkName[10] = "qemu_demo";
+  const dword IPV4_STR_SIZE = 16;    // IPv4 string size
+  char ipv4AddrTapStr[IPV4_STR_SIZE] = "192.168.7.2";
+  char ipv4AddrEchoStr[IPV4_STR_SIZE] = "192.168.7.34";
+  dword timeout = 10000;
+  msTimer loginTimer1;
+  msTimer loginTimer2;
+  msTimer startToPingSut;
+  const int qmpTimeoutTime = 10;
+  char credentialsAsKeyStrokes[1000] = "{ \"execute\": \"send-key\", \"arguments\": { \"hold-time\": 150, \"keys\": [ { \"type\": \"qcode\", \"data\": \"r\" }, { \"type\": \"qcode\", \"data\": \"o\" }, { \"type\": \"qcode\", \"data\": \"o\" }, { \"type\": \"qcode\", \"data\": \"t\" }, { \"type\": \"qcode\", \"data\": \"kp_enter\" }  ] } }";
+  distObjRef CANoeIf out_object = `Namespace::CANoe;
+}
+
+void CheckTestResult(char testName[], int result)
+{
+  if (result != 1)
+  {
+    TestStepFail(testName, "FAILED: No message within timeout");
+  }
+  TestStepPass(testName, "SUCCESS");
+}
+
+on timer loginTimer1
+{
+  // enter username "root"
+  $out_object.toQMP = credentialsAsKeyStrokes;    
+  setTimer(loginTimer2, qmpTimeoutTime); 
+}
+
+on timer loginTimer2
+{
+  // enter PW "root"
+  $out_object.toQMP = credentialsAsKeyStrokes;
+  setTimer(startToPingSut, qmpTimeoutTime);
+}
+
+export testfunction PepareTestscenario()
+{
+  out_object.Connect();  
+  // Enter command mode
+  $out_object.toQMP = "{ \"execute\": \"qmp_capabilities\" }";
+  setTimer(loginTimer1, qmpTimeoutTime);
+}
+
+on timer startToPingSut
+{
+  $out_object.toQMP = "{ \"execute\": \"send-key\", \"arguments\": { \"hold-time\": 10, \"keys\": [ { \"type\": \"qcode\", \"data\": \"p\" }, { \"type\": \"qcode\", \"data\": \"i\" }, { \"type\": \"qcode\", \"data\": \"n\" }, { \"type\": \"qcode\", \"data\": \"g\" }, { \"type\": \"qcode\", \"data\": \"spc\" }, { \"type\": \"qcode\", \"data\": \"spc\" }, { \"type\": \"qcode\", \"data\": \"1\" }, { \"type\": \"qcode\", \"data\": \"9\" }, { \"type\": \"qcode\", \"data\": \"2\" }, { \"type\": \"qcode\", \"data\": \"dot\" }, { \"type\": \"qcode\", \"data\": \"1\" },{ \"type\": \"qcode\", \"data\": \"6\" }, { \"type\": \"qcode\", \"data\": \"8\" }, { \"type\": \"qcode\", \"data\": \"dot\" } , { \"type\": \"qcode\", \"data\": \"7\" }, { \"type\": \"qcode\", \"data\": \"dot\" } , { \"type\": \"qcode\", \"data\": \"3\" }, { \"type\": \"qcode\", \"data\": \"4\" }, { \"type\": \"qcode\", \"data\": \"kp_enter\" }  ] } }";
+}
+
+export testfunction StopToPingSut()
+{      
+  $out_object.toQMP = "{ \"execute\": \"send-key\", \"arguments\": { \"hold-time\": 10, \"keys\": [  { \"type\": \"qcode\", \"data\": \"ctrl\" }, { \"type\": \"qcode\", \"data\": \"c\" } ] } }";  
+}
+
+export testcase Ethernet_WaitForQemuMessage()
+{
+  SetBusContext(GetBusNameContext(networkName));  
+  
+  result = TestWaitForEthernetPacket(IpGetAddressAsNumber(ipv4AddrTapStr), 0, 0, 0, 0, 0x0020, timeout);  
+  CheckTestResult("Ethernet_WaitForQemuMessage", result);
+}
+
+export testcase Ethernet_WaitForEchoMessage()
+{
+  SetBusContext(GetBusNameContext(networkName));  
+
+  result = TestWaitForEthernetPacket(IpGetAddressAsNumber(ipv4AddrEchoStr), 0, 0, 0, 0, 0x0020, timeout);
+  CheckTestResult("Ethernet_WaitForEchoMessage", result);
+}
+

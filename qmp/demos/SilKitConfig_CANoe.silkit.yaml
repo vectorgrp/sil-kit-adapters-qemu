@@ -1,0 +1,4 @@
+Description: Configuration for CANoe participant for SIL Kit Adapter QEMU (qmp) demo
+Middleware:  
+  RegistryUri: silkit://localhost:8501
+  

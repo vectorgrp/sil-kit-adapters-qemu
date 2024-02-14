@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DataSourceDescription xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+  <DataSources>
+    <DataSource xmlns="" i:type="FileDataSource">
+      <Files>
+        <File>
+          <FileType>evCDL</FileType>
+          <LastModifiedTime>2024-01-25T10:39:43.433254+01:00</LastModifiedTime>
+          <Path>..\Datasource_qmp.vcdl</Path>
+          <ReferenceHashValue>JGlfjOExGDnGo8yKLB4N+PKTcmPeC3zXmRbpgnBX15M=</ReferenceHashValue>
+        </File>
+      </Files>
+      <ID>2</ID>
+      <ImportParameters>{
+  "$id": "1",
+  "ImportParametersMap": {
+    "$id": "2",
+    "vCDL": {
+      "$id": "3",
+      "IncludeFiles": [
+        "D:\\vfs\\SilKit\\sil-kit-adapters-qemu\\qmp\\demos\\Datasource_qmp.vcdl"
+      ],
+      "FileType": 3,
+      "Version": 0,
+      "Networks": [],
+      "FileInfos": [
+        {
+          "$id": "4",
+          "Type": 3,
+          "Path": "D:\\vfs\\SilKit\\sil-kit-adapters-qemu\\qmp\\demos\\Datasource_qmp.vcdl",
+          "Name": "Datasource_qmp.vcdl",
+          "Version": "1.4"
+        }
+      ],
+      "DummyServiceFEPPrefix": "CANoe",
+      "DummyParticipantPrefix": "CANoe",
+      "SystemNamespace": "",
+      "UserObjectsNamespace": "UserObjects",
+      "NameSpaceDataTypesCOM": "DataTypes",
+      "NameSpaceDataObjectsCOM": "CommunicationObjects",
+      "NameSpaceParticipants": "Participants",
+      "NameSpaceTimings": "Timings",
+      "NameSpaceBindings": "BindingInfo",
+      "NameSpaceEncodings": "Encodings",
+      "CreateDummyParticipants": true,
+      "CreateDummyServiceFEPs": true,
+      "OEMType": 0
+    }
+  }
+}</ImportParameters>
+      <ImportStatus>eImported</ImportStatus>
+      <Name></Name>
+      <ReferencedFiles>
+        <File>
+          <LastModifiedTime>2024-01-25T10:39:43.433254+01:00</LastModifiedTime>
+          <Path>..\Datasource_qmp.vcdl</Path>
+          <ReferenceHashValue>JGlfjOExGDnGo8yKLB4N+PKTcmPeC3zXmRbpgnBX15M=</ReferenceHashValue>
+        </File>
+      </ReferencedFiles>
+    </DataSource>
+  </DataSources>
+  <FormatVersion>
+    <Major>16</Major>
+    <Minor>0</Minor>
+    <Running>4</Running>
+  </FormatVersion>
+</DataSourceDescription>
