@@ -37,7 +37,7 @@ endif()
 if(DEFINED SILKIT_PACKAGE_DIR)
     # if the user forces using a specific SIL Kit package, use it
 	message(STATUS "SILKIT_PACKAGE_DIR has been set to: ${SILKIT_PACKAGE_DIR}, CMAKE will look for a SIL Kit package in that directory")
-	find_package(SilKit 4.0.7
+	find_package(SilKit 4.0.40
 		REQUIRED 
 		CONFIG  
 		NO_CMAKE_PACKAGE_REGISTRY 
@@ -47,7 +47,7 @@ else()
     if (WIN32)
         # otherwise, look for an installed version of SIL Kit (.msi file) 
         message(STATUS "SILKIT_PACKAGE_DIR has not been set by user. Attempting to find an msi-installed version of SIL Kit")
-        find_package(SilKit 4.0.7
+        find_package(SilKit 4.0.40
             CONFIG)
     endif()
         
@@ -67,7 +67,7 @@ else()
         message(STATUS "SIL Kit: using pre-built binaries from: ${silkit_SOURCE_DIR}")
 
         message(STATUS "Searching SilKit package which has been fetched from github.com")
-        find_package(SilKit 4.0.7
+        find_package(SilKit 4.0.40
             REQUIRED
             CONFIG
             NO_CMAKE_PACKAGE_REGISTRY
