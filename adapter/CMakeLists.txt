@@ -1,7 +1,9 @@
 
 add_executable(SilKitAdapterQemu
     "SilKitAdapterQemu.cpp" 
-    "Parsing.cpp" )
+    "Parsing.cpp"
+    "SignalHandler.cpp"
+)
 
 target_link_libraries(SilKitAdapterQemu
     PRIVATE

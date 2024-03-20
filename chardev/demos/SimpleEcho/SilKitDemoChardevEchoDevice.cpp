@@ -11,11 +11,29 @@
 #include "silkit/services/pubsub/all.hpp"
 #include "silkit/util/serdes/Serialization.hpp"
 #include "../../adapter/Parsing.hpp"
+#include "../adapter/SignalHandler.hpp"
+
 using namespace adapters;
 
 using namespace SilKit::Services::PubSub;
 
 using namespace std::chrono_literals;
+
+void promptForExit()
+{    
+    std::promise<int> signalPromise;
+    auto signalValue = signalPromise.get_future();
+    RegisterSignalHandler([&signalPromise](auto sigNum) {
+        signalPromise.set_value(sigNum);
+    });
+        
+    std::cout << "Press CTRL + C to stop the process..." << std::endl;
+
+    signalValue.wait();
+
+    std::cout << "\nSignal " << signalValue.get() << " received!" << std::endl;
+    std::cout << "Exiting..." << std::endl;
+}
 
 /**************************************************************************************************
  * Main Function
@@ -29,6 +47,7 @@ int main(int argc, char** argv)
                   << "SilKitDemoChardevEchoDevice [" << participantNameArg << " <participant's name{EchoDevice}>]\n"
                      "  ["<<regUriArg<<" silkit://<host{localhost}>:<port{8501}>]\n"
                      "  ["<<logLevelArg<<" <Trace|Debug|Warn|{Info}|Error|Critical|off>]\n";
+        return 0;
     }
 
     const std::string loglevel = getArgDefault(argc, argv, logLevelArg, "Info");
@@ -87,21 +106,16 @@ int main(int argc, char** argv)
                 dataPublisher->Publish(dataMessageEvent.data);
             });
 
-        std::cout << "Press enter to stop the process..." << std::endl;
-        std::cin.ignore();
+        promptForExit();
     }
     catch (const SilKit::ConfigurationError& error)
     {
         std::cerr << "Invalid configuration: " << error.what() << std::endl;
-        std::cout << "Press enter to stop the process..." << std::endl;
-        std::cin.ignore();
         return -2;
     }
     catch (const std::exception& error)
     {
         std::cerr << "Something went wrong: " << error.what() << std::endl;
-        std::cout << "Press enter to stop the process..." << std::endl;
-        std::cin.ignore();
         return -3;
     }
 

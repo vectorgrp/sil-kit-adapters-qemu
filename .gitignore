@@ -1,7 +1,11 @@
 /silkit-qemu-demos-guest.qcow2
 /out/
 /.vs/
+/.vscode/
 /build/
+/bin/
+/lib/
+/Downloads/
 /_build/
 *.build*
 *.vector

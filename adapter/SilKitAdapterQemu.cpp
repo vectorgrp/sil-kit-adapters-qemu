@@ -11,6 +11,7 @@
 
 #include "Exceptions.hpp"
 #include "Parsing.hpp"
+#include "SignalHandler.hpp"
 #include "../chardev/adapter/ChardevSocketToPubSubAdapter.hpp"
 #include "../eth/adapter/EthSocketToEthControllerAdapter.hpp"
 
@@ -29,9 +30,19 @@ using namespace std::chrono_literals;
 using namespace SilKit::Services::Orchestration;
 
 void promptForExit()
-{
-    std::cout << "Press enter to stop the process..." << std::endl;
-    std::cin.ignore();
+{    
+    std::promise<int> signalPromise;
+    auto signalValue = signalPromise.get_future();
+    RegisterSignalHandler([&signalPromise](auto sigNum) {
+        signalPromise.set_value(sigNum);
+    });
+        
+    std::cout << "Press CTRL + C to stop the process..." << std::endl;
+
+    signalValue.wait();
+
+    std::cout << "\nSignal " << signalValue.get() << " received!" << std::endl;
+    std::cout << "Exiting..." << std::endl;
 }
 
 int main(int argc, char** argv)
@@ -145,8 +156,7 @@ int main(int argc, char** argv)
         auto futureStatus = runningStateFuture.wait_for(15s);
         if (futureStatus != std::future_status::ready)
         {
-            std::cout << "Lifecycle Service Stopping: timed out while checking if the participant is currently running.";
-            promptForExit();
+            logger->Debug("Lifecycle Service Stopping: timed out while checking if the participant is currently running.");
         }
         
         lifecycleService->Stop("Adapter stopped by the user.");
@@ -154,33 +164,28 @@ int main(int argc, char** argv)
         auto finalState = finalStateFuture.wait_for(15s);
         if (finalState != std::future_status::ready)
         {
-            std::cout << "Lifecycle service stopping: timed out" << std::endl;
-            promptForExit();
+            logger->Debug("Lifecycle service stopping: timed out");
         }
     }
     catch (const SilKit::ConfigurationError& error)
     {
         std::cerr << "Invalid configuration: " << error.what() << std::endl;
-        promptForExit();
         return CONFIGURATION_ERROR;
     }
     catch (const InvalidCli&)
     {
         adapters::print_help();
         std::cerr << std::endl << "Invalid command line arguments." << std::endl;
-        promptForExit();
         return CLI_ERROR;
     }
     catch (const SilKit::SilKitError& error)
     {
         std::cerr << "SIL Kit runtime error: " << error.what() << std::endl;
-        promptForExit();
         return OTHER_ERROR;
     }
     catch (const std::exception& error)
     {
         std::cerr << "Something went wrong: " << error.what() << std::endl;
-        promptForExit();
         return OTHER_ERROR;
     }
 
