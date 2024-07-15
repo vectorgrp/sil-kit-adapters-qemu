@@ -39,8 +39,7 @@ adapters::ethernet::EthSocketToEthControllerAdapter::EthSocketToEthControllerAda
         static intptr_t transmitId = 0;
         _ethController->SendFrame(EthernetFrame{std::move(data)}, reinterpret_cast<void*>(++transmitId));
         std::ostringstream debug_message;
-        debug_message << "QEMU >> SIL Kit: Ethernet frame (" << frameSize << " bytes, txId=" << transmitId << ")"
-                  << std::endl;
+        debug_message << "QEMU >> SIL Kit: Ethernet frame (" << frameSize << " bytes, txId=" << transmitId << ")";
         _logger->Debug(debug_message.str());
     }))
 {
@@ -64,7 +63,7 @@ adapters::ethernet::EthSocketToEthControllerAdapter::EthSocketToEthControllerAda
         auto rawFrame = msg.frame.raw;
         SendEthernetFrameToQemu(rawFrame);
         std::ostringstream debug_message;
-        debug_message << "SIL Kit >> QEMU: Ethernet frame (" << rawFrame.size() << " bytes)" << std::endl;
+        debug_message << "SIL Kit >> QEMU: Ethernet frame (" << rawFrame.size() << " bytes)";
         _logger->Debug(debug_message.str());
     });
     _ethController->AddFrameTransmitHandler(
@@ -73,12 +72,12 @@ adapters::ethernet::EthSocketToEthControllerAdapter::EthSocketToEthControllerAda
             if (ack.status == EthernetTransmitStatus::Transmitted)
             {
                 debug_message << "SIL Kit >> Demo: ACK for ETH Message with transmitId="
-                              << reinterpret_cast<intptr_t>(ack.userContext) << std::endl;
+                              << reinterpret_cast<intptr_t>(ack.userContext);
             }
             else
             {
                 debug_message << "SIL Kit >> Demo: NACK for ETH Message with transmitId="
-                              << reinterpret_cast<intptr_t>(ack.userContext) << ": " << ack.status << std::endl;
+                              << reinterpret_cast<intptr_t>(ack.userContext) << ": " << ack.status;
             }
             _logger->Debug(debug_message.str());
         });
