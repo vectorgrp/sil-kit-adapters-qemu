@@ -61,7 +61,7 @@ void adapters::print_help(bool userRequested)
               << "SilKitAdapterQemu ["<<participantNameArg<<" <participant's name{SilKitAdapterQemu}>]\n"
            "  ["<<configurationArg<<" <path to .silkit.yaml or .json configuration file>]\n"
            "  ["<<regUriArg<<" silkit://<host{localhost}>:<port{8501}>]\n"
-           "  ["<<logLevelArg<<" <Trace|Debug|Warn|{Info}|Error|Critical|off>]\n"
+           "  ["<<logLevelArg<<" <Trace|Debug|Warn|{Info}|Error|Critical|Off>]\n"
            " [["<<ethArg<<" <host>:<port>,network=<network's name>[:<controller's name>]]]\n"
            " [["<<chardevArg<<"\n"
            "     <host>:<port>,\n"

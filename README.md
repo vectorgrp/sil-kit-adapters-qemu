@@ -88,7 +88,7 @@ The application takes the following command line arguments (defaults in curly br
     SilKitAdapterQemu [--name <participant's name{SilKitAdapterQemu}>]
       [--configuration <path to .silkit.yaml or .json configuration file>]
       [--registry-uri silkit://<host{localhost}>:<port{8501}>]
-      [--log <Trace|Debug|Warn|{Info}|Error|Critical|off>]
+      [--log <Trace|Debug|Warn|{Info}|Error|Critical|Off>]
      [[--socket-to-ethernet <host>:<port>,network=<network's name>[:<controller's name>]]]
      [[--socket-to-chardev
          <host>:<port>,

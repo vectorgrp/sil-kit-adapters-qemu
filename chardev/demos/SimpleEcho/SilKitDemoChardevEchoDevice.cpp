@@ -46,7 +46,7 @@ int main(int argc, char** argv)
         std::cout << "Usage (defaults in curly braces if you omit the switch):" << std::endl
                   << "SilKitDemoChardevEchoDevice [" << participantNameArg << " <participant's name{EchoDevice}>]\n"
                      "  ["<<regUriArg<<" silkit://<host{localhost}>:<port{8501}>]\n"
-                     "  ["<<logLevelArg<<" <Trace|Debug|Warn|{Info}|Error|Critical|off>]\n";
+                     "  ["<<logLevelArg<<" <Trace|Debug|Warn|{Info}|Error|Critical|Off>]\n";
         return 0;
     }
 
