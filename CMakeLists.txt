@@ -2,13 +2,22 @@ cmake_minimum_required(VERSION 3.5)
 project(VectorSilKitAdaptersQemu)
 include(FetchContent)
 
+if(WIN32)
+    if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+        set(CMAKE_INSTALL_PREFIX "$ENV{ProgramFiles}/VectorSilKitAdaptersQemu" CACHE PATH "Set default install path to $ENV{ProgramFiles}" FORCE)
+    endif(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+endif()
+
 set(CMAKE_BUILD_RPATH_USE_ORIGIN ON)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(CMAKE_CXX_STANDARD 17)
 
-set(SILKIT_ADAPTERS_QEMU_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
+set(SILKIT_ADAPTERS_QEMU_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
+set(SILKIT_ADAPTERS_QEMU_LIBRARY_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib")
+
+set(SILKIT_ADAPTERS_QEMU_VERSION "1.1.1")
 
 set(SILKIT_VERSION "4.0.43" CACHE STRING "If no SIL Kit package is specified, this version will be downloaded")
 set(SILKIT_FLAVOR "ubuntu-18.04-x86_64-gcc" CACHE STRING "If no SIL Kit package is specified, this package flavor will be downloaded")
@@ -20,6 +29,13 @@ target_compile_definitions(asio INTERFACE ASIO_STANDALONE=1)
 target_link_libraries(asio INTERFACE Threads::Threads)
 
 if (WIN32)
+    # set the default install paths for Windows 32 and 64 bits
+    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+        set(CMAKE_INSTALL_PREFIX "C:/Program Files/Vector SIL Kit Adapters QEMU ${SILKIT_ADAPTERS_QEMU_VERSION}" CACHE PATH "Default install path" FORCE)
+    elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
+        set(CMAKE_INSTALL_PREFIX "C:/Program Files (x86)/Vector SIL Kit Adapters QEMU ${SILKIT_ADAPTERS_QEMU_VERSION}" CACHE PATH "Default install path" FORCE)
+    endif()
+
     target_compile_definitions(asio INTERFACE _SILENCE_CXX17_ALLOCATOR_VOID_DEPRECATION_WARNING=1)
     target_compile_definitions(asio INTERFACE WINVER=0x0601 _WIN32_WINNT=0x0601) # Windows 7
 endif()
@@ -101,85 +117,120 @@ add_subdirectory(chardev/demos)
 
 install(
     DIRECTORY            
-        ${CMAKE_CURRENT_SOURCE_DIR}/adapter            
-
-    DESTINATION .
-    COMPONENT source
-    REGEX "\.git$" EXCLUDE
-    REGEX "\.github$" EXCLUDE    
-)
-
-install(
-    DIRECTORY            
-        ${CMAKE_CURRENT_SOURCE_DIR}/tools            
-
-    DESTINATION .
-    COMPONENT source
-    REGEX "\.git$" EXCLUDE
-    REGEX "\.github$" EXCLUDE    
-)
-
-install(
-    DIRECTORY            
-        ${CMAKE_CURRENT_SOURCE_DIR}/eth            
-
-    DESTINATION .
-    COMPONENT source
-    REGEX "\.git$" EXCLUDE
-    REGEX "\.github$" EXCLUDE    
-)
-
-install(
-    DIRECTORY            
-        ${CMAKE_CURRENT_SOURCE_DIR}/chardev           
-
-    DESTINATION .
-    COMPONENT source
-    REGEX "\.git$" EXCLUDE
-    REGEX "\.github$" EXCLUDE    
-)
-
-install(
-    DIRECTORY            
-        ${CMAKE_CURRENT_SOURCE_DIR}/qmp           
-
-    DESTINATION .
-    COMPONENT source
-    REGEX "\.git$" EXCLUDE
-    REGEX "\.github$" EXCLUDE    
-)
-
-install(
-    DIRECTORY
+        ${CMAKE_CURRENT_SOURCE_DIR}/adapter
+        ${CMAKE_CURRENT_SOURCE_DIR}/eth
+        ${CMAKE_CURRENT_SOURCE_DIR}/chardev
+        ${CMAKE_CURRENT_SOURCE_DIR}/qmp
         ${CMAKE_CURRENT_SOURCE_DIR}/third_party
+        ${CMAKE_CURRENT_SOURCE_DIR}/tools
+
     DESTINATION .
     COMPONENT source
+    EXCLUDE_FROM_ALL
     REGEX "\.git$" EXCLUDE
-    REGEX "\.github$" EXCLUDE
+    REGEX "\.github$" EXCLUDE    
+)
+
+install(
+    FILES            
+        ${CMAKE_CURRENT_SOURCE_DIR}/tools/setup-host-wsl2-ubuntu.sh
+        ${CMAKE_CURRENT_SOURCE_DIR}/tools/build-silkit-qemu-demos-guest
+        ${CMAKE_CURRENT_SOURCE_DIR}/tools/run-silkit-qemu-demos-guest
+    DESTINATION tools
+    PERMISSIONS
+        OWNER_READ OWNER_WRITE OWNER_EXECUTE
+        GROUP_READ GROUP_EXECUTE
+        WORLD_READ WORLD_EXECUTE
+    COMPONENT source
+    EXCLUDE_FROM_ALL
+)
+
+install(
+    FILES            
+        ${CMAKE_CURRENT_SOURCE_DIR}/eth/demos/CANoe4SW_SE/run.sh
+    DESTINATION eth/demos/CANoe4SW_SE
+    PERMISSIONS
+        OWNER_READ OWNER_WRITE OWNER_EXECUTE
+        GROUP_READ GROUP_EXECUTE
+        WORLD_READ WORLD_EXECUTE
+    COMPONENT source
+    EXCLUDE_FROM_ALL
+)
+
+install(
+    FILES            
+        ${CMAKE_CURRENT_SOURCE_DIR}/qmp/demos/CANoe4SW_SE/run.sh
+    DESTINATION qmp/demos/CANoe4SW_SE
+    PERMISSIONS
+        OWNER_READ OWNER_WRITE OWNER_EXECUTE
+        GROUP_READ GROUP_EXECUTE
+        WORLD_READ WORLD_EXECUTE
+    COMPONENT source
+    EXCLUDE_FROM_ALL
+)
+
+install(
+    FILES            
+        ${CMAKE_CURRENT_SOURCE_DIR}/chardev/demos/CANoe4SW_SE/run.sh
+    DESTINATION chardev/demos/CANoe4SW_SE
+    PERMISSIONS
+        OWNER_READ OWNER_WRITE OWNER_EXECUTE
+        GROUP_READ GROUP_EXECUTE
+        WORLD_READ WORLD_EXECUTE
+    COMPONENT source
+    EXCLUDE_FROM_ALL
 )
 
 install(
     FILES
         CMakeLists.txt
         CMakePresets.json
+        LICENSE
+        README.md
+        SECURITY.md
+        CONTRIBUTING.md
     DESTINATION .
     COMPONENT source
+    EXCLUDE_FROM_ALL
 )
+
+include(GNUInstallDirs)
 
 install(
     FILES
-        LICENSE
-        README.md        
-    DESTINATION .
-    COMPONENT source
+        ${SILKIT_ADAPTERS_QEMU_LIBRARY_DIRECTORY}/libSilKit.so
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    PERMISSIONS
+        OWNER_READ OWNER_WRITE
+        GROUP_READ
+        WORLD_READ
+    COMPONENT lib
+    EXCLUDE_FROM_ALL
 )
 
 install(
-    DIRECTORY
-        ${SILKIT_ADAPTERS_QEMU_OUTPUT_DIRECTORY}
+    TARGETS 
+        SilKitDemoChardevEchoDevice
+        SilKitDemoEthernetIcmpEchoDevice
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT Runtime
+    PERMISSIONS
+        OWNER_READ OWNER_WRITE OWNER_EXECUTE
+        GROUP_READ GROUP_EXECUTE
+        WORLD_READ WORLD_EXECUTE    
+    EXCLUDE_FROM_ALL
+)
 
-    DESTINATION build
-    COMPONENT bin
+# only SilKitAdapterQemu should be installed to /usr/local/bin by calling --target install (therefore it is not excluded)
+install(
+    TARGETS 
+        SilKitAdapterQemu
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT Runtime
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT Runtime
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/SilKitAdapterQemu COMPONENT Development   
+    PERMISSIONS
+        OWNER_READ OWNER_WRITE OWNER_EXECUTE
+        GROUP_READ GROUP_EXECUTE
+        WORLD_READ WORLD_EXECUTE
 )
 
 ###############################################################################
@@ -190,9 +241,12 @@ set(CPACK_GENERATOR "ZIP")
 
 set(CPACK_PACKAGE_DESCRIPTION "binary release of SIL Kit Adapters QEMU")
 set(CPACK_PACKAGE_NAME "SilKit-Adapters-QEMU")
-
 set(CPACK_PACKAGE_VENDOR "Vector Informatik")
 set(CPACK_PACKAGE_CONTACT "support@vector.com")
 set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}${PACKAGE_FILENAME_SUFFIX}")
+
+set(CPACK_ARCHIVE_COMPONENT_INSTALL ON)
+set(CPACK_COMPONENTS_ALL_IN_ONE_PACKAGE ON)
+set(CPACK_COMPONENT_INCLUDE_TOPLEVEL_DIRECTORY ON)
 
 include(CPack)

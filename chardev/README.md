@@ -34,7 +34,7 @@ root@silkit-qemu-demos-guest:~# stty raw -echo 115200 -F /dev/ttyS1
 Then (or before) you have to setup the SIL Kit environment:
 
 ```
-wsl$ ./path/to/SilKit-x.y.z-$platform/SilKit/bin/sil-kit-registry --listen-uri 'silkit://0.0.0.0:8501'
+./path/to/SilKit-x.y.z-$platform/SilKit/bin/sil-kit-registry --listen-uri 'silkit://0.0.0.0:8501'
 ```
 
 
@@ -42,7 +42,7 @@ wsl$ ./path/to/SilKit-x.y.z-$platform/SilKit/bin/sil-kit-registry --listen-uri '
 After following the common steps above, first launch the adapter, which connects to the registry (to connect to other participants) and to QEMU,
 to transmit the serial data written to ``/dev/ttyS1`` inside QEMU through SIL Kit, and vice-versa:
 ```
-wsl$ ./build/bin/SilKitAdapterQemu --socket-to-chardev localhost:23456,Namespace::toChardev,VirtualNetwork=Default,Instance=EchoDevice,Namespace::fromChardev,VirtualNetwork:Default,Instance:Adapter --configuration ./chardev/demos/SilKitConfig_Adapter.silkit.yaml
+./bin/SilKitAdapterQemu --socket-to-chardev localhost:23456,Namespace::toChardev,VirtualNetwork=Default,Instance=EchoDevice,Namespace::fromChardev,VirtualNetwork:Default,Instance:Adapter --configuration ./chardev/demos/SilKitConfig_Adapter.silkit.yaml
 Creating participant 'SilKitAdapterQemu' at silkit://localhost:8501
 [2022-08-31 18:06:27.674] [SilKitAdapterQemu] [info] Creating participant 'SilKitAdapterQemu' at 'silkit://localhost:8501', SIL Kit version: 4.0.19
 [2022-08-31 18:06:27.790] [SilKitAdapterQemu] [info] Connected to registry at 'tcp://127.0.0.1:8501' via 'tcp://127.0.0.1:49224' (silkit://localhost:8501)
@@ -57,7 +57,7 @@ root@silkit-qemu-demos-guest:~# cat /dev/ttyS1&
 
 Then, launch the following helping process in separate window:
 ``` 
-wsl$ ./build/bin/SilKitDemoChardevEchoDevice
+./bin/SilKitDemoChardevEchoDevice
 Creating participant 'EchoDevice' at silkit://localhost:8501
 [2022-08-31 18:07:03.818] [EchoDevice] [info] Creating participant 'EchoDevice' at 'silkit://localhost:8501', SIL Kit version: 4.0.19
 [2022-08-31 18:07:03.935] [EchoDevice] [info] Connected to registry at 'tcp://127.0.0.1:8501' via 'tcp://127.0.0.1:49242' (silkit://localhost:8501)
@@ -180,7 +180,7 @@ a publisher on the other, ``toChardev``.
 After following the common demo steps above, first launch the adapter, which connects to the registry (to connect to other participants) and to QEMU,
 to transmit the serial data written to ``/dev/ttyS1`` inside QEMU through SIL Kit, and vice-versa:
 ```
-wsl$ ./build/bin/SilKitAdapterQemu --socket-to-chardev localhost:23456,Namespace::toChardev,VirtualNetwork=Default,Instance=EchoDevice,Namespace::fromChardev,VirtualNetwork:Default,Instance:Adapter --configuration ./chardev/demos/SilKitConfig_Adapter.silkit.yaml
+./bin/SilKitAdapterQemu --socket-to-chardev localhost:23456,Namespace::toChardev,VirtualNetwork=Default,Instance=EchoDevice,Namespace::fromChardev,VirtualNetwork:Default,Instance:Adapter --configuration ./chardev/demos/SilKitConfig_Adapter.silkit.yaml
 Creating participant 'SilKitAdapterQemu' at silkit://localhost:8501
 [2022-08-31 18:06:27.674] [SilKitAdapterQemu] [info] Creating participant 'SilKitAdapterQemu' at 'silkit://localhost:8501', SIL Kit version: 4.0.19
 [2022-08-31 18:06:27.790] [SilKitAdapterQemu] [info] Connected to registry at 'tcp://127.0.0.1:8501' via 'tcp://127.0.0.1:49224' (silkit://localhost:8501)
@@ -219,7 +219,7 @@ Before you can connect CANoe to the SIL Kit network you should adapt the ``Regis
 
 Then launch the adapter prepare to dialog with CANoe on its byte-oriented topics:
 ```
-wsl$ ./build/bin/SilKitAdapterQemu --socket-to-chardev localhost:23456,Namespace::degrees_user,VirtualNetwork=Default,Instance=UserTemp,Namespace::degrees_sensor,VirtualNetwork:Default,Instance:SensorTemp --registry-uri silkit://localhost:8501 --log Debug
+./bin/SilKitAdapterQemu --socket-to-chardev localhost:23456,Namespace::degrees_user,VirtualNetwork=Default,Instance=UserTemp,Namespace::degrees_sensor,VirtualNetwork:Default,Instance:SensorTemp --registry-uri silkit://localhost:8501 --log Debug
 ```
 
 ### Temperature control demo

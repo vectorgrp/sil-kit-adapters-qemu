@@ -25,9 +25,9 @@ interface with the SIL Kit - and the ``SilKitDemoEthernetIcmpEchoDevice`` in sep
 
     ./path/to/SilKit-x.y.z-$platform/SilKit/bin/sil-kit-registry --listen-uri 'silkit://0.0.0.0:8501'
     
-    ./build/bin/SilKitAdapterQemu --socket-to-ethernet localhost:12345,network=qemu_demo --configuration ./eth/demos/SilKitConfig_Adapter.silkit.yaml
+    ./bin/SilKitAdapterQemu --socket-to-ethernet localhost:12345,network=qemu_demo --configuration ./eth/demos/SilKitConfig_Adapter.silkit.yaml
     
-    ./build/bin/SilKitDemoEthernetIcmpEchoDevice
+    ./bin/SilKitDemoEthernetIcmpEchoDevice
     
 The demo applications will produce output when they send and receive Ethernet frames from QEMU or the Vector SIL Kit.
 
