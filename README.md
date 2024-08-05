@@ -25,7 +25,7 @@ The first thing that you should do is initializing the submodules to fetch the r
 
 Otherwise clone the standalone version of asio manually:
 
-    git clone --branch asio-1-18-2 https://github.com/chriskohlhoff/asio.git third_party/asio
+    git clone --branch asio-1-24-0 https://github.com/chriskohlhoff/asio.git third_party/asio
 
 ### Build the Adapters and Demos
 To build the adapters and demos, you'll need a SIL Kit package ``SilKit-x.y.z-$platform`` for your platform. You can download them directly from [Vector SIL Kit Releases](https://github.com/vectorgrp/sil-kit/releases). 
