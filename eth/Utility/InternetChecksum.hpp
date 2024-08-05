@@ -2,14 +2,14 @@
 
 #pragma once
 
-#include "ReadUintBe.hpp"
-
 #include <optional>
-
 #include <cstdint>
 #include <cassert>
+#include <cstdint>
 
-#include <asio/ts/buffer.hpp>
+#include "ReadUintBe.hpp"
+
+#include "asio/ts/buffer.hpp"
 
 namespace demo {
 

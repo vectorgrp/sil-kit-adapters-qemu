@@ -17,3 +17,8 @@ set_target_properties(ChardevSocketToPubSubAdapter
     BUILD_RPATH "$ORIGIN"
     RUNTIME_OUTPUT_DIRECTORY $<$<BOOL:ALWAYS>:${SILKIT_ADAPTERS_QEMU_OUTPUT_DIRECTORY}>
 )
+
+if(MINGW)
+	target_compile_definitions(ChardevSocketToPubSubAdapter INTERFACE _WIN32_WINNT=0x0601)
+	target_link_libraries(ChardevSocketToPubSubAdapter PUBLIC -lwsock32 -lws2_32) #windows socket/ wsa
+endif()

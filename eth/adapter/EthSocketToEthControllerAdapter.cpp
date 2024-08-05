@@ -5,15 +5,16 @@
 #include <thread>
 #include <vector>
 #include <set>
+#include <cstdint>
 
 #include "adapter/Exceptions.hpp"
 #include "WriteUintBe.hpp"
 #include "../../chardev/Utility/StringUtils.hpp"
 #include "adapter/Parsing.hpp"
 
-#include <asio/ts/buffer.hpp>
-#include <asio/ts/io_context.hpp>
-#include <asio/ts/net.hpp>
+#include "asio/ts/buffer.hpp"
+#include "asio/ts/io_context.hpp"
+#include "asio/ts/net.hpp"
 
 #include "EthSocketToEthControllerAdapter.hpp"
 

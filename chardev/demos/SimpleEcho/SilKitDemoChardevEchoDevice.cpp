@@ -6,12 +6,13 @@
 #include <chrono>
 #include <thread>
 
+#include "../../adapter/Parsing.hpp"
+#include "../adapter/SignalHandler.hpp"
+
 #include "silkit/SilKit.hpp"
 #include "silkit/config/all.hpp"
 #include "silkit/services/pubsub/all.hpp"
 #include "silkit/util/serdes/Serialization.hpp"
-#include "../../adapter/Parsing.hpp"
-#include "../adapter/SignalHandler.hpp"
 
 using namespace adapters;
 

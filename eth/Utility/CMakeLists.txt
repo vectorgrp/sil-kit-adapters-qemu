@@ -40,3 +40,7 @@ target_link_libraries(Utility
         asio
 )
 
+if(MINGW)
+    target_compile_definitions(Utility INTERFACE _WIN32_WINNT=0x0601)
+    target_link_libraries(Utility PUBLIC -lwsock32 -lws2_32) #windows socket/ wsa
+endif()

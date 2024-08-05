@@ -1,17 +1,18 @@
 // Copyright (c) Vector Informatik GmbH. All rights reserved.
 
-#include "Device.hpp"
-
 #include <iostream>
 #include <string>
 #include <vector>
+#include <cstdint>
+
+#include "Device.hpp"
+#include "../../adapter/Parsing.hpp"
+#include "../adapter/SignalHandler.hpp"
 
 #include "silkit/SilKit.hpp"
 #include "silkit/config/all.hpp"
 #include "silkit/services/ethernet/all.hpp"
 #include "silkit/services/ethernet/string_utils.hpp"
-#include "../../adapter/Parsing.hpp"
-#include "../adapter/SignalHandler.hpp"
 
 using namespace adapters;
 

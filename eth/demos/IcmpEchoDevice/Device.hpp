@@ -2,6 +2,11 @@
 
 #pragma once
 
+#include <iostream>
+#include <vector>
+#include <functional>
+#include <cstdint>
+
 #include "Enums.hpp"
 #include "Exceptions.hpp"
 #include "FormattedBuffer.hpp"
@@ -18,13 +23,9 @@
 #include "Ip4Header.hpp"
 #include "Icmp4Header.hpp"
 
-#include <iostream>
-#include <vector>
-#include <functional>
-
-#include <asio/ts/buffer.hpp>
-#include <asio/ts/internet.hpp>
-#include <asio/ts/socket.hpp>
+#include "asio/ts/buffer.hpp"
+#include "asio/ts/internet.hpp"
+#include "asio/ts/socket.hpp"
 
 namespace demo {
 

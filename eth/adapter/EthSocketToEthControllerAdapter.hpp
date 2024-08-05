@@ -2,12 +2,15 @@
 
 #pragma once
 
+#include <cstdint>
+
+#include "WriteUintBe.hpp"
+
 #include "silkit/SilKit.hpp"
 #include "silkit/config/all.hpp"
 #include "silkit/services/ethernet/all.hpp"
 #include "silkit/services/logging/all.hpp"
 #include "silkit/services/ethernet/string_utils.hpp"
-#include "WriteUintBe.hpp"
 
 namespace adapters {
 namespace ethernet {
