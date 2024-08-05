@@ -35,23 +35,15 @@ The adapters and demos are built using ``cmake``:
 
     mkdir build
     cmake -S. -Bbuild -DSILKIT_PACKAGE_DIR=/path/to/SilKit-x.y.z-$platform/ -D CMAKE_BUILD_TYPE=Release
-    cmake --build build --parallel
+    cmake --build build --parallel --config Release
 
-**Note (1):** If you have installed a self-built or a pre-built version of SIL Kit, you can build the adapter against it by setting `SILKIT_PACKAGE_DIR` to the path, where the `bin`, `include` and `lib` directories are. 
+**Note 1:** If you have a self-built or pre-built version of SIL Kit, you can build the adapter against it by setting SILKIT_PACKAGE_DIR to the path, where the bin, include and lib directories are.
 
-**Note (2)(for Windows only):** SIL Kit (v4.0.19 and above) is available on Windows with an (.msi) installation file.
-If you want to build the adapters agains this installed version of SIL Kit, you can generate the build files without specifying any path for SIL Kit as it will be found automatically by CMAKE, e.g: 
-    
-     mkdir build
-     cmake -S. -Bbuild
-     cmake --build build --parallel
+**Note 2:** If you have SIL Kit installed on your system, you can build the adapter against it, even by not providing SILKIT_PACKAGE_DIR to the installation path at all. Hint: Be aware, if you are using WSL2 this may result in issue where your Windows installation of SIL Kit is found. To avoid this specify SILKIT_PACKAGE_DIR.
 
-If you want to force building the adapter against a specific version of SIL Kit (e.g. a downloaded SIL Kit released package), you can do this by setting the SILKIT_PACKAGE_DIR variable according to your preference as shown in the default case. 
+**Note 3:** If you don't provide a specific path for SILKIT_PACKAGE_DIR and there is no SIL Kit installation on your system, a SIL Kit release package (the default version listed in CMakeLists.txt) will be fetched from github.com and the adapter will be built against it.
 
-**Note (3):** If you don't provide a specific path for SILKIT_PACKAGE_DIR and there is no SIL Kit installation on your system, a SIL Kit release package (the default version listed in CMakeLists.txt) will be fetched from github.com and the adapter will be built against it.
-
-The adapter and demo executables will be available in ``bin`` directory.
-Additionally the ``SilKit`` shared library (e.g., ``SilKit[d].dll`` on Windows) is copied to the ``lib`` directory next to it automatically.
+The adapter and demo executables will be available in the ``bin`` directory. Additionally the ``SilKit`` shared library is copied to the ``lib`` directory next to it automatically.
 
 ## b) Getting Started with pre-built Adapters and Demos
 Download a preview or release of the Adapters directly from [Vector SIL Kit QEMU Releases](https://github.com/vectorgrp/sil-kit-adapters-qemu/releases).
