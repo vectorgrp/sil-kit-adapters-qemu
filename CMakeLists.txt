@@ -134,8 +134,8 @@ install(
 install(
     FILES            
         ${CMAKE_CURRENT_SOURCE_DIR}/tools/setup-host-wsl2-ubuntu.sh
-        ${CMAKE_CURRENT_SOURCE_DIR}/tools/build-silkit-qemu-demos-guest
-        ${CMAKE_CURRENT_SOURCE_DIR}/tools/run-silkit-qemu-demos-guest
+        ${CMAKE_CURRENT_SOURCE_DIR}/tools/build-silkit-qemu-demos-guest.sh
+        ${CMAKE_CURRENT_SOURCE_DIR}/tools/run-silkit-qemu-demos-guest.sh
     DESTINATION tools
     PERMISSIONS
         OWNER_READ OWNER_WRITE OWNER_EXECUTE

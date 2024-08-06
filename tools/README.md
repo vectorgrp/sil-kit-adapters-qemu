@@ -3,20 +3,18 @@ Setup your WSL host:
 
     sudo ./tools/setup-host-wsl2-ubuntu.sh
 
-**Note:** This script will install ``virt-builder`` and a kernel image for use by ``virt-builder``)
+**Note:** This script will install ``virt-builder`` and a kernel image for use by ``virt-builder``.
 
 Build the guest image:
 
-    sudo chmod a+x tools/build-silkit-qemu-demos-guest
-    sudo ./tools/build-silkit-qemu-demos-guest
+    sudo ./tools/build-silkit-qemu-demos-guest.sh
     sudo chmod go+rw silkit-qemu-demos-guest.qcow2
 
 
 ### Run QEMU image
 To start the guest image, run:
 
-    sudo chmod a+x tools/run-silkit-qemu-demos-guest
-    ./tools/run-silkit-qemu-demos-guest
+    ./tools/run-silkit-qemu-demos-guest.sh
 
 By default, the options in this script will spawn the guest system in the same terminal. The password for the ``root``
 user is ``root``.

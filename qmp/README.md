@@ -7,7 +7,7 @@ Detailed documentation regarding QMP can be found here:
 - https://qemu-project.gitlab.io/qemu/interop/qemu-qmp-ref.html# 
 - https://wiki.qemu.org/Documentation/QMP
 
-To make QEMU expose the QMP interface and act as a QMP server it needs to be started with an additional CLI command (the ``run-silkit-qemu-demos-guest`` script already includes this command):
+To make QEMU expose the QMP interface and act as a QMP server it needs to be started with an additional CLI command (the ``run-silkit-qemu-demos-guest.sh`` script already includes this command):
 
     -qmp tcp:localhost:4444,server,wait=off
 
