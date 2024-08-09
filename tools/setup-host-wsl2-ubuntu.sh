@@ -1,4 +1,4 @@
 #!/bin/bash
 
-apt install linux-virtual libguestfs-tools
+apt install linux-virtual libguestfs-tools -y
 

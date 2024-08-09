@@ -10,6 +10,7 @@
 *.build*
 *.vector
 *Default.venvironment*
+*TestUnit.vtestunit*
 *working-dir*
 /*/build/
 /*/_build/
@@ -17,3 +18,4 @@
 /build_wsl
 qmp/demos/CANoe4SW_SE/testPingViaQmp.vtestunit/*
 qmp/demos/CANoe/.run/*
+/**/*.out
