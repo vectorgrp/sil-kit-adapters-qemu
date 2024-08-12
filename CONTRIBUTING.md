@@ -1,6 +1,6 @@
-# Contributing to Vector SIL Kit Adapters for QEMU
+# Contributing to Vector SIL Kit Adapter for QEMU
 
-Welcome and thank you for your interest in contributing to the Vector SIL Kit Adapters for QEMU
+Welcome and thank you for your interest in contributing to the Vector SIL Kit Adapter for QEMU
 open source project.
 
 We are sorry, but at the moment, we do not accept external contributions until

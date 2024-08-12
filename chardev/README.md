@@ -42,7 +42,7 @@ Then (or before) you have to setup the SIL Kit environment:
 After following the common steps above, first launch the adapter, which connects to the registry (to connect to other participants) and to QEMU,
 to transmit the serial data written to ``/dev/ttyS1`` inside QEMU through SIL Kit, and vice-versa:
 ```
-./bin/SilKitAdapterQemu --socket-to-chardev localhost:23456,Namespace::toChardev,VirtualNetwork=Default,Instance=EchoDevice,Namespace::fromChardev,VirtualNetwork:Default,Instance:Adapter --configuration ./chardev/demos/SilKitConfig_Adapter.silkit.yaml
+./bin/sil-kit-adapter-qemu --socket-to-chardev localhost:23456,Namespace::toChardev,VirtualNetwork=Default,Instance=EchoDevice,Namespace::fromChardev,VirtualNetwork:Default,Instance:Adapter --configuration ./chardev/demos/SilKitConfig_Adapter.silkit.yaml
 Creating participant 'SilKitAdapterQemu' at silkit://localhost:8501
 [2022-08-31 18:06:27.674] [SilKitAdapterQemu] [info] Creating participant 'SilKitAdapterQemu' at 'silkit://localhost:8501', SIL Kit version: 4.0.19
 [2022-08-31 18:06:27.790] [SilKitAdapterQemu] [info] Connected to registry at 'tcp://127.0.0.1:8501' via 'tcp://127.0.0.1:49224' (silkit://localhost:8501)
@@ -57,7 +57,7 @@ root@silkit-qemu-demos-guest:~# cat /dev/ttyS1&
 
 Then, launch the following helping process in separate window:
 ``` 
-./bin/SilKitDemoChardevEchoDevice
+./bin/sil-kit-demo-chardev-echo-device
 Creating participant 'EchoDevice' at silkit://localhost:8501
 [2022-08-31 18:07:03.818] [EchoDevice] [info] Creating participant 'EchoDevice' at 'silkit://localhost:8501', SIL Kit version: 4.0.19
 [2022-08-31 18:07:03.935] [EchoDevice] [info] Connected to registry at 'tcp://127.0.0.1:8501' via 'tcp://127.0.0.1:49242' (silkit://localhost:8501)
@@ -65,8 +65,8 @@ Press CTRL + C to stop the process...
     ...
 ```
 
-Finally, you can test sending characters to ``/dev/ttyS1`` inside QEMU, which will be received by SilKitAdapterQemu
-out of the socket port 23456, sent to SilKitDemoChardevEchoDevice which will send them back, before finally be resent
+Finally, you can test sending characters to ``/dev/ttyS1`` inside QEMU, which will be received by sil-kit-adapter-qemu
+out of the socket port 23456, sent to sil-kit-demo-chardev-echo-device which will send them back, before finally be resent
 through the QEMU socket connection and you'll see them printed by the ``cat`` command launched during the setup.
 
 If you chose not to use SSH to read what is incoming from ``ttyS1``, it is recommended to make the terminal pause to
@@ -81,7 +81,7 @@ root@silkit-qemu-demos-guest:~# echo message11 > /dev/ttyS1 ; sleep 0.1
 message11
 ```
 
-You should see output similar to the following from the SilKitAdapterQemu application:
+You should see output similar to the following from the sil-kit-adapter-qemu application:
 ```
 [2023-03-30 11:17:54.376] [SilKitAdapterQemu] [debug] QEMU >> SIL Kit: message1
 
@@ -103,7 +103,7 @@ Take note that timing and other considerations may split the message, as thus:
 
 ```
 
-And you should see output similar to the following from the SilKitDemoChardevEchoDevice application:
+And you should see output similar to the following from the sil-kit-demo-chardev-echo-device application:
 ```
 SIL Kit >> SIL Kit: message1
 
@@ -180,7 +180,7 @@ a publisher on the other, ``toChardev``.
 After following the common demo steps above, first launch the adapter, which connects to the registry (to connect to other participants) and to QEMU,
 to transmit the serial data written to ``/dev/ttyS1`` inside QEMU through SIL Kit, and vice-versa:
 ```
-./bin/SilKitAdapterQemu --socket-to-chardev localhost:23456,Namespace::toChardev,VirtualNetwork=Default,Instance=EchoDevice,Namespace::fromChardev,VirtualNetwork:Default,Instance:Adapter --configuration ./chardev/demos/SilKitConfig_Adapter.silkit.yaml
+./bin/sil-kit-adapter-qemu --socket-to-chardev localhost:23456,Namespace::toChardev,VirtualNetwork=Default,Instance=EchoDevice,Namespace::fromChardev,VirtualNetwork:Default,Instance:Adapter --configuration ./chardev/demos/SilKitConfig_Adapter.silkit.yaml
 Creating participant 'SilKitAdapterQemu' at silkit://localhost:8501
 [2022-08-31 18:06:27.674] [SilKitAdapterQemu] [info] Creating participant 'SilKitAdapterQemu' at 'silkit://localhost:8501', SIL Kit version: 4.0.19
 [2022-08-31 18:06:27.790] [SilKitAdapterQemu] [info] Connected to registry at 'tcp://127.0.0.1:8501' via 'tcp://127.0.0.1:49224' (silkit://localhost:8501)
@@ -219,7 +219,7 @@ Before you can connect CANoe to the SIL Kit network you should adapt the ``Regis
 
 Then launch the adapter prepare to dialog with CANoe on its byte-oriented topics:
 ```
-./bin/SilKitAdapterQemu --socket-to-chardev localhost:23456,Namespace::degrees_user,VirtualNetwork=Default,Instance=UserTemp,Namespace::degrees_sensor,VirtualNetwork:Default,Instance:SensorTemp --registry-uri silkit://localhost:8501 --log Debug
+./bin/sil-kit-adapter-qemu --socket-to-chardev localhost:23456,Namespace::degrees_user,VirtualNetwork=Default,Instance=UserTemp,Namespace::degrees_sensor,VirtualNetwork:Default,Instance:SensorTemp --registry-uri silkit://localhost:8501 --log Debug
 ```
 
 ### Temperature control demo

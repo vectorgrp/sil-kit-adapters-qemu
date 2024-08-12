@@ -33,13 +33,13 @@ $RunQEMUProcess.StartInfo.UseShellExecute = $false
 $RunQEMUProcess.StartInfo.RedirectStandardInput = $true
 
 $AdapterProcess = New-Object System.Diagnostics.Process
-$AdapterProcess.StartInfo.FileName = "$PSScriptRoot\..\..\..\bin\SilKitAdapterQemu.exe"
+$AdapterProcess.StartInfo.FileName = "$PSScriptRoot\..\..\..\bin\sil-kit-adapter-qemu.exe"
 $AdapterProcess.StartInfo.Arguments = "--socket-to-ethernet localhost:12345,network=qemu_demo --configuration $PSScriptRoot\..\SilKitConfig_Adapter.silkit.yaml"
 $AdapterProcess.StartInfo.UseShellExecute = $false
 $AdapterProcess.StartInfo.RedirectStandardOutput = $true
 
 $DemoProcess = New-Object System.Diagnostics.Process
-$DemoProcess.StartInfo.FileName = "$PSScriptRoot\..\..\..\bin\SilKitDemoEthernetIcmpEchoDevice.exe"
+$DemoProcess.StartInfo.FileName = "$PSScriptRoot\..\..\..\bin\sil-kit-demo-ethernet-icmp-echo-device.exe"
 $DemoProcess.StartInfo.Arguments = "--log Debug"
 $DemoProcess.StartInfo.UseShellExecute = $false  
 $DemoProcess.StartInfo.RedirectStandardOutput = $true
@@ -55,20 +55,20 @@ $RegistryOutputHandler = {
 $AdapterOutputHandler = {
     param($sending, $data)
     if ($data.Data) {
-        Add-Content -Path "$PSScriptRoot\logs\SilKitAdapterQemu.out" -Value $data.Data
+        Add-Content -Path "$PSScriptRoot\logs\sil-kit-adapter-qemu.out" -Value $data.Data
     }
 }
 
 $DemoOutputHandler = {
     param($sending, $data)
     if ($data.Data) {
-        Add-Content -Path "$PSScriptRoot\logs\SilKitDemoEthernetIcmpEchoDevice.out" -Value $data.Data
+        Add-Content -Path "$PSScriptRoot\logs\sil-kit-demo-ethernet-icmp-echo-device.out" -Value $data.Data
     }
 }
 
 Clear-Content -Path $PSScriptRoot\logs\sil-kit-registry.out -ErrorAction SilentlyContinue
-Clear-Content -Path $PSScriptRoot\logs\SilKitAdapterQemu.out -ErrorAction SilentlyContinue
-Clear-Content -Path $PSScriptRoot\logs\SilKitDemoEthernetIcmpEchoDevice.out -ErrorAction SilentlyContinue
+Clear-Content -Path $PSScriptRoot\logs\sil-kit-adapter-qemu.out -ErrorAction SilentlyContinue
+Clear-Content -Path $PSScriptRoot\logs\sil-kit-demo-ethernet-icmp-echo-device.out -ErrorAction SilentlyContinue
 
 Register-ObjectEvent -InputObject $RegistryProcess -EventName OutputDataReceived -Action $RegistryOutputHandler | Out-Null
 Register-ObjectEvent -InputObject $AdapterProcess -EventName OutputDataReceived -Action $AdapterOutputHandler | Out-Null

@@ -1,12 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
-project(VectorSilKitAdaptersQemu)
+project(VectorSilKitAdapterQemu)
 include(FetchContent)
-
-if(WIN32)
-    if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-        set(CMAKE_INSTALL_PREFIX "$ENV{ProgramFiles}/VectorSilKitAdaptersQemu" CACHE PATH "Set default install path to $ENV{ProgramFiles}" FORCE)
-    endif(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-endif()
 
 set(CMAKE_BUILD_RPATH_USE_ORIGIN ON)
 
@@ -14,12 +8,12 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(CMAKE_CXX_STANDARD 17)
 
-set(SILKIT_ADAPTERS_QEMU_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
-set(SILKIT_ADAPTERS_QEMU_LIBRARY_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib")
+set(SILKIT_ADAPTER_QEMU_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
+set(SILKIT_ADAPTER_QEMU_LIBRARY_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib")
 
-set(SILKIT_ADAPTERS_QEMU_VERSION "1.1.1")
+set(SILKIT_ADAPTER_QEMU_VERSION "1.1.1")
 
-set(SILKIT_VERSION "4.0.43" CACHE STRING "If no SIL Kit package is specified, this version will be downloaded")
+set(SILKIT_VERSION "4.0.50" CACHE STRING "If no SIL Kit package is specified, this version will be downloaded")
 set(SILKIT_FLAVOR "ubuntu-18.04-x86_64-gcc" CACHE STRING "If no SIL Kit package is specified, this package flavor will be downloaded")
 
 find_package(Threads REQUIRED)
@@ -29,12 +23,14 @@ target_compile_definitions(asio INTERFACE ASIO_STANDALONE=1)
 target_link_libraries(asio INTERFACE Threads::Threads)
 
 if (WIN32)
-    # set the default install paths for Windows 32 and 64 bits
-    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-        set(CMAKE_INSTALL_PREFIX "C:/Program Files/Vector SIL Kit Adapters QEMU ${SILKIT_ADAPTERS_QEMU_VERSION}" CACHE PATH "Default install path" FORCE)
-    elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
-        set(CMAKE_INSTALL_PREFIX "C:/Program Files (x86)/Vector SIL Kit Adapters QEMU ${SILKIT_ADAPTERS_QEMU_VERSION}" CACHE PATH "Default install path" FORCE)
-    endif()
+    if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+        # set the default install paths for Windows 32 and 64 bits
+        if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+            set(CMAKE_INSTALL_PREFIX "C:/Program Files/Vector SIL Kit Adapter QEMU ${SILKIT_ADAPTER_QEMU_VERSION}" CACHE PATH "Default install path" FORCE)
+        elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
+            set(CMAKE_INSTALL_PREFIX "C:/Program Files (x86)/Vector SIL Kit Adapter QEMU ${SILKIT_ADAPTER_QEMU_VERSION}" CACHE PATH "Default install path" FORCE)
+        endif()
+    endif(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 
     target_compile_definitions(asio INTERFACE _SILENCE_CXX17_ALLOCATOR_VOID_DEPRECATION_WARNING=1)
     target_compile_definitions(asio INTERFACE WINVER=0x0601 _WIN32_WINNT=0x0601) # Windows 7
@@ -42,7 +38,7 @@ endif()
 
 # SIL KIT PACKAGE CONSUMPTION 
 
-## On Windows, if an msi-installed version of SIL Kit is available and you want to build the adapters against it, CMAKE will attempt to use it.
+## On Windows, if an msi-installed version of SIL Kit is available and you want to build the adapter against it, CMAKE will attempt to use it.
 
 ## If you want to use another specific SIL Kit package (downloaded Release package OR self-built & installed package), you must specify the path to it by setting SILKIT_PACKAGE_DIR
 ## if it is a downloaded Release package of SIL Kit:
@@ -198,7 +194,7 @@ include(GNUInstallDirs)
 
 install(
     FILES
-        ${SILKIT_ADAPTERS_QEMU_LIBRARY_DIRECTORY}/libSilKit.so
+        ${SILKIT_ADAPTER_QEMU_LIBRARY_DIRECTORY}/libSilKit.so
     DESTINATION ${CMAKE_INSTALL_LIBDIR}
     PERMISSIONS
         OWNER_READ OWNER_WRITE
@@ -210,8 +206,8 @@ install(
 
 install(
     TARGETS 
-        SilKitDemoChardevEchoDevice
-        SilKitDemoEthernetIcmpEchoDevice
+        sil-kit-demo-chardev-echo-device
+        sil-kit-demo-ethernet-icmp-echo-device
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT Runtime
     PERMISSIONS
         OWNER_READ OWNER_WRITE OWNER_EXECUTE
@@ -220,13 +216,13 @@ install(
     EXCLUDE_FROM_ALL
 )
 
-# only SilKitAdapterQemu should be installed to /usr/local/bin by calling --target install (therefore it is not excluded)
+# only sil-kit-adapter-qemu should be installed to /usr/local/bin by calling --target install (therefore it is not excluded)
 install(
     TARGETS 
-        SilKitAdapterQemu
+        sil-kit-adapter-qemu
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT Runtime
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT Runtime
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/SilKitAdapterQemu COMPONENT Development   
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}/sil-kit-adapter-qemu COMPONENT Development   
     PERMISSIONS
         OWNER_READ OWNER_WRITE OWNER_EXECUTE
         GROUP_READ GROUP_EXECUTE
@@ -239,8 +235,8 @@ install(
 
 set(CPACK_GENERATOR "ZIP")
 
-set(CPACK_PACKAGE_DESCRIPTION "binary release of SIL Kit Adapters QEMU")
-set(CPACK_PACKAGE_NAME "SilKit-Adapters-QEMU")
+set(CPACK_PACKAGE_DESCRIPTION "binary release of SIL Kit Adapter QEMU")
+set(CPACK_PACKAGE_NAME "SilKit-Adapter-QEMU")
 set(CPACK_PACKAGE_VENDOR "Vector Informatik")
 set(CPACK_PACKAGE_CONTACT "support@vector.com")
 set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}${PACKAGE_FILENAME_SUFFIX}")

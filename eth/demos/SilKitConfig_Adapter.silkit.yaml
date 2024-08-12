@@ -1,5 +1,5 @@
 Description: Configuration for Adapter participant for SIL Kit Adapter QEMU (chardev) demo
-ParticipantName: SilKitAdapterQemu
+ParticipantName: sil-kit-adapter-qemu
 Middleware:
   RegistryUri: silkit://localhost:8501
 Logging:

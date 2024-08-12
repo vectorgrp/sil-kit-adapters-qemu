@@ -58,7 +58,7 @@ void adapters::print_help(bool userRequested)
 {
     std::cout
         << "Usage (defaults in curly braces if you omit the switch):" << std::endl
-              << "SilKitAdapterQemu ["<<participantNameArg<<" <participant's name{SilKitAdapterQemu}>]\n"
+              << "sil-kit-adapter-qemu ["<<participantNameArg<<" <participant's name{SilKitAdapterQemu}>]\n"
            "  ["<<configurationArg<<" <path to .silkit.yaml or .json configuration file>]\n"
            "  ["<<regUriArg<<" silkit://<host{localhost}>:<port{8501}>]\n"
            "  ["<<logLevelArg<<" <Trace|Debug|Warn|{Info}|Error|Critical|Off>]\n"
@@ -79,7 +79,7 @@ void adapters::print_help(bool userRequested)
            "SIL Kit-specific CLI arguments will be overwritten by the config file passed by "<<configurationArg<<".\n";
     std::cout << "\n"
                  "Example:\n"
-                 "SilKitAdapterQemu "<<participantNameArg<<" ChardevAdapter "
+                 "sil-kit-adapter-qemu "<<participantNameArg<<" ChardevAdapter "
                  <<chardevArg<<" localhost:12345,"
                  "Namespace::toChardev,VirtualNetwork=Default,"
                  "fromChardev,Namespace:Namespace,VirtualNetwork:Default\n";

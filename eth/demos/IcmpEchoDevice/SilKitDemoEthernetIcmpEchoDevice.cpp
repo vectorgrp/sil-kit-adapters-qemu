@@ -61,7 +61,7 @@ int main(int argc, char** argv)
     if (findArg(argc, argv, "--help", argv) != nullptr)
     {
         std::cout << "Usage (defaults in curly braces if you omit the switch):" << std::endl
-                  << "SilKitDemoEthernetIcmpEchoDevice [" << participantNameArg << " <participant's name{EthernetDevice}>]\n"
+                  << "sil-kit-demo-ethernet-icmp-echo-device [" << participantNameArg << " <participant's name{EthernetDevice}>]\n"
                      "  [" << regUriArg << " silkit://<host{localhost}>:<port{8501}>]\n"
                      "  [" << logLevelArg << " <Trace|Debug|Warn|{Info}|Error|Critical|Off>]\n";
         return 0;

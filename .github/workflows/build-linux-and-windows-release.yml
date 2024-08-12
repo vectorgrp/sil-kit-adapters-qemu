@@ -7,7 +7,7 @@ on:
 
 jobs:
   linux-release:
-    name: Build SIL Kit QEMU for Linux Release configuration
+    name: Build SIL Kit Adapter QEMU for Linux Release configuration
     environment: public-github-runners
     runs-on: ubuntu-20.04
     steps:
@@ -26,10 +26,10 @@ jobs:
           prerelease: true
           draft: true
           files: |
-            _build/linux-release/SilKit-Adapters*.zip
+            _build/linux-release/SilKit-Adapter*.zip
 
   windows-release:
-    name: Build SIL Kit QEMU for Windows Release configuration
+    name: Build SIL Kit Adapter QEMU for Windows Release configuration
     runs-on: windows-latest
     environment: public-github-runners
     steps:
@@ -48,4 +48,4 @@ jobs:
           prerelease: true
           draft: true
           files: |
-            _build/windows-release/SilKit-Adapters*.zip
+            _build/windows-release/SilKit-Adapter*.zip

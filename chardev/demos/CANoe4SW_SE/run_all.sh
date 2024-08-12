@@ -57,8 +57,8 @@ echo "root" >&3
 sleep 1
 echo "root" >&3
 
-$scriptDir/../../../bin/SilKitAdapterQemu --socket-to-chardev localhost:23456,Namespace::toChardev,VirtualNetwork=Default,Instance=EchoDevice,Namespace::fromChardev,VirtualNetwork:Default,Instance:Adapter --configuration ./chardev/demos/SilKitConfig_Adapter.silkit.yaml &> $scriptDir/SilKitAdapterQemu.out &
-$scriptDir/../../../bin/SilKitDemoChardevEchoDevice &> $scriptDir/SilKitDemoChardevEchoDevice.out &
+$scriptDir/../../../bin/sil-kit-adapter-qemu --socket-to-chardev localhost:23456,Namespace::toChardev,VirtualNetwork=Default,Instance=EchoDevice,Namespace::fromChardev,VirtualNetwork:Default,Instance:Adapter --configuration ./chardev/demos/SilKitConfig_Adapter.silkit.yaml &> $scriptDir/sil-kit-adapter-qemu.out &
+$scriptDir/../../../bin/sil-kit-demo-chardev-echo-device &> $scriptDir/sil-kit-demo-chardev-echo-device.out &
 
 echo "[info] Sending data to /dev/ttyS1"
 echo "stty -echo raw -F /dev/ttyS1" >&3

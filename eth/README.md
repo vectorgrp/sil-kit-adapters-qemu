@@ -11,7 +11,7 @@ exported socket and implements a transport to a virtual SIL Kit Ethernet bus nam
                                                                          |
                                                            Vector CANoe <=> 
 
-## SilKitDemoEthernetIcmpEchoDevice
+## sil-kit-demo-ethernet-icmp-echo-device
 This demo application implements a very simple SIL Kit participant with a single simulated ethernet controller.
 The application will reply to an ARP request and respond to ICMPv4 Echo Requests directed to it's hardcoded MAC address
 (``01:23:45:67:89:ab``) and IPv4 address (``192.168.7.35``).
@@ -20,14 +20,14 @@ The application will reply to an ARP request and respond to ICMPv4 Echo Requests
 
 ## Running the Demo Applications
 
-Now is a good point to start the ``sil-kit-registry``, ``SilKitAdapterQemu`` - which connects the QEMU virtual ethernet
-interface with the SIL Kit - and the ``SilKitDemoEthernetIcmpEchoDevice`` in separate terminals:
+Now is a good point to start the ``sil-kit-registry``, ``sil-kit-adapter-qemu`` - which connects the QEMU virtual ethernet
+interface with the SIL Kit - and the ``sil-kit-demo-ethernet-icmp-echo-device`` in separate terminals:
 
     ./path/to/SilKit-x.y.z-$platform/SilKit/bin/sil-kit-registry --listen-uri 'silkit://0.0.0.0:8501'
     
-    ./bin/SilKitAdapterQemu --socket-to-ethernet localhost:12345,network=qemu_demo --configuration ./eth/demos/SilKitConfig_Adapter.silkit.yaml
+    ./bin/sil-kit-adapter-qemu --socket-to-ethernet localhost:12345,network=qemu_demo --configuration ./eth/demos/SilKitConfig_Adapter.silkit.yaml
     
-    ./bin/SilKitDemoEthernetIcmpEchoDevice
+    ./bin/sil-kit-demo-ethernet-icmp-echo-device
     
 The demo applications will produce output when they send and receive Ethernet frames from QEMU or the Vector SIL Kit.
 
@@ -45,7 +45,7 @@ Then ping the demo device:
 
 The ping requests should all receive responses.
 
-You should see output similar to the following from the ``SilKitAdapterQemu`` application:
+You should see output similar to the following from the ``sil-kit-adapter-qemu`` application:
 
     ...
     [2023-02-21 16:49:16.977] [SilKitAdapterQemu] [debug] SIL Kit >> Demo: ACK for ETH Message with transmitId=2
@@ -54,7 +54,7 @@ You should see output similar to the following from the ``SilKitAdapterQemu`` ap
     ...
 
     
-And output similar to the following from the ``SilKitDemoEthernetIcmpEchoDevice`` application:
+And output similar to the following from the ``sil-kit-demo-ethernet-icmp-echo-device`` application:
 
     ...
     SIL Kit >> Demo: Ethernet frame (98 bytes)

@@ -1,5 +1,5 @@
 # Ethernet Demo with QMP remote control
-This demo is based on the ethernet demo showcased within this repo as well. To keep it as simple as possible and focus on the remote control aspect of this demo, the application ``SilKitDemoEthernetIcmpEchoDevice`` is replaced by a CANoe network node with an IPv4 address (``192.168.7.34``) as the counter part for the ping demo with the QEMU image.
+This demo is based on the ethernet demo showcased within this repo as well. To keep it as simple as possible and focus on the remote control aspect of this demo, the application ``sil-kit-demo-ethernet-icmp-echo-device`` is replaced by a CANoe network node with an IPv4 address (``192.168.7.34``) as the counter part for the ping demo with the QEMU image.
 
 The QEMU QMP interface is the key element to make it possible to remotely control the QEMU image. It enables us to send JSON like control or query commands to the QEMU image. This makes it possible to do things like restarting the SUT or sending keystrokes for typing in commands into a terminal. 
 
@@ -23,12 +23,12 @@ If CANoe should be a participant in this SIL Kit network as well, it is importan
 
 ## Running the Demo Applications
 
-If your QEMU image is already running, now is a good point to start the ``sil-kit-registry`` and ``SilKitAdapterQemu`` - which connects the QEMU virtual ethernet
+If your QEMU image is already running, now is a good point to start the ``sil-kit-registry`` and ``sil-kit-adapter-qemu`` - which connects the QEMU virtual ethernet
 interface and QMP interface with the SIL Kit - in separate terminals:
 
     ./path/to/SilKit-x.y.z-$platform/SilKit/bin/sil-kit-registry --listen-uri 'silkit://0.0.0.0:8501'
     
-    ./bin/SilKitAdapterQemu --socket-to-ethernet localhost:12345,network=qemu_demo --socket-to-chardev localhost:4444,Namespace::toQMP,VirtualNetwork=Default,Instance=CANoe,Namespace::fromQMP,VirtualNetwork:Default,Instance:Adapter --configuration ./qmp/demos/SilKitConfig_Adapter.silkit.yaml    
+    ./bin/sil-kit-adapter-qemu --socket-to-ethernet localhost:12345,network=qemu_demo --socket-to-chardev localhost:4444,Namespace::toQMP,VirtualNetwork=Default,Instance=CANoe,Namespace::fromQMP,VirtualNetwork:Default,Instance:Adapter --configuration ./qmp/demos/SilKitConfig_Adapter.silkit.yaml    
 
 ## Interactive ICMP Ping and Pong with CANoe (CANoe 17 SP3 or newer)
 
@@ -47,7 +47,7 @@ Type in the following command to ping the CANoe network node from the QEMU termi
 
 The ping requests should all receive responses.
 
-You should see output similar to the following from the ``SilKitAdapterQemu`` application:
+You should see output similar to the following from the ``sil-kit-adapter-qemu`` application:
 
     ...
     [2023-02-21 16:49:16.977] [SilKitAdapterQemu] [debug] SIL Kit >> Demo: ACK for ETH Message with transmitId=2
