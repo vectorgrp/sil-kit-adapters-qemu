@@ -1,0 +1,7 @@
+version: 2.1.0
+test-tree:
+  - test-fixture: QemuChardevTestFixture
+    elements:
+      - capl-test-case: DO_WaitForQemuMessage
+      - capl-test-case: DO_WaitForEchoMessage
+    

@@ -1,0 +1,8 @@
+version: 2.0.0
+
+test-unit-information:
+  description: This test unit tests the basic functionality of receiving ethernet packets from a QEMU image.
+  
+test-unit-implementation:
+  - source-file-path: testQemuPingDemo.can
+  - source-file-path: testQemuPingDemo.vtesttree.yaml

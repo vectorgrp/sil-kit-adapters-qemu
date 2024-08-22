@@ -1,0 +1,37 @@
+﻿/*@!Encoding:65001*/
+includes
+{
+  
+}
+
+
+variables
+{
+  distObjRef *in_object = Namespace::EchoDevice;
+  distObjRef *out_object = Namespace::Adapter;
+  int result;
+  dword timeout=2000;
+}
+
+void CheckTestResult(char testName[], int result)
+{
+  if (result != 1)
+  {
+    TestStepFail(testName, "FAILED: No message within timeout");
+  }
+  TestStepPass(testName, "SUCCESS");
+}
+
+export testcase DO_WaitForQemuMessage()
+{
+  out_object.Connect();
+  result = testWaitForUpdate(Namespace::Adapter.fromChardev,timeout);
+  CheckTestResult("DO_WaitForQemuMessage", result);
+}
+
+export testcase DO_WaitForEchoMessage()
+{
+  in_object.Connect();
+  result = testWaitForUpdate(Namespace::EchoDevice.toChardev,timeout);
+  CheckTestResult("DO_WaitForEchoMessage", result);
+}

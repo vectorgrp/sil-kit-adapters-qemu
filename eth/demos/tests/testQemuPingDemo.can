@@ -1,0 +1,50 @@
+﻿/*@!Encoding:65001*/
+includes
+{
+  
+}
+
+variables
+{
+  int result;
+  char networkName[10] = "qemu_demo";
+  const dword IPV4_STR_SIZE = 16;    // IPv4 string size
+  char ipv4AddrTapStr[IPV4_STR_SIZE] = "192.168.7.2";
+  char ipv4AddrEchoStr[IPV4_STR_SIZE] = "192.168.7.35";
+  dword timeout = 2000;
+}
+
+void CheckTestResult(char testName[], int result)
+{
+  if (result != 1)
+  {
+    TestStepFail(testName, "FAILED: No message within timeout");
+  }
+  TestStepPass(testName, "SUCCESS");
+}
+
+export testcase Ethernet_WaitForQemuMessage()
+{
+  SetBusContext(GetBusNameContext(networkName));  
+  
+  result = TestWaitForEthernetPacket(IpGetAddressAsNumber(ipv4AddrTapStr), 0, 0, 0, 0, 0x0020, timeout);  
+  CheckTestResult("Ethernet_WaitForTapMessage", result);
+}
+
+export testcase Ethernet_WaitForEchoMessage()
+{
+  SetBusContext(GetBusNameContext(networkName));  
+  result = TestWaitForEthernetPacket(IpGetAddressAsNumber(ipv4AddrEchoStr), 0, 0, 0, 0, 0x0020, timeout);
+  CheckTestResult("Ethernet_WaitForEchoMessage", result);
+}
+
+on ethernetPacket *
+{
+  if (this.HasProtocolError())
+  {
+    char text[100];
+    this.GetProtocolErrorText( text );
+    write( "Protocol error on Eth %d: %s", this.msgChannel, text );
+    testStepFail("FAILED: protocol error");
+  }
+}

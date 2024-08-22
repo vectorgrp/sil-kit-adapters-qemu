@@ -1,0 +1,7 @@
+version: 2.1.0
+test-tree:
+  - test-fixture: QemuEthTestFixture
+    elements:
+      - capl-test-case: Ethernet_WaitForQemuMessage
+      - capl-test-case: Ethernet_WaitForEchoMessage
+    

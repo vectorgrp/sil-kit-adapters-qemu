@@ -131,7 +131,7 @@ Please note that you can compile and run the demos on Windows even if QEMU is ru
 
 ### Observing and/or testing the echo demo with CANoe
 
-You need to use CANoe 16 SP3 or newer. 
+You need to use CANoe 17 SP3 or newer. 
 
 Before you can connect CANoe to the SIL Kit network you should adapt the RegistryUri in /chardev/demos/SilKitConfig_CANoe.silkit.yaml to the IP address of your system where your sil-kit-registry is running (in case of a WSL2 Ubuntu image e.g. the IP address of Eth0). The configuration file is referenced by both following CANoe use cases (Desktop Edition and Server Edition).
 
@@ -170,7 +170,7 @@ You can also run the same test set with ``CANoe4SW SE (Linux)``. At first you ha
 ## Demo with CANoe interaction
 This demo showcases sending data from CANoe Desktop to the serial port of QEMU.
 
-You need to use CANoe 16 SP3 or newer.
+You need to use CANoe 17 SP3 or newer.
 
 Before you can connect CANoe to the SIL Kit network you should adapt the RegistryUri in /chardev/demos/SilKitConfig_CANoe.silkit.yaml to the IP address of your system where your sil-kit-registry is running (in case of a WSL2 Ubuntu image e.g. the IP address of Eth0).
 
@@ -192,7 +192,7 @@ Then, you can start a dump of data sent through the link from the outside:
 ```
 root@silkit-qemu-demos-guest:~# cat /dev/ttyS1&
 ```
-Finally, launch ``CANoe 16 SP3`` or newer and load the
+Finally, launch ``CANoe 17 SP3`` or newer and load the
 ``Qemu_Chardev_demo_CANoe_device.cfg`` from the ``demos/CANoe`` directory.
 
 Here is a small drawing to illustrate how CANoe is connected to QEMU:
@@ -213,7 +213,7 @@ field will be outputted by the ``cat`` inside QEMU once you press the "Send" but
 
 These demos showcase binary transfer and conversion from the chardev channel to a DataPublisher-DataSubscriber pair for CANoe communication.
 
-You need to use CANoe 16 SP3 or newer.
+You need to use CANoe 17 SP3 or newer.
 
 Before you can connect CANoe to the SIL Kit network you should adapt the ``RegistryUri`` in /chardev/demos/SilKitConfig_CANoe.silkit.yaml to the IP address of your system where your sil-kit-registry is running (in case of a WSL2 Ubuntu image e.g. the IP address of Eth0).
 
@@ -231,7 +231,7 @@ After following the common steps for all demos as well as steps for byte-oriente
 root@silkit-qemu-demos-guest:~# od -An -tu2 -w2 -v /dev/ttyS1 &
 ```
 
-Then you can launch ``CANoe 16 SP3`` or newer and load the ``Qemu_Chardev_demo_CANoe_temperature_control.cfg`` from the ``demos/CANoe`` directory. When you will start the measurement, CANoe will set itself up as a publisher on ``degrees_user`` topic.
+Then you can launch ``CANoe 17 SP3`` or newer and load the ``Qemu_Chardev_demo_CANoe_temperature_control.cfg`` from the ``demos/CANoe`` directory. When you will start the measurement, CANoe will set itself up as a publisher on ``degrees_user`` topic.
 
 After starting the simulation, you can input a value in celsius in the panel named ``TemperaturePanel`` and click on send, you'll see the value being printed in the console of QEMU in Kelvins. This is what you would see if you send "27" twice, then "0" with CANoe:
 ```
@@ -259,7 +259,7 @@ root@silkit-qemu-demos-guest:~# send () { printf $(printf '\%03o' $(($1&255)) $(
 
 This way, calling e.g. ``send 333`` from qemu console will send number ``333`` through the link by splitting it in MSB and LSB, printing octal commands with a first ``printf``, whose result will be interpreted by a second ``printf``.
 
-Then you can launch ``CANoe 16 SP3`` or newer and load the ``Qemu_Chardev_demo_CANoe_temperature_sensing.cfg`` from the ``demos/CANoe`` directory. When you will start the measurement, CANoe will subscribe to the ``degrees_sensor`` topic.
+Then you can launch ``CANoe 17 SP3`` or newer and load the ``Qemu_Chardev_demo_CANoe_temperature_sensing.cfg`` from the ``demos/CANoe`` directory. When you will start the measurement, CANoe will subscribe to the ``degrees_sensor`` topic.
 
 When you start the simulation, the value in the panel named ``TemperaturePanel`` will reflect what being typed in the console of QEMU in Kelvins. For instance if you type the following commands:
 ```

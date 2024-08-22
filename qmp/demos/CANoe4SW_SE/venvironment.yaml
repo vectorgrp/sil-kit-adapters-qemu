@@ -6,7 +6,7 @@ global-settings:
 
 datasources:
   input-files:
-  - file-path: ../Datasource_qmp.vcdl
+  - file-path: ../CANoe/Datasource_qmp.vcdl
 
 sil-kit:
   participant-name: CANoe4SW_SE

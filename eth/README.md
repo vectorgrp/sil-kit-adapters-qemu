@@ -69,7 +69,7 @@ And output similar to the following from the ``sil-kit-demo-ethernet-icmp-echo-d
     ...
 
 
-## Adding CANoe (16 SP3 or newer) as a participant
+## Adding CANoe (17 SP3 or newer) as a participant
 If CANoe is connected to the SIL Kit, all ethernet traffic is visible there as well. You can also execute a test unit which checks if the ICMP Ping and Pong is happening as expected.
 
 Before you can connect CANoe to the SIL Kit network you should adapt the ``RegistryUri`` in ``demos/SilKitConfig_CANoe.silkit.yaml`` to the IP address of your system where your sil-kit-registry is running (in case of a WSL Ubuntu image e.g. the IP address of Eth0). The configuration file is referenced by both following CANoe use cases (Desktop Edition and Server Edition).
