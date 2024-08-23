@@ -53,7 +53,7 @@ If not already existent on your system you should also download a SIL Kit Releas
 ## Install the sil-kit-adapter-qemu (optional)
 Be aware that SIL Kit itself also needs to be installed to run the adapter.
 
-Run the following command to install the sil-kit-adapter-qemu (can be done for self-build and pre-built package after cmake configuration):
+Run the following command to install the sil-kit-adapter-qemu (can be done for self-built and pre-built package after cmake configuration):
 
 ### Linux installation
 
@@ -80,7 +80,7 @@ It can be configured for the QEMU virtual machine using the following command li
     -netdev socket,listen=:12345
     -chardev socket,server=on,wait=off,host=0.0.0.0,port=23456
 
-The arguments of ``listen=`` and ``hots=``&``port=`` specifies a TCP socket endpoint on which QEMU will listen for incoming connections, 
+The arguments of ``listen=`` and ``hots=``&``port=`` specify a TCP socket endpoint on which QEMU will listen for incoming connections, 
 which sil-kit-adapter-qemu will establish.
 
 All *outgoing* ethernet frames on that particular virtual ethernet interface inside of the virtual machine are sent to
@@ -92,7 +92,7 @@ All characters published on the subscribed topic by sil-kit-adapter-qemu will be
 
 Before you start the adapter there always needs to be a sil-kit-registry running already. Start it e.g. like this:
 
-    ./path/to/SilKit-x.y.z-$platform/SilKit/bin/sil-kit-registry --listen-uri 'silkit://0.0.0.0:8501'
+    /path/to/SilKit-x.y.z-$platform/SilKit/bin/sil-kit-registry --listen-uri 'silkit://0.0.0.0:8501'
 
 The application takes the following command line arguments (defaults in curly braces if you omit the switch):
 

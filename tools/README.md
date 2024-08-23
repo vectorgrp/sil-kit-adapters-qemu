@@ -18,7 +18,7 @@ To start the guest image, run:
 ./tools/run-silkit-qemu-demos-guest.sh
 ```
 
-- On a Windows sytem:
+- On a Windows system:
 ```
 ./tools/run-silkit-qemu-demos-guest.ps1
 ```
@@ -27,7 +27,7 @@ To start the guest image, run:
 By default, the options in this script will spawn the guest system in the same terminal. The password for the ``root``
 user is ``root``.
 
-QEMU is also set up to forward the guests SSH port on ``localhost:10022``, any interaction with the guest can then
+QEMU is also set up to forward the guest SSH port on ``localhost:10022``, any interaction with the guest can then
 proceed via SSH from the host system:
 
     ssh -p10022 -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null root@localhost

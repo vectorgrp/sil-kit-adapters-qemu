@@ -26,15 +26,15 @@ If CANoe should be a participant in this SIL Kit network as well, it is importan
 If your QEMU image is already running, now is a good point to start the ``sil-kit-registry`` and ``sil-kit-adapter-qemu`` - which connects the QEMU virtual ethernet
 interface and QMP interface with the SIL Kit - in separate terminals:
 
-    ./path/to/SilKit-x.y.z-$platform/SilKit/bin/sil-kit-registry --listen-uri 'silkit://0.0.0.0:8501'
+    /path/to/SilKit-x.y.z-$platform/SilKit/bin/sil-kit-registry --listen-uri 'silkit://0.0.0.0:8501'
     
     ./bin/sil-kit-adapter-qemu --socket-to-ethernet localhost:12345,network=qemu_demo --socket-to-chardev localhost:4444,Namespace::toQMP,VirtualNetwork=Default,Instance=CANoe,Namespace::fromQMP,VirtualNetwork:Default,Instance:Adapter --configuration ./qmp/demos/SilKitConfig_Adapter.silkit.yaml    
 
 ## Interactive ICMP Ping and Pong with CANoe (CANoe 17 SP3 or newer)
 
-Before you connect CANoe to the SIL Kit network you should adapt the ``RegistryUri`` in ``demos/SilKitConfig_CANoe.silkit.yaml`` to the IP address of your system where your sil-kit-registry is running (in case of a WSL Ubuntu image e.g. the IP address of Eth0). The configuration file is referenced by all following CANoe use cases (Desktop Edition and Server Edition).
+Before you connect CANoe to the SIL Kit network you should adapt the ``RegistryUri`` in ``./qmp/demos/SilKitConfig_CANoe.silkit.yaml`` to the IP address of your system where your sil-kit-registry is running (in case of a WSL Ubuntu image e.g. the IP address of Eth0). The configuration file is referenced by all following CANoe use cases (Desktop Edition and Server Edition).
 
-Load the ``Qemu_qmp_demo.cfg`` from the ``demos/CANoe`` directory and start the measurement.
+Load the ``Qemu_qmp_demo.cfg`` from the ``./qmp/demos/CANoe`` directory and start the measurement.
 
 When the QEMU image boots up, the network interface created for hooking up with the Vector SIL Kit (``silkit0``) is ``up``.
 It automatically assigns the static IP ``192.168.7.2/24`` to the interface.
@@ -50,9 +50,9 @@ The ping requests should all receive responses.
 You should see output similar to the following from the ``sil-kit-adapter-qemu`` application:
 
     ...
-    [2023-02-21 16:49:16.977] [SilKitAdapterQemu] [debug] SIL Kit >> Demo: ACK for ETH Message with transmitId=2
-    [2023-02-21 16:49:16.977] [SilKitAdapterQemu] [debug] QEMU >> SIL Kit: Ethernet frame (98 bytes, txId=2)
-    [2023-02-21 16:49:16.985] [SilKitAdapterQemu] [debug] SIL Kit >> QEMU: Ethernet frame (98 bytes)
+    [date time] [SilKitAdapterQemu] [debug] SIL Kit >> Demo: ACK for ETH Message with transmitId=2
+    [date time] [SilKitAdapterQemu] [debug] QEMU >> SIL Kit: Ethernet frame (98 bytes, txId=2)
+    [date time] [SilKitAdapterQemu] [debug] SIL Kit >> QEMU: Ethernet frame (98 bytes)
     ...
 
 In the CANoe trace window you should also be able to see the icmpv4 traffic. Ping requests coming from the QEMU SUT and replies to this requests coming from the CANoe network node.
@@ -79,12 +79,12 @@ Some of this commands, including a set of suitable arguments, are available as s
 What has been done in an interactive manner before can also be done automated by a test set which sends out QMP commands and checks the ethernet traffic if it matches the test verdict. While the QEMU image and the adapter are running these tests should be successful.
 
 ### CANoe Desktop Edition
-Load the ``Qemu_qmp_demo.cfg`` from the ``demos/CANoe`` directory and start the measurement if not already running. Start the execution of the test set in the included test configuration.
+Load the ``Qemu_qmp_demo.cfg`` from the ``./qmp/demos/CANoe`` directory and start the measurement if not already running. Start the execution of the test set in the included test configuration.
 
 ### CANoe4SW Server Edition (Windows)
-You can also run the same test set with ``CANoe4SW SE`` by executing the following powershell script ``demos/CANoe4SW_SE/run.ps1``. The test cases are executed automatically and you should see a short test report in powershell after execution.
+You can also run the same test set with ``CANoe4SW SE`` by executing the following PowerShell script ``./qmp/demos/CANoe4SW_SE/run.ps1``. The test cases are executed automatically and you should see a short test report in PowerShell after execution.
 
 ### CANoe4SW Server Edition (Linux)
-You can also run the same test set with ``CANoe4SW SE (Linux)``. At first you have to execute the powershell script ``demos/CANoe4SW_SE/createEnvForLinux.ps1`` on your windows system by using tools of ``CANoe4SW SE (Windows)`` to prepare your test environment for Linux. In ``demos/CANoe4SW_SE/run.sh`` you should set ``canoe4sw_se_install_dir`` to the path of your ``CANoe4SW SE`` installation in your WSL. Afterwards you can execute ``demos/CANoe4SW_SE/run.sh`` in your WSL. The test cases are executed automatically and you should see a short test report in your terminal after execution.
+You can also run the same test set with ``CANoe4SW SE (Linux)``. At first you have to execute the PowerShell script ``./qmp/demos/CANoe4SW_SE/createEnvForLinux.ps1`` on your Windows system by using tools of ``CANoe4SW SE (Windows)`` to prepare your test environment for Linux. In ``./qmp/demos/CANoe4SW_SE/run.sh`` you should set ``canoe4sw_se_install_dir`` to the path of your ``CANoe4SW SE`` installation in your WSL. Afterwards you can execute ``./qmp/demos/CANoe4SW_SE/run.sh`` in your WSL. The test cases are executed automatically and you should see a short test report in your terminal after execution.
 
 
