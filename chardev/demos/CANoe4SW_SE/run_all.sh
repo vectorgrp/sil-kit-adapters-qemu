@@ -63,7 +63,7 @@ $scriptDir/../../../bin/sil-kit-demo-chardev-echo-device &> $scriptDir/sil-kit-d
 echo "[info] Sending data to /dev/ttyS1"
 echo "stty -echo raw -F /dev/ttyS1" >&3
 sleep 1
-echo "while true; do echo test > /dev/ttyS1; sleep 1; done" >&3
+echo "while true; do echo test > /dev/ttyS1; sleep 1; done &" >&3
 
 $scriptDir/run.sh
 #capture returned value of run.sh script
