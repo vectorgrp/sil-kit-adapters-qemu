@@ -80,7 +80,7 @@ It can be configured for the QEMU virtual machine using the following command li
     -netdev socket,listen=:12345
     -chardev socket,server=on,wait=off,host=0.0.0.0,port=23456
 
-The arguments of ``listen=`` and ``hots=``&``port=`` specify a TCP socket endpoint on which QEMU will listen for incoming connections, 
+The arguments of ``listen=`` and ``host=``&``port=`` specify a TCP socket endpoint on which QEMU will listen for incoming connections, 
 which sil-kit-adapter-qemu will establish.
 
 All *outgoing* ethernet frames on that particular virtual ethernet interface inside of the virtual machine are sent to
