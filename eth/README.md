@@ -25,7 +25,7 @@ interface with the SIL Kit - and the ``sil-kit-demo-ethernet-icmp-echo-device`` 
 
     ./path/to/SilKit-x.y.z-$platform/SilKit/bin/sil-kit-registry --listen-uri 'silkit://0.0.0.0:8501'
     
-    ./bin/sil-kit-adapter-qemu --socket-to-ethernet localhost:12345,network=qemu_demo --configuration ./eth/demos/SilKitConfig_Adapter.silkit.yaml
+    ./bin/sil-kit-adapter-qemu --socket-to-ethernet localhost:12345,network=qemu_demo --configuration ../eth/demos/SilKitConfig_Adapter.silkit.yaml
     
     ./bin/sil-kit-demo-ethernet-icmp-echo-device
     
