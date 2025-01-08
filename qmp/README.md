@@ -17,7 +17,7 @@ On the SIL Kit Adapaters QEMU side of things the important part for connecting t
 
     --socket-to-chardev localhost:4444,Namespace::toQMP,VirtualNetwork=Default,Instance=CANoe,Namespace::fromQMP,VirtualNetwork:Default,Instance:Adapter
 
-If CANoe should be a participant in this SIL Kit network as well, it is important to provide a .vCDL file to CANoe with matching publish/subscribe namespaces and topic names. For this particular demo the .vCDL is given in [Datasource_qmp.vcdl](demos/Datasource_qmp.vcdl).
+If CANoe should be a participant in this SIL Kit network as well, it is important to provide a .vCDL file to CANoe with matching publish/subscribe namespaces and topic names. For this particular demo the .vCDL is given in [Datasource_qmp.vcdl](demos/CANoe/Datasource_qmp.vcdl).
 
 # Running the Demos
 
