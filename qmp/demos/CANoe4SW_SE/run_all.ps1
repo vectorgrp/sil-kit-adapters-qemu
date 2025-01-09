@@ -34,7 +34,7 @@ $RunQEMUProcess.StartInfo.RedirectStandardInput = $true
 
 $AdapterProcess = New-Object System.Diagnostics.Process
 $AdapterProcess.StartInfo.FileName = "$PSScriptRoot\..\..\..\bin\sil-kit-adapter-qemu.exe"
-$AdapterProcess.StartInfo.Arguments = "--socket-to-ethernet localhost:12345,network=qemu_demo --socket-to-chardev localhost:4444,Namespace::toQMP,VirtualNetwork=Default,Instance=CANoe,Namespace::fromQMP,VirtualNetwork:Default,Instance:Adapter --configuration $PSScriptRoot\..\SilKitConfig_Adapter.silkit.yaml"
+$AdapterProcess.StartInfo.Arguments = "--socket-to-ethernet localhost:12345,network=Ethernet1 --socket-to-chardev localhost:4444,Namespace::toQMP,VirtualNetwork=Default,Instance=CANoe,Namespace::fromQMP,VirtualNetwork:Default,Instance:Adapter --configuration $PSScriptRoot\..\SilKitConfig_Adapter.silkit.yaml"
 $AdapterProcess.StartInfo.UseShellExecute = $false
 $AdapterProcess.StartInfo.RedirectStandardOutput = $true
 

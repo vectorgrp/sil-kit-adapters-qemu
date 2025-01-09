@@ -57,7 +57,7 @@ echo "root" >&3
 sleep 1
 echo "root" >&3
 
-$scriptDir/../../../bin/sil-kit-adapter-qemu --socket-to-ethernet localhost:12345,network=qemu_demo --configuration ./eth/demos/SilKitConfig_Adapter.silkit.yaml &> $scriptDir/sil-kit-adapter-qemu.out &
+$scriptDir/../../../bin/sil-kit-adapter-qemu --socket-to-ethernet localhost:12345,network=Ethernet1 --configuration ./eth/demos/SilKitConfig_Adapter.silkit.yaml &> $scriptDir/sil-kit-adapter-qemu.out &
 $scriptDir/../../../bin/sil-kit-demo-ethernet-icmp-echo-device --log Debug &> $scriptDir/sil-kit-demo-ethernet-icmp-echo-device.out &
 
 echo "[Info] Ping 192.168.7.35" 

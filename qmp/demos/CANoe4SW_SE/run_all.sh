@@ -57,7 +57,7 @@ echo "root" >&3
 sleep 1
 echo "root" >&3
 
-$scriptDir/../../../bin/sil-kit-adapter-qemu --socket-to-ethernet localhost:12345,network=qemu_demo --socket-to-chardev localhost:4444,Namespace::toQMP,VirtualNetwork=Default,Instance=CANoe,Namespace::fromQMP,VirtualNetwork:Default,Instance:Adapter --configuration ./qmp/demos/SilKitConfig_Adapter.silkit.yaml &> $scriptDir/sil-kit-adapter-qemu.out &
+$scriptDir/../../../bin/sil-kit-adapter-qemu --socket-to-ethernet localhost:12345,network=Ethernet1 --socket-to-chardev localhost:4444,Namespace::toQMP,VirtualNetwork=Default,Instance=CANoe,Namespace::fromQMP,VirtualNetwork:Default,Instance:Adapter --configuration ./qmp/demos/SilKitConfig_Adapter.silkit.yaml &> $scriptDir/sil-kit-adapter-qemu.out &
 
 echo "[Info] Ping 192.168.7.34" 
 echo "ping 192.168.7.34 &" >&3

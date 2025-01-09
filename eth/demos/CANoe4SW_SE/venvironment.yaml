@@ -10,11 +10,11 @@ sil-kit:
   config-file-path: ../SilKitConfig_CANoe.silkit.yaml
 
 ethernet-networks:
-  - name: qemu_demo    
+  - name: Ethernet1    
     mapping: external-sil-kit
 
 simulation-nodes:
   - name: SilKitDummyNode
     network-assignments:
-      - network: qemu_demo
+      - network: Ethernet1
       

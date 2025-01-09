@@ -2,7 +2,7 @@
 This demo consists of two separate components: the QEMU based guest image contains a live
 Linux kernel that reacts to ICMP echo requests on its virtual network interface.
 The SIL Kit component contains a socket client that connects to the virtual QEMU network interface via its
-exported socket and implements a transport to a virtual SIL Kit Ethernet bus named "qemu_demo".
+exported socket and implements a transport to a virtual SIL Kit Ethernet bus named "Ethernet1".
 
     +-------[ QEMU ]---------+                                +------[ SIL Kit ]------+
     | Debian 11              |<== [listening socket 12345] ==>|  QemuSocketClient     |
@@ -25,7 +25,7 @@ interface with the SIL Kit - and the ``sil-kit-demo-ethernet-icmp-echo-device`` 
 
     ./path/to/SilKit-x.y.z-$platform/SilKit/bin/sil-kit-registry --listen-uri 'silkit://0.0.0.0:8501'
     
-    ./bin/sil-kit-adapter-qemu --socket-to-ethernet localhost:12345,network=qemu_demo --configuration ./eth/demos/SilKitConfig_Adapter.silkit.yaml
+    ./bin/sil-kit-adapter-qemu --socket-to-ethernet localhost:12345,network=Ethernet1 --configuration ./eth/demos/SilKitConfig_Adapter.silkit.yaml
     
     ./bin/sil-kit-demo-ethernet-icmp-echo-device
     

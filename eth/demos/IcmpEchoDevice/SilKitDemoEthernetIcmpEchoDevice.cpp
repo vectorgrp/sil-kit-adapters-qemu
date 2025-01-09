@@ -75,7 +75,7 @@ int main(int argc, char** argv)
         R"({ "Logging": { "Sinks": [ { "Type": "Stdout", "Level": ")" + loglevel + R"("} ] } })";
 
     const std::string ethernetControllerName = participantName + "_Eth1";
-    const std::string ethernetNetworkName ="qemu_demo";
+    const std::string ethernetNetworkName ="Ethernet1";
 
     try
     {

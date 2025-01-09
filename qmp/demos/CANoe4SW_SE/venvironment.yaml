@@ -13,13 +13,13 @@ sil-kit:
   config-file-path: ../SilKitConfig_CANoe.silkit.yaml
 
 ethernet-networks:
-  - name: qemu_demo
+  - name: Ethernet1
 
 simulation-nodes:
   - name: SilKitDummyNode
     database-node: false
     network-assignments:
-      - network: qemu_demo
+      - network: Ethernet1
         tcp-ip-stack-adapter:
           ipv4-settings: 
             address-configuration: static
