@@ -34,6 +34,22 @@ if (WIN32)
 
     target_compile_definitions(asio INTERFACE _SILENCE_CXX17_ALLOCATOR_VOID_DEPRECATION_WARNING=1)
     target_compile_definitions(asio INTERFACE WINVER=0x0601 _WIN32_WINNT=0x0601) # Windows 7
+
+    # Set SIL Kit lib name
+    if(CMAKE_BUILD_TYPE STREQUAL "Release")
+        set(SILKIT_DLL_NAME "SilKit.dll")
+        set(SILKIT_LIB_NAME "SilKit.lib")
+    else() # Debug or RelWithDebInfo
+        set(SILKIT_DLL_NAME "SilKitd.dll")
+        set(SILKIT_LIB_NAME "SilKitd.lib")
+    endif()
+else()
+    # Set SIL Kit lib name
+    if(CMAKE_BUILD_TYPE STREQUAL "Release")
+        set(SILKIT_SO_NAME "libSilKit.so")
+    else() # Debug or RelWithDebInfo
+        set(SILKIT_SO_NAME "libSilKitd.so")
+    endif()
 endif()
 
 # SIL KIT PACKAGE CONSUMPTION 
@@ -195,14 +211,14 @@ include(GNUInstallDirs)
 if(WIN32)
     install(
         FILES
-            ${SILKIT_ADAPTER_QEMU_OUTPUT_DIRECTORY}/SilKit.dll
+            ${SILKIT_ADAPTER_QEMU_OUTPUT_DIRECTORY}/${SILKIT_DLL_NAME}
         DESTINATION ${CMAKE_INSTALL_BINDIR}
         COMPONENT lib
         EXCLUDE_FROM_ALL
     )
     install(
         FILES
-            ${SILKIT_ADAPTER_QEMU_LIBRARY_DIRECTORY}/SilKit.lib
+            ${SILKIT_ADAPTER_QEMU_LIBRARY_DIRECTORY}/${SILKIT_LIB_NAME}
         DESTINATION ${CMAKE_INSTALL_LIBDIR}
         COMPONENT lib
         EXCLUDE_FROM_ALL
@@ -210,7 +226,7 @@ if(WIN32)
 else()
     install(
         FILES
-            ${SILKIT_ADAPTER_QEMU_LIBRARY_DIRECTORY}/libSilKit.so
+            ${SILKIT_ADAPTER_QEMU_LIBRARY_DIRECTORY}/${SILKIT_SO_NAME}
         DESTINATION ${CMAKE_INSTALL_LIBDIR}
         PERMISSIONS
             OWNER_READ OWNER_WRITE
