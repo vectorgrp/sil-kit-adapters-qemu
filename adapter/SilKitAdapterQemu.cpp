@@ -140,6 +140,14 @@ int main(int argc, char** argv)
                 arg, alreadyProvidedSockets, participantName, ioContext, participant, logger));
         });
 
+        std::vector<EthSocketToEthControllerAdapter*> ethernetUnixSocketTransmitters;
+
+        foreachArgDo(argc, argv, unixEthArg, [&](char* arg) -> void {
+            ++numberOfRequestedAdaptations;
+            ethernetUnixSocketTransmitters.push_back(parseEthernetUnixSocketArgument(
+                arg, alreadyProvidedSockets, participantName, ioContext, participant, logger));
+        });
+
         throwInvalidCliIf(numberOfRequestedAdaptations == 0);
         auto finalStateFuture = lifecycleService->StartLifecycle();
 

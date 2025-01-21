@@ -9,6 +9,8 @@
 
 const std::string adapters::ethArg = "--socket-to-ethernet";
 
+const std::string adapters::unixEthArg = "--unix-socket-to-ethernet";
+
 const std::string adapters::chardevArg = "--socket-to-chardev";
 
 const std::string adapters::regUriArg = "--registry-uri";
@@ -21,7 +23,7 @@ const std::string adapters::participantNameArg = "--name";
 
 const std::string adapters::helpArg = "--help";
 
-const std::array<std::string, 6> switchesWithArgument = {adapters::ethArg, adapters::chardevArg, adapters::regUriArg,
+const std::array<std::string, 7> switchesWithArgument = {adapters::ethArg, adapters::unixEthArg, adapters::chardevArg, adapters::regUriArg,
                                             adapters::logLevelArg, adapters::participantNameArg, adapters::configurationArg};
 
 const std::array<std::string, 1> switchesWithoutArguments = {adapters::helpArg};
@@ -63,6 +65,7 @@ void adapters::print_help(bool userRequested)
            "  ["<<regUriArg<<" silkit://<host{localhost}>:<port{8501}>]\n"
            "  ["<<logLevelArg<<" <Trace|Debug|Warn|{Info}|Error|Critical|Off>]\n"
            " [["<<ethArg<<" <host>:<port>,network=<network's name>[:<controller's name>]]]\n"
+           " [["<<unixEthArg<<" <path>,network=<network's name>[:<controller's name>]]]\n"
            " [["<<chardevArg<<"\n"
            "     <host>:<port>,\n"
            "    [<namespace>::]<toChardev topic name>[~<subscriber's name>]\n"
@@ -75,7 +78,9 @@ void adapters::print_help(bool userRequested)
            "       ]]\n"
            " ]]\n"
            "\n"
-           "There needs to be at least one "<<chardevArg<<" or "<<ethArg<<" argument. Each socket must be unique.\n"
+                 "There needs to be at least one "
+              << chardevArg << " or " << ethArg << " or " << unixEthArg
+              << " argument. Each socket must be unique.\n"
            "SIL Kit-specific CLI arguments will be overwritten by the config file passed by "<<configurationArg<<".\n";
     std::cout << "\n"
                  "Example:\n"

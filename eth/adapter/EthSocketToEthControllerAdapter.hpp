@@ -12,6 +12,8 @@
 #include "silkit/services/logging/all.hpp"
 #include "silkit/services/ethernet/string_utils.hpp"
 
+#include "asio/generic/stream_protocol.hpp"
+
 namespace adapters {
 namespace ethernet {
 
@@ -26,7 +28,8 @@ class EthSocketToEthControllerAdapter
 public:
     EthSocketToEthControllerAdapter(SilKit::IParticipant* participant, asio::io_context& io_context,
                                       const std::string& host, const std::string& service,
-                                      const std::string ethernetControllerName, const std::string ethernetNetworkName);
+                                      const std::string ethernetControllerName, const std::string ethernetNetworkName,
+                                      bool enableDomainSockets);
 
     template <class container>
     void SendEthernetFrameToQemu(const container& data)
@@ -41,7 +44,7 @@ public:
 private:
     void DoReceiveFrameFromQemu();
 
-    asio::ip::tcp::socket _socket;
+    asio::generic::stream_protocol::socket _socket;
     SilKit::Services::Logging::ILogger* _logger;
 
     std::array<uint8_t, 4> _frame_size_buffer = {};
@@ -56,6 +59,12 @@ EthSocketToEthControllerAdapter* parseEthernetSocketArgument(char* arg, std::set
                                                                asio::io_context& ioContext,
                                                                SilKit::IParticipant* participant,
                                                                SilKit::Services::Logging::ILogger* logger);
+
+EthSocketToEthControllerAdapter* parseEthernetUnixSocketArgument(char* arg, std::set<std::string>& alreadyProvidedSockets,
+                                                                 const std::string& participantName,
+                                                                 asio::io_context& ioContext,
+                                                                 SilKit::IParticipant* participant,
+                                                                 SilKit::Services::Logging::ILogger* logger);
 
 } // namespace ethernet
 } // namespace adapters

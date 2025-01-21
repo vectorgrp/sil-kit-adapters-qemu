@@ -15,6 +15,7 @@
 #include "asio/ts/buffer.hpp"
 #include "asio/ts/io_context.hpp"
 #include "asio/ts/net.hpp"
+#include "asio/local/stream_protocol.hpp"
 
 #include "EthSocketToEthControllerAdapter.hpp"
 
@@ -27,7 +28,8 @@ using namespace demo;
 adapters::ethernet::EthSocketToEthControllerAdapter::EthSocketToEthControllerAdapter(SilKit::IParticipant* participant,
                                                                    asio::io_context& io_context,
                                   const std::string& host, const std::string& service,
-                                  const std::string ethernetControllerName, const std::string ethernetNetworkName)
+                                  const std::string ethernetControllerName, const std::string ethernetNetworkName,
+                                  bool enableDomainSockets)
     : _socket{io_context}
     , _logger{participant->GetLogger()}
     , _ethController(participant->CreateEthernetController(ethernetControllerName, ethernetNetworkName))
@@ -43,18 +45,35 @@ adapters::ethernet::EthSocketToEthControllerAdapter::EthSocketToEthControllerAda
         debug_message << "QEMU >> SIL Kit: Ethernet frame (" << frameSize << " bytes, txId=" << transmitId << ")";
         _logger->Debug(debug_message.str());
     }))
-{
-    asio::ip::tcp::resolver resolver{io_context};
+{    
     try
     {
-      const auto onReceiveEthernetFrameFromQemu = asio::connect(_socket, resolver.resolve(host, service));
+        if (enableDomainSockets)
+        {
+            asio::local::stream_protocol::endpoint endpoint(host);
+            _socket.connect(endpoint);
+        }
+        else
+        {
+            asio::ip::tcp::resolver resolver{io_context};
+            auto endpoint = resolver.resolve(host, service)->endpoint();
+            _socket.connect(endpoint);   
+        }      
     }
     catch (std::exception& e)
-    {
+    {        
       std::ostringstream error_message;
       error_message << e.what() << std::endl;
-      error_message << "Error encountered while trying to connect to QEMU with \"" << ethArg << "\" at \"" << host
-                    << ':' << service << '"';
+      if (enableDomainSockets)
+      {
+          error_message << "Error encountered while trying to connect to QEMU with \"" << unixEthArg << "\" at \"" << host
+                        << '"';
+      }
+      else
+      {
+          error_message << "Error encountered while trying to connect to QEMU with \"" << ethArg << "\" at \"" << host
+                        << ':' << service << '"';
+      }      
       throw std::runtime_error(error_message.str());
     }
     _logger->Info("Connect success");
@@ -189,11 +208,43 @@ EthSocketToEthControllerAdapter* adapters::ethernet::parseEthernetSocketArgument
     if (controllerName == "")
         controllerName = generateControllerNameFrom(participantName);
     const std::string& networkName = *arg_iter;
-    
+
     newAdapter = new EthSocketToEthControllerAdapter(participant, ioContext, address, port, controllerName,
-                                                       networkName);
+                                                       networkName, false);
 
     logger->Debug("Created Ethernet transmitter " + address + ':' + port + " (" + networkName + ')');
+
+    return newAdapter;
+}
+
+EthSocketToEthControllerAdapter* adapters::ethernet::parseEthernetUnixSocketArgument(char* arg, 
+                                                                                    std::set<std::string>& alreadyProvidedSockets, 
+                                                                                    const std::string& participantName,
+                                                                                    asio::io_context& ioContext, 
+                                                                                    SilKit::IParticipant* participant, 
+                                                                                    SilKit::Services::Logging::ILogger* logger)
+{
+    EthSocketToEthControllerAdapter* newAdapter = NULL;
+    auto args = Utils::split(arg, ",");
+    auto arg_iter = args.begin();
+
+    //handle <path>
+    assertAdditionalIterator(arg_iter, args);
+    throwInvalidCliIf(alreadyProvidedSockets.insert(*arg_iter).second == false);
+    const std::string& socketPath = *arg_iter++;
+    const std::string& dummyPort = "-1";
+    //handle inbound topic and labels
+    assertAdditionalIterator(arg_iter, args);
+    std::string controllerName = "";
+    extractAndEraseNamespaceAndControllernameFrom(*arg_iter, controllerName);
+    if (controllerName == "")
+        controllerName = generateControllerNameFrom(participantName);
+    const std::string& networkName = *arg_iter;
+
+    newAdapter = new EthSocketToEthControllerAdapter(participant, ioContext, socketPath, dummyPort, controllerName, networkName,
+                                                     true);
+
+    logger->Debug("Created Ethernet transmitter " + socketPath + " (" + networkName + ')');
 
     return newAdapter;
 }

@@ -101,6 +101,7 @@ The application takes the following command line arguments (defaults in curly br
       [--registry-uri silkit://<host{localhost}>:<port{8501}>]
       [--log <Trace|Debug|Warn|{Info}|Error|Critical|Off>]
      [[--socket-to-ethernet <host>:<port>,network=<network's name>[:<controller's name>]]]
+     [[--unix-socket-to-ethernet <path to socket identifier>,network=<network's name>[:<controller's name>]]]
      [[--socket-to-chardev
          <host>:<port>,
         [<namespace>::]<toChardev topic name>[~<subscriber's name>]
@@ -113,7 +114,7 @@ The application takes the following command line arguments (defaults in curly br
            ]]
      ]]
 
-There needs to be at least one ``--socket-to-chardev`` or ``--socket-to-ethernet`` argument. Each socket must be unique.
+There needs to be at least one ``--socket-to-chardev`` or ``--socket-to-ethernet`` or ``--unix-socket-to-ethernet`` argument. Each socket must be unique.
 
 SIL Kit-specific CLI arguments will be overwritten by the config file passed by ``--configuration``.
 

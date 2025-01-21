@@ -31,7 +31,22 @@ interface with the SIL Kit - and the ``sil-kit-demo-ethernet-icmp-echo-device`` 
     
 The demo applications will produce output when they send and receive Ethernet frames from QEMU or the Vector SIL Kit.
 
-**Note:** You can compile and run the demos on Windows even if QEMU is running in WSL.
+**Note 1:** You can compile and run the demos on Windows even if QEMU is running in WSL.
+
+**Note 2:** If you want to use UNIX domain sockets instead of TCP sockets for the QEMU network backend, the adapter can be started as follows 
+
+    ./bin/sil-kit-adapter-qemu --unix-socket-to-ethernet PATH,network=qemu_demo --configuration ./eth/demos/SilKitConfig_Adapter.silkit.yaml
+
+where PATH needs to be replaced by an actual filesystem location representing the socket address. If you are using a Linux OS, you may choose PATH=/tmp/socket. In case of a Windows system, PATH=C:\Users\MyUser\AppData\Local\Temp\qemu.socket is a possible choice. 
+Note that in ``./tools/run-silkit-qemu-demos-guest.sh``, respectively ``./tools/run-silkit-qemu-demos-guest.ps1``, the line
+
+    -netdev socket,id=mynet0,listen=:12345
+
+needs to be replaced by the following line:
+
+    -netdev stream,id=mynet0,server=on,addr.type=unix,addr.path=PATH
+
+We remark that the ``-netdev stream`` option is only available with QEMU 7.2.0 and higher. Further, if you are building QEMU yourself from source, you may encounter problems regarding the 'user' networking backend in case of QEMU 7.2.0 and higher. In this case, the 'slirp' submodule is probably missing and can be added by recompiling QEMU with the option ``--enable-slirp``.
 
 ## ICMP Ping and Pong
 When the virtual machine boots, the network interface created for hooking up with the Vector SIL Kit (``silkit0``) is ``up``.

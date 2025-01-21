@@ -86,6 +86,11 @@ void foreachArgDo(int argc, char** argv, const std::string& argument, const Acti
 extern const std::string ethArg;
 
 /// <summary>
+/// string containing the argument preceding ethernet adaptation and unix domain socket information.
+/// </summary>
+extern const std::string unixEthArg;
+
+/// <summary>
 /// string containing the argument preceding chardev adaptation information.
 /// </summary>
 extern const std::string chardevArg;
