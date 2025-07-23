@@ -63,10 +63,13 @@ EthSocketToEthControllerAdapter::EthSocketToEthControllerAdapter(SilKit::IPartic
         }
         else
         {
-            asio::ip::tcp::resolver resolver{io_context};
-            auto endpoint = resolver.resolve(host, service)->endpoint();
-            _socket.connect(endpoint);
-        }
+            asio::ip::tcp::resolver resolver(io_context);
+            auto endpoints = resolver.resolve(host, service);
+
+            asio::ip::tcp::socket temp_socket(io_context);
+            asio::connect(temp_socket, endpoints);
+            _socket = asio::generic::stream_protocol::socket(std::move(temp_socket));
+        }      
     }
     catch (std::exception& e)
     {

@@ -19,9 +19,9 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 # start SIL Kit registry
-$silKitDir/SilKit/bin/sil-kit-registry --listen-uri 'silkit://0.0.0.0:8501' -s &> $scriptDir/sil-kit-registry.out &
+$silKitDir/SilKit/bin/sil-kit-registry --listen-uri 'silkit://0.0.0.0:8501' &> $scriptDir/sil-kit-registry.out &
 sleep 1 # wait 1 second for the creation/existense of the .out file
-timeout 30s grep -q 'Registered signal handler' <(tail -f $scriptDir/sil-kit-registry.out -n +1) || { echo "[error] Timeout reached while waiting for sil-kit-registry to start"; exit 1; }
+timeout 30s grep -q 'Press Ctrl-C to terminate...' <(tail -f $scriptDir/sil-kit-registry.out -n +1) || { echo "[error] Timeout reached while waiting for sil-kit-registry to start"; exit 1; }
 
 echo "[info] Starting QEMU image"
 tmp_fifo3=$(mktemp -u)
