@@ -6,35 +6,20 @@
 #include <cstdint>
 
 #include "Device.hpp"
-#include "../../adapter/Parsing.hpp"
-#include "../adapter/SignalHandler.hpp"
 
 #include "silkit/SilKit.hpp"
 #include "silkit/config/all.hpp"
 #include "silkit/services/ethernet/all.hpp"
 #include "silkit/services/ethernet/string_utils.hpp"
+#include "common/Parsing.hpp"
+#include "common/Cli.hpp"
 
 using namespace adapters;
+using namespace util;
 
 using namespace SilKit::Services::Ethernet;
 
 using namespace std::chrono_literals;
-
-void promptForExit()
-{    
-    std::promise<int> signalPromise;
-    auto signalValue = signalPromise.get_future();
-    RegisterSignalHandler([&signalPromise](auto sigNum) {
-        signalPromise.set_value(sigNum);
-    });
-        
-    std::cout << "Press CTRL + C to stop the process..." << std::endl;
-
-    signalValue.wait();
-
-    std::cout << "\nSignal " << signalValue.get() << " received!" << std::endl;
-    std::cout << "Exiting..." << std::endl;
-}
 
 void EthAckCallback(IEthernetController* /*controller*/, const EthernetFrameTransmitEvent& ack)
 {

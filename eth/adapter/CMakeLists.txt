@@ -12,6 +12,7 @@ target_link_libraries(EthSocketToEthControllerAdapter
         Utility
         asio
         SilKit::SilKit
+        sil-kit-adapters-common
 )
 set_target_properties(EthSocketToEthControllerAdapter 
 	PROPERTIES

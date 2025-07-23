@@ -3,199 +3,159 @@
 #include "SilKitAdapterQemu.hpp"
 
 #include <iostream>
-#include <string>
 #include <thread>
-#include <vector>
-#include <set>
-#include <algorithm>
 
-#include "Exceptions.hpp"
-#include "Parsing.hpp"
-#include "SignalHandler.hpp"
-#include "../chardev/adapter/ChardevSocketToPubSubAdapter.hpp"
+#include "common/Parsing.hpp"
+#include "common/Cli.hpp"
+#include "common/ParticipantCreation.hpp"
+#include "common/SocketToBytesPubSubAdapter.hpp"
 #include "../eth/adapter/EthSocketToEthControllerAdapter.hpp"
 
-#include "silkit/SilKit.hpp"
-#include "silkit/config/all.hpp"
-#include "silkit/services/pubsub/all.hpp"
-#include "silkit/services/logging/all.hpp"
-#include "silkit/util/serdes/Serialization.hpp"
-
-#include "../chardev/Utility/StringUtils.hpp"
-
+using namespace util;
 using namespace adapters;
-using namespace adapters::chardev;
+using namespace adapters::bytes_socket;
 using namespace adapters::ethernet;
-using namespace std::chrono_literals;
-using namespace SilKit::Services::Orchestration;
 
-void promptForExit()
-{    
-    std::promise<int> signalPromise;
-    auto signalValue = signalPromise.get_future();
-    RegisterSignalHandler([&signalPromise](auto sigNum) {
-        signalPromise.set_value(sigNum);
-    });
-        
-    std::cout << "Press CTRL + C to stop the process..." << std::endl;
+const std::string adapters::ethArg = "--socket-to-ethernet";
 
-    signalValue.wait();
+const std::string adapters::chardevArg = "--socket-to-chardev";
 
-    std::cout << "\nSignal " << signalValue.get() << " received!" << std::endl;
-    std::cout << "Exiting..." << std::endl;
-}
+const std::string adapters::unixEthArg = "--unix-socket-to-ethernet";
+
+const std::string adapters::defaultParticipantName = "SilKitAdapterQemu";
+
+void print_help(bool userRequested=false)
+{
+    std::cout << "Usage (defaults in curly braces if you omit the switch):" << std::endl
+              << "sil-kit-adapter-qemu [" << participantNameArg
+              << " <participant's name{SilKitAdapterQemu}>]\n"
+                 "  ["
+              << configurationArg
+              << " <path to .silkit.yaml or .json configuration file>]\n"
+                 "  ["
+              << regUriArg
+              << " silkit://<host{localhost}>:<port{8501}>]\n"
+                 "  ["
+              << logLevelArg
+              << " <Trace|Debug|Warn|{Info}|Error|Critical|off>]\n"
+                 " [["
+              << ethArg
+              << " <host>:<port>,network=<network's name>[:<controller's name>]]]\n"
+                 " [["
+              << unixEthArg
+              << " <path>,network=<network's name>[:<controller's name>]]]\n"
+                 " [["
+              << chardevArg
+              << "\n"
+              << SocketToBytesPubSubAdapter::printArgumentHelp("    ")
+              << " ]]\n"
+                 "\n"
+                 "There needs to be at least one "
+              << chardevArg << " or " << ethArg << " or " << unixEthArg
+              << " argument. Each socket must be unique.\n"
+                 "SIL Kit-specific CLI arguments will be overwritten by the config file passed by "
+              << configurationArg << ".\n";
+    std::cout << "\n"
+                 "Example:\n"
+                 "sil-kit-adapter-qemu "
+              << participantNameArg << " ChardevAdapter " << chardevArg
+              << " localhost:12345,"
+                 "Namespace::toChardev,VirtualNetwork=Default,"
+                 "fromChardev,Namespace:Namespace,VirtualNetwork:Default\n";
+    if (!userRequested)
+        std::cout << "\n"
+                     "Pass " << helpArg << " to get this message.\n";
+};
 
 int main(int argc, char** argv)
 {
     if (findArg(argc, argv, helpArg, argv) != NULL)
     {
-        print_help(true);
-        return NO_ERROR;
+        ::print_help(true);
+        return CodeSuccess;
     }
-
-    const std::string configurationFile = getArgDefault(argc, argv, configurationArg, "");
-
+    
     asio::io_context ioContext;
 
-    const std::string participantName = getArgDefault(argc, argv, participantNameArg, "SilKitAdapterQemu");
-
-    const std::string registryURI = getArgDefault(argc, argv, regUriArg, "silkit://localhost:8501");
-
-    unsigned numberOfRequestedAdaptations = 0;
     try
     {
-        throwInvalidCliIf(thereAreUnknownArguments(argc, argv));
+        throwInvalidCliIf(thereAreUnknownArguments(argc, argv, 
+            {&ethArg, &chardevArg, &regUriArg, &logLevelArg, &participantNameArg, &configurationArg, &unixEthArg},
+            {&helpArg}));
 
-        std::shared_ptr<SilKit::Config::IParticipantConfiguration> participantConfiguration;
-        if (!configurationFile.empty())
-        {
-            participantConfiguration = SilKit::Config::ParticipantConfigurationFromFile(configurationFile);
-            static const auto conflictualArguments = {
-                &logLevelArg,
-                /* others are correctly handled by SilKit if one is overwritten.*/};
-            for (const auto* conflictualArgument : conflictualArguments)
-            {
-                if (findArg(argc, argv, *conflictualArgument, argv) != NULL)
-                {
-                    auto configFileName = configurationFile;
-                    if (configurationFile.find_last_of("/\\") != std::string::npos)
-                    {
-                        configFileName = configurationFile.substr(configurationFile.find_last_of("/\\") + 1);
-                    }
-                    std::cout << "[info] Be aware that argument given with " << *conflictualArgument
-                              << " can be overwritten by a different value defined in the given configuration file "
-                              << configFileName << std::endl;
-                }
-            }
-        }
-        else
-        {
-            const std::string loglevel = getArgDefault(argc, argv, logLevelArg, "Info");
-            const std::string participantConfigurationString =
-                R"({ "Logging": { "Sinks": [ { "Type": "Stdout", "Level": ")" + loglevel + R"("} ] } })";
-            participantConfiguration =
-                SilKit::Config::ParticipantConfigurationFromString(participantConfigurationString);
-        }
-
-        std::cout << "Creating participant '" << participantName << "' at " << registryURI << std::endl;
-        std::unique_ptr<SilKit::IParticipant> p_container =
-            SilKit::CreateParticipant(participantConfiguration, participantName, registryURI);
-        auto participant = p_container.get();
-
-        auto logger = participant->GetLogger();
-
-        auto* lifecycleService = participant->CreateLifecycleService({OperationMode::Autonomous});
-        auto* systemMonitor = participant->CreateSystemMonitor();
-
+        SilKit::Services::Logging::ILogger* logger;
+        SilKit::Services::Orchestration::ILifecycleService* lifecycleService;
         std::promise<void> runningStatePromise;
 
-        systemMonitor->AddParticipantStatusHandler(
-            [&runningStatePromise, participantName](const SilKit::Services::Orchestration::ParticipantStatus& status) {
-                if (participantName == status.participantName)
-                {
-                    if (status.state == SilKit::Services::Orchestration::ParticipantState::Running)
-                    {
-                        // Only call lifecycleservice->stop() after hitting this
-                        runningStatePromise.set_value();
-                    }
-                }
-            });
+        std::string participantName = defaultParticipantName;
+        const auto participant =
+            CreateParticipant(argc, argv, logger, &participantName, &lifecycleService, &runningStatePromise);
 
-        std::vector<ChardevSocketToPubSubAdapter*> chardevSocketTransmitters;
+        unsigned numberOfRequestedAdaptations = 0;
 
         //set to ensure the provided sockets are unique (text-based)
         std::set<std::string> alreadyProvidedSockets;
 
+        std::vector<std::unique_ptr<SocketToBytesPubSubAdapter>> chardevSocketTransmitters;
+
         foreachArgDo(argc, argv, chardevArg, [&](char* arg) -> void {
             ++numberOfRequestedAdaptations;
-            chardevSocketTransmitters.push_back(parseChardevSocketArgument(arg, alreadyProvidedSockets, participantName,
-                                                                           ioContext, participant, logger));
+            chardevSocketTransmitters.emplace_back(SocketToBytesPubSubAdapter::parseArgument(
+                arg, alreadyProvidedSockets, participantName, ioContext, participant.get(), logger));
         });
 
-        std::vector<EthSocketToEthControllerAdapter*> ethernetSocketTransmitters;
+        std::vector<std::unique_ptr<EthSocketToEthControllerAdapter>> ethernetSocketTransmitters;
 
         foreachArgDo(argc, argv, ethArg, [&](char* arg) -> void {
             ++numberOfRequestedAdaptations;
-            ethernetSocketTransmitters.push_back(parseEthernetSocketArgument(
-                arg, alreadyProvidedSockets, participantName, ioContext, participant, logger));
+            ethernetSocketTransmitters.emplace_back(parseEthernetSocketArgument(
+                arg, alreadyProvidedSockets, participantName, ioContext, participant.get(), logger));
         });
 
         std::vector<EthSocketToEthControllerAdapter*> ethernetUnixSocketTransmitters;
 
         foreachArgDo(argc, argv, unixEthArg, [&](char* arg) -> void {
             ++numberOfRequestedAdaptations;
-            ethernetUnixSocketTransmitters.push_back(parseEthernetUnixSocketArgument(
-                arg, alreadyProvidedSockets, participantName, ioContext, participant, logger));
+            ethernetUnixSocketTransmitters.emplace_back(parseEthernetUnixSocketArgument(
+                arg, alreadyProvidedSockets, participantName, ioContext, participant.get(), logger));
         });
 
-        throwInvalidCliIf(numberOfRequestedAdaptations == 0);
+        if (numberOfRequestedAdaptations == 0)
+        {
+            logger->Error("No " + ethArg + ", " + unixEthArg + " or " + chardevArg + " argument, exiting.");
+            throw InvalidCli();
+        }
         auto finalStateFuture = lifecycleService->StartLifecycle();
 
-        std::thread t([&]() -> void {
+        std::thread ioContextThread([&]() -> void {
             ioContext.run();
         });
 
         promptForExit();
 
-        ioContext.stop();
-        t.join();
-
-        auto runningStateFuture = runningStatePromise.get_future();
-        auto futureStatus = runningStateFuture.wait_for(15s);
-        if (futureStatus != std::future_status::ready)
-        {
-            logger->Debug("Lifecycle Service Stopping: timed out while checking if the participant is currently running.");
-        }
-        
-        lifecycleService->Stop("Adapter stopped by the user.");
-
-        auto finalState = finalStateFuture.wait_for(15s);
-        if (finalState != std::future_status::ready)
-        {
-            logger->Debug("Lifecycle service stopping: timed out");
-        }
+        Stop(ioContext, ioContextThread, *logger, &runningStatePromise, lifecycleService, &finalStateFuture);
     }
     catch (const SilKit::ConfigurationError& error)
     {
         std::cerr << "Invalid configuration: " << error.what() << std::endl;
-        return CONFIGURATION_ERROR;
+        return CodeErrorConfiguration;
     }
     catch (const InvalidCli&)
     {
-        adapters::print_help();
+        ::print_help();
         std::cerr << std::endl << "Invalid command line arguments." << std::endl;
-        return CLI_ERROR;
+        return CodeErrorCli;
     }
     catch (const SilKit::SilKitError& error)
     {
         std::cerr << "SIL Kit runtime error: " << error.what() << std::endl;
-        return OTHER_ERROR;
+        return CodeErrorOther;
     }
     catch (const std::exception& error)
     {
         std::cerr << "Something went wrong: " << error.what() << std::endl;
-        return OTHER_ERROR;
+        return CodeErrorOther;
     }
 
-    return NO_ERROR;
+    return CodeSuccess;
 }

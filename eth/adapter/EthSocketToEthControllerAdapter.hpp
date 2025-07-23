@@ -2,15 +2,12 @@
 
 #pragma once
 
-#include <cstdint>
-
-#include "WriteUintBe.hpp"
+#include <set>
 
 #include "silkit/SilKit.hpp"
-#include "silkit/config/all.hpp"
-#include "silkit/services/ethernet/all.hpp"
-#include "silkit/services/logging/all.hpp"
-#include "silkit/services/ethernet/string_utils.hpp"
+#include "asio/ip/tcp.hpp"
+#include "asio/write.hpp"
+#include "WriteUintBe.hpp"
 
 #include "asio/generic/stream_protocol.hpp"
 
@@ -28,7 +25,7 @@ class EthSocketToEthControllerAdapter
 public:
     EthSocketToEthControllerAdapter(SilKit::IParticipant* participant, asio::io_context& io_context,
                                       const std::string& host, const std::string& service,
-                                      const std::string ethernetControllerName, const std::string ethernetNetworkName,
+                                      const std::string& ethernetControllerName, const std::string& ethernetNetworkName,
                                       bool enableDomainSockets);
 
     template <class container>

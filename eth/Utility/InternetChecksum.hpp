@@ -7,8 +7,6 @@
 #include <cassert>
 #include <cstdint>
 
-#include "ReadUintBe.hpp"
-
 #include "asio/ts/buffer.hpp"
 
 namespace demo {

@@ -61,9 +61,9 @@ The ping requests should all receive responses.
 You should see output similar to the following from the ``sil-kit-adapter-qemu`` application:
 
     ...
-    [date time] [SilKitAdapterQemu] [debug] SIL Kit >> Demo: ACK for ETH Message with transmitId=2
-    [date time] [SilKitAdapterQemu] [debug] QEMU >> SIL Kit: Ethernet frame (98 bytes, txId=2)
-    [date time] [SilKitAdapterQemu] [debug] SIL Kit >> QEMU: Ethernet frame (98 bytes)
+    [date time] [SilKitAdapterQemu] [debug] SIL Kit >> Adapter: ACK for ETH Message with transmitId=2
+    [date time] [SilKitAdapterQemu] [debug] Adapter >> SIL Kit: Ethernet frame (98 bytes, txId=2)
+    [date time] [SilKitAdapterQemu] [debug] SIL Kit >> Adapter: Ethernet frame (98 bytes)
     ...
 
 In the CANoe trace window you should also be able to see the icmpv4 traffic. Ping requests coming from the QEMU SUT and replies to this requests coming from the CANoe network node.

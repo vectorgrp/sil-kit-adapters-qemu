@@ -2,8 +2,6 @@
 
 #include "Ip4Address.hpp"
 
-#include <ostream>
-
 #include "asio/ts/net.hpp"
 
 namespace demo {

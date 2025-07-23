@@ -22,7 +22,6 @@ To start the guest image, run:
 ```
 ./tools/run-silkit-qemu-demos-guest.ps1
 ```
-> On Windows you have to adapt the following line of the script: ``-hda "D:\Vector\qemu\silkit-qemu-demos-guest.qcow2"`` with the absolute path to the built guest image.
 
 By default, the options in this script will spawn the guest system in the same terminal. The password for the ``root``
 user is ``root``.

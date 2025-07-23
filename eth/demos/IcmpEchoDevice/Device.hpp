@@ -2,30 +2,11 @@
 
 #pragma once
 
-#include <iostream>
 #include <vector>
 #include <functional>
-#include <cstdint>
 
-#include "Enums.hpp"
-#include "Exceptions.hpp"
-#include "FormattedBuffer.hpp"
-#include "ReadUintBe.hpp"
-#include "WriteUintBe.hpp"
-
-#include "EthernetAddress.hpp"
 #include "Ip4Address.hpp"
-
-#include "EthernetHeader.hpp"
-
-#include "ArpIp4Packet.hpp"
-
-#include "Ip4Header.hpp"
-#include "Icmp4Header.hpp"
-
-#include "asio/ts/buffer.hpp"
-#include "asio/ts/internet.hpp"
-#include "asio/ts/socket.hpp"
+#include "EthernetAddress.hpp"
 
 namespace demo {
 

@@ -83,18 +83,18 @@ message11
 
 You should see output similar to the following from the sil-kit-adapter-qemu application:
 ```
-[date time] [SilKitAdapterQemu] [debug] QEMU >> SIL Kit: message1
-[date time] [SilKitAdapterQemu] [debug] SIL Kit >> QEMU: message1
-[date time] [SilKitAdapterQemu] [debug] QEMU >> SIL Kit: message10
-[date time] [SilKitAdapterQemu] [debug] SIL Kit >> QEMU: message10
-[date time] [SilKitAdapterQemu] [debug] QEMU >> SIL Kit: message11
-[date time] [SilKitAdapterQemu] [debug] SIL Kit >> QEMU: message11
+[date time] [SilKitAdapterQemu] [debug] Adapter >> SIL Kit: message1
+[date time] [SilKitAdapterQemu] [debug] SIL Kit >> Adapter: message1
+[date time] [SilKitAdapterQemu] [debug] Adapter >> SIL Kit: message10
+[date time] [SilKitAdapterQemu] [debug] SIL Kit >> Adapter: message10
+[date time] [SilKitAdapterQemu] [debug] Adapter >> SIL Kit: message11
+[date time] [SilKitAdapterQemu] [debug] SIL Kit >> Adapter: message11
 
 ```
 Take note that timing and other considerations may split the message, as thus:
 ```
-[date time] [SilKitAdapterQemu] [debug] QEMU >> SIL Kit: m
-[date time] [SilKitAdapterQemu] [debug] QEMU >> SIL Kit: essage1
+[date time] [SilKitAdapterQemu] [debug] Adapter >> SIL Kit: m
+[date time] [SilKitAdapterQemu] [debug] Adapter >> SIL Kit: essage1
 
 ```
 
@@ -230,9 +230,9 @@ root@silkit-qemu-demos-guest:~# od -An -tu2 -w2 -v /dev/ttyS1
 
 And here is what you'll see in the Adapter's log (note that binary values are not always printable):
 ```
-[date time] [SilKitAdapterQemu] [debug] SIL Kit >> QEMU: ,☺
-[date time] [SilKitAdapterQemu] [debug] SIL Kit >> QEMU: ,☺
-[date time] [SilKitAdapterQemu] [debug] SIL Kit >> QEMU: ◄☺
+[date time] [SilKitAdapterQemu] [debug] SIL Kit >> Adapter: ,☺
+[date time] [SilKitAdapterQemu] [debug] SIL Kit >> Adapter: ,☺
+[date time] [SilKitAdapterQemu] [debug] SIL Kit >> Adapter: ◄☺
 ```
 
 ### Temperature sensing demo
@@ -257,8 +257,8 @@ CANoe would show "0" and "27" in the panel.
 
 And here is what you'll see in the Adapter's log (note that binary values are not always printable):
 ```
-[date time] [SilKitAdapterQemu] [debug] QEMU >> SIL Kit: ◄☺
-[date time] [SilKitAdapterQemu] [debug] QEMU >> SIL Kit: ,☺
+[date time] [SilKitAdapterQemu] [debug] Adapter >> SIL Kit: ◄☺
+[date time] [SilKitAdapterQemu] [debug] Adapter >> SIL Kit: ,☺
 ```
 
 Take note that timing and other considerations may split the message.

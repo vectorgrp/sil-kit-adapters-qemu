@@ -9,5 +9,5 @@
 -device isa-serial,chardev=ttySPI,id=serialSilKit,index=1 `
 -netdev socket,id=mynet0,listen=:12345 `
 -net nic,macaddr=52:54:56:53:4B:51,netdev=mynet0 `
--hda "D:\Vector\qemu\silkit-qemu-demos-guest.qcow2" `
+-hda (Join-Path -Path (Split-Path -Parent $PSScriptRoot) -ChildPath "silkit-qemu-demos-guest.qcow2") `
 -qmp tcp:localhost:4444,server,wait=off

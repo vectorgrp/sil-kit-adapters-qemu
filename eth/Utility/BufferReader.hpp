@@ -2,12 +2,13 @@
 
 #pragma once
 
+#include "common/Exceptions.hpp"
+#include "InternetChecksum.hpp"
+
 #include <array>
 #include <type_traits>
 #include <cstddef>
 #include <cstdint>
-
-#include "Exceptions.hpp"
 #include "InternetChecksum.hpp"
 
 #include "asio/ts/buffer.hpp"

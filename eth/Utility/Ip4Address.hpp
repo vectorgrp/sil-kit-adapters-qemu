@@ -2,11 +2,10 @@
 
 #pragma once
 
+#include "common/Exceptions.hpp"
 #include <array>
 #include <iosfwd>
 #include <cstdint>
-
-#include "Exceptions.hpp"
 
 #include "asio/ts/buffer.hpp"
 

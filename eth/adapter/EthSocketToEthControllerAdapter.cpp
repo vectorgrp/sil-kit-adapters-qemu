@@ -1,35 +1,43 @@
 // Copyright (c) Vector Informatik GmbH. All rights reserved.
 
+#include "EthSocketToEthControllerAdapter.hpp"
+
 #include <iostream>
 #include <string>
 #include <thread>
 #include <vector>
 #include <set>
-#include <cstdint>
 
-#include "adapter/Exceptions.hpp"
+#include "common/Exceptions.hpp"
 #include "WriteUintBe.hpp"
-#include "../../chardev/Utility/StringUtils.hpp"
-#include "adapter/Parsing.hpp"
+#include "common/StringUtils.hpp"
+#include "common/Parsing.hpp"
 
-#include "asio/ts/buffer.hpp"
-#include "asio/ts/io_context.hpp"
-#include "asio/ts/net.hpp"
-#include "asio/local/stream_protocol.hpp"
+#include <asio/ts/buffer.hpp>
+#include <asio/ts/net.hpp>
+#include <asio/local/stream_protocol.hpp>
 
-#include "EthSocketToEthControllerAdapter.hpp"
+#include "silkit/services/ethernet/string_utils.hpp"
+
+namespace adapters {
+extern const std::string ethArg;
+extern const std::string unixEthArg;
+}
 
 using namespace SilKit::Services::Ethernet;
 using namespace adapters::ethernet;
 using namespace std::chrono_literals;
 using namespace adapters;
+using namespace util;
 using namespace demo;
 
-adapters::ethernet::EthSocketToEthControllerAdapter::EthSocketToEthControllerAdapter(SilKit::IParticipant* participant,
-                                                                   asio::io_context& io_context,
-                                  const std::string& host, const std::string& service,
-                                  const std::string ethernetControllerName, const std::string ethernetNetworkName,
-                                  bool enableDomainSockets)
+EthSocketToEthControllerAdapter::EthSocketToEthControllerAdapter(SilKit::IParticipant* participant,
+                                                                 asio::io_context& io_context, 
+                                                                 const std::string& host,
+                                                                 const std::string& service,
+                                                                 const std::string& ethernetControllerName, 
+                                                                 const std::string& ethernetNetworkName,
+                                                                 bool enableDomainSockets)
     : _socket{io_context}
     , _logger{participant->GetLogger()}
     , _ethController(participant->CreateEthernetController(ethernetControllerName, ethernetNetworkName))
@@ -42,10 +50,10 @@ adapters::ethernet::EthSocketToEthControllerAdapter::EthSocketToEthControllerAda
         static intptr_t transmitId = 0;
         _ethController->SendFrame(EthernetFrame{std::move(data)}, reinterpret_cast<void*>(++transmitId));
         std::ostringstream debug_message;
-        debug_message << "QEMU >> SIL Kit: Ethernet frame (" << frameSize << " bytes, txId=" << transmitId << ")";
+        debug_message << "Adapter >> SIL Kit: Ethernet frame (" << frameSize << " bytes, txId=" << transmitId << ")";
         _logger->Debug(debug_message.str());
     }))
-{    
+{
     try
     {
         if (enableDomainSockets)
@@ -57,23 +65,23 @@ adapters::ethernet::EthSocketToEthControllerAdapter::EthSocketToEthControllerAda
         {
             asio::ip::tcp::resolver resolver{io_context};
             auto endpoint = resolver.resolve(host, service)->endpoint();
-            _socket.connect(endpoint);   
-        }      
+            _socket.connect(endpoint);
+        }
     }
     catch (std::exception& e)
-    {        
+    {
       std::ostringstream error_message;
       error_message << e.what() << std::endl;
       if (enableDomainSockets)
       {
-          error_message << "Error encountered while trying to connect to QEMU with \"" << unixEthArg << "\" at \"" << host
-                        << '"';
+        error_message << "Error encountered while trying to connect to QEMU with \"" << unixEthArg << "\" at \""
+        << host << '"';
       }
       else
       {
-          error_message << "Error encountered while trying to connect to QEMU with \"" << ethArg << "\" at \"" << host
-                        << ':' << service << '"';
-      }      
+        error_message << "Error encountered while trying to connect to QEMU with \"" << ethArg << "\" at \"" << host
+                      << ':' << service << '"';
+      }
       throw std::runtime_error(error_message.str());
     }
     _logger->Info("Connect success");
@@ -83,7 +91,7 @@ adapters::ethernet::EthSocketToEthControllerAdapter::EthSocketToEthControllerAda
         auto rawFrame = msg.frame.raw;
         SendEthernetFrameToQemu(rawFrame);
         std::ostringstream debug_message;
-        debug_message << "SIL Kit >> QEMU: Ethernet frame (" << rawFrame.size() << " bytes)";
+        debug_message << "SIL Kit >> Adapter: Ethernet frame (" << rawFrame.size() << " bytes)";
         _logger->Debug(debug_message.str());
     });
     _ethController->AddFrameTransmitHandler(
@@ -91,12 +99,12 @@ adapters::ethernet::EthSocketToEthControllerAdapter::EthSocketToEthControllerAda
             std::ostringstream debug_message;
             if (ack.status == EthernetTransmitStatus::Transmitted)
             {
-                debug_message << "SIL Kit >> Demo: ACK for ETH Message with transmitId="
+                debug_message << "SIL Kit >> Adapter: ACK for ETH Message with transmitId="
                               << reinterpret_cast<intptr_t>(ack.userContext);
             }
             else
             {
-                debug_message << "SIL Kit >> Demo: NACK for ETH Message with transmitId="
+                debug_message << "SIL Kit >> Adapter: NACK for ETH Message with transmitId="
                               << reinterpret_cast<intptr_t>(ack.userContext) << ": " << ack.status;
             }
             _logger->Debug(debug_message.str());
@@ -105,7 +113,7 @@ adapters::ethernet::EthSocketToEthControllerAdapter::EthSocketToEthControllerAda
     _ethController->Activate();
 }
 
-void adapters::ethernet::EthSocketToEthControllerAdapter::DoReceiveFrameFromQemu()
+void EthSocketToEthControllerAdapter::DoReceiveFrameFromQemu()
 {
     asio::async_read(
         _socket, asio::buffer(_frame_size_buffer.data(), _frame_size_buffer.size()),
@@ -153,7 +161,7 @@ void adapters::ethernet::EthSocketToEthControllerAdapter::DoReceiveFrameFromQemu
 /// <param name="defaultname">output</param>
 void extractAndEraseNamespaceAndControllernameFrom(std::string& networkname, std::string& controllername)
 {
-    auto splitNetwork = Utils::split(networkname, "=");
+    auto splitNetwork = util::split(networkname, "=");
     if (splitNetwork.size() == 2 && splitNetwork[0] == "network")
     {
         networkname = splitNetwork[1];
@@ -163,7 +171,7 @@ void extractAndEraseNamespaceAndControllernameFrom(std::string& networkname, std
         throw InvalidCli();
     }
 
-    auto splitController = Utils::split(networkname, ":");
+    auto splitController = util::split(networkname, ":");
     if (splitController.size() == 2)
     {
         networkname = splitController[0];
@@ -183,21 +191,21 @@ std::string generateControllerNameFrom(const std::string& participantName)
     return static_cast<std::ostringstream&>(subscriberName << base << count++).str();
 }
 
-EthSocketToEthControllerAdapter* adapters::ethernet::parseEthernetSocketArgument(char* arg,
-                                                                        std::set<std::string>& alreadyProvidedSockets,
-                                                                        const std::string& participantName,
-                                                                        asio::io_context& ioContext,
-                                                                        SilKit::IParticipant* participant,
-                                                                        SilKit::Services::Logging::ILogger* logger)
-{
+EthSocketToEthControllerAdapter* ethernet::parseEthernetSocketArgument(char* arg,
+                                                                       std::set<std::string>& alreadyProvidedSockets,
+                                                                       const std::string& participantName,
+                                                                       asio::io_context& ioContext,
+                                                                       SilKit::IParticipant* participant,
+                                                                       SilKit::Services::Logging::ILogger* logger)
+ {
     EthSocketToEthControllerAdapter* newAdapter=NULL;
-    auto args = Utils::split(arg, ",");
+    auto args = util::split(arg, ",");
     auto arg_iter = args.begin();
 
     //handle <address>:<port>
     assertAdditionalIterator(arg_iter, args);
     throwInvalidCliIf(alreadyProvidedSockets.insert(*arg_iter).second == false);
-    auto portAddress = Utils::split(*arg_iter++, ":");
+    auto portAddress = util::split(*arg_iter++, ":");
     throwInvalidCliIf(portAddress.size() != 2);
     const auto& address = portAddress[0];
     const auto& port = portAddress[1];
@@ -208,7 +216,7 @@ EthSocketToEthControllerAdapter* adapters::ethernet::parseEthernetSocketArgument
     if (controllerName == "")
         controllerName = generateControllerNameFrom(participantName);
     const std::string& networkName = *arg_iter;
-
+    
     newAdapter = new EthSocketToEthControllerAdapter(participant, ioContext, address, port, controllerName,
                                                        networkName, false);
 
@@ -217,15 +225,16 @@ EthSocketToEthControllerAdapter* adapters::ethernet::parseEthernetSocketArgument
     return newAdapter;
 }
 
-EthSocketToEthControllerAdapter* adapters::ethernet::parseEthernetUnixSocketArgument(char* arg, 
-                                                                                    std::set<std::string>& alreadyProvidedSockets, 
-                                                                                    const std::string& participantName,
-                                                                                    asio::io_context& ioContext, 
-                                                                                    SilKit::IParticipant* participant, 
-                                                                                    SilKit::Services::Logging::ILogger* logger)
+EthSocketToEthControllerAdapter* ethernet::parseEthernetUnixSocketArgument(
+    char* arg, 
+    std::set<std::string>& alreadyProvidedSockets, 
+    const std::string& participantName,
+    asio::io_context& ioContext, 
+    SilKit::IParticipant* participant, 
+    SilKit::Services::Logging::ILogger* logger)
 {
     EthSocketToEthControllerAdapter* newAdapter = NULL;
-    auto args = Utils::split(arg, ",");
+    auto args = util::split(arg, ",");
     auto arg_iter = args.begin();
 
     //handle <path>
@@ -241,8 +250,8 @@ EthSocketToEthControllerAdapter* adapters::ethernet::parseEthernetUnixSocketArgu
         controllerName = generateControllerNameFrom(participantName);
     const std::string& networkName = *arg_iter;
 
-    newAdapter = new EthSocketToEthControllerAdapter(participant, ioContext, socketPath, dummyPort, controllerName, networkName,
-                                                     true);
+    newAdapter = new EthSocketToEthControllerAdapter(participant, ioContext, socketPath, dummyPort, controllerName,
+                                                     networkName, true);
 
     logger->Debug("Created Ethernet transmitter " + socketPath + " (" + networkName + ')');
 

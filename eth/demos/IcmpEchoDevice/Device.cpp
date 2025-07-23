@@ -4,6 +4,10 @@
 
 #include <iostream>
 
+#include "common/Cli.hpp"
+#include "ArpIp4Packet.hpp"
+#include "Icmp4Header.hpp"
+
 namespace demo {
 
 void Device::Process(asio::const_buffer incomingData)

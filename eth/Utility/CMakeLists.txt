@@ -38,6 +38,7 @@ target_include_directories(Utility PUBLIC ${CMAKE_SOURCE_DIR}/adapter ${CMAKE_CU
 target_link_libraries(Utility
     PUBLIC
         asio
+        sil-kit-adapters-common
 )
 
 if(MINGW)
