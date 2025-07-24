@@ -31,9 +31,7 @@ void EthAckCallback(IEthernetController* /*controller*/, const EthernetFrameTran
     else
     {
         std::cout << "SIL Kit >> Demo: NACK for ETH Message with transmitId="
-                  << reinterpret_cast<intptr_t>(ack.userContext)
-                  << ": " << ack.status
-                  << std::endl;
+                  << reinterpret_cast<intptr_t>(ack.userContext) << ": " << ack.status << std::endl;
     }
 }
 
@@ -46,12 +44,16 @@ int main(int argc, char** argv)
     if (findArg(argc, argv, "--help", argv) != nullptr)
     {
         std::cout << "Usage (defaults in curly braces if you omit the switch):" << std::endl
-                  << "sil-kit-demo-ethernet-icmp-echo-device [" << participantNameArg << " <participant's name{EthernetDevice}>]\n"
-                     "  [" << regUriArg << " silkit://<host{localhost}>:<port{8501}>]\n"
-                     "  [" << logLevelArg << " <Trace|Debug|Warn|{Info}|Error|Critical|Off>]\n";
+                  << "sil-kit-demo-ethernet-icmp-echo-device [" << participantNameArg
+                  << " <participant's name{EthernetDevice}>]\n"
+                     "  ["
+                  << regUriArg
+                  << " silkit://<host{localhost}>:<port{8501}>]\n"
+                     "  ["
+                  << logLevelArg << " <Trace|Debug|Warn|{Info}|Error|Critical|Off>]\n";
         return 0;
     }
-    
+
     const std::string loglevel = getArgDefault(argc, argv, logLevelArg, "Info");
     const std::string participantName = getArgDefault(argc, argv, participantNameArg, "EthernetDevice");
     const std::string registryURI = getArgDefault(argc, argv, regUriArg, "silkit://localhost:8501");
@@ -59,12 +61,13 @@ int main(int argc, char** argv)
     const std::string participantConfigurationString =
         R"({ "Logging": { "Sinks": [ { "Type": "Stdout", "Level": ")" + loglevel + R"("} ] } })";
 
-    const std::string ethernetControllerName = participantName + "_Eth1";
-    const std::string ethernetNetworkName ="Ethernet1";
+    const std::string ethernetControllerName = "SilKit_ETH_CTRL_1";
+    const std::string ethernetNetworkName = "Ethernet1";
 
     try
     {
-        auto participantConfiguration = SilKit::Config::ParticipantConfigurationFromString(participantConfigurationString);
+        auto participantConfiguration =
+            SilKit::Config::ParticipantConfigurationFromString(participantConfigurationString);
 
         std::cout << "Creating participant '" << participantName << "' at " << registryURI << std::endl;
         auto participant = SilKit::CreateParticipant(participantConfiguration, participantName, registryURI);
@@ -81,13 +84,13 @@ int main(int argc, char** argv)
                                                              reinterpret_cast<void*>(++transmitId));
                                     std::cout << "Demo >> SIL Kit: Ethernet frame (" << frameSize
                                               << " bytes, txId=" << transmitId << ")" << std::endl;
-                               }};
+                                }};
 
         ethController->AddFrameHandler(
             [&demoDevice](IEthernetController* /*controller*/, const EthernetFrameEvent& msg) {
                 auto rawFrame = msg.frame.raw;
                 std::cout << "SIL Kit >> Demo: Ethernet frame (" << rawFrame.size() << " bytes)" << std::endl;
-                demoDevice.Process(asio::buffer(rawFrame.data(),rawFrame.size()));
+                demoDevice.Process(asio::buffer(rawFrame.data(), rawFrame.size()));
             });
 
         ethController->AddFrameTransmitHandler(&EthAckCallback);
