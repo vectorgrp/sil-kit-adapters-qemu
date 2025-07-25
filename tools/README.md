@@ -1,7 +1,7 @@
 ### Build QEMU image
 Setup your WSL host:
 
-    sudo ./tools/setup-host-wsl2-ubuntu.sh
+    sudo ./tools/setup-host-ubuntu.sh
 
 **Note:** This script will install ``virt-builder`` and a kernel image for use by ``virt-builder``.
 
