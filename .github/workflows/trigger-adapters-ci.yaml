@@ -11,9 +11,9 @@ on:
 
 jobs:
   trigger-adapters-ci:
-    uses: ${{ secrets.CI_TESTING_WORKFLOW }}
+    uses: pnd/sil-kit-adapters-ci-testing/.github/workflows/sil-kit-adapters-ci.yaml@main
     with:
-      repository_under_test : ${{ secrets.ADAPTER_REPO_PATH }}
+      repository_under_test : 'pnd/sil-kit-adapters-qemu'
       branch_under_test: ${{ inputs.common_repo_commit != '' && 'main' || github.event.pull_request.head.ref }}
       common_repo_commit: ${{ inputs.common_repo_commit }}
       linux_scripts: |
