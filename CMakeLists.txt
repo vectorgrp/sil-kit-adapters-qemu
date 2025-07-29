@@ -10,15 +10,18 @@ set(CMAKE_CXX_STANDARD 17)
 set(SILKIT_ADAPTER_QEMU_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
 set(SILKIT_ADAPTER_QEMU_LIBRARY_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib")
 
-set(SILKIT_ADAPTER_QEMU_VERSION "1.1.1")
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
+include(SilKitAdapterVersion)
+configure_silkit_adapter_version(${PROJECT_NAME})
+add_definitions(-DSILKIT_ADAPTER_VERSION="${PROJECT_VERSION}")
 
 if (WIN32)
     if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
         # set the default install paths for Windows 32 and 64 bits
         if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-            set(CMAKE_INSTALL_PREFIX "C:/Program Files/Vector SIL Kit Adapter QEMU ${SILKIT_ADAPTER_QEMU_VERSION}" CACHE PATH "Default install path" FORCE)
+            set(CMAKE_INSTALL_PREFIX "C:/Program Files/Vector SIL Kit Adapter QEMU ${PROJECT_VERSION}" CACHE PATH "Default install path" FORCE)
         elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
-            set(CMAKE_INSTALL_PREFIX "C:/Program Files (x86)/Vector SIL Kit Adapter QEMU ${SILKIT_ADAPTER_QEMU_VERSION}" CACHE PATH "Default install path" FORCE)
+            set(CMAKE_INSTALL_PREFIX "C:/Program Files (x86)/Vector SIL Kit Adapter QEMU ${PROJECT_VERSION}" CACHE PATH "Default install path" FORCE)
         endif()
     endif(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 endif()
@@ -53,6 +56,7 @@ install(
         ${CMAKE_CURRENT_SOURCE_DIR}/qmp
         ${CMAKE_CURRENT_SOURCE_DIR}/third_party
         ${CMAKE_CURRENT_SOURCE_DIR}/tools
+        ${CMAKE_CURRENT_SOURCE_DIR}/cmake
 
     DESTINATION .
     COMPONENT source
@@ -65,7 +69,7 @@ install(
 include(common/cmake/InstallFunctions.cmake)
 
 install_scripts_to(tools
-    ${CMAKE_CURRENT_SOURCE_DIR}/tools/setup-host-wsl2-ubuntu.sh
+    ${CMAKE_CURRENT_SOURCE_DIR}/tools/setup-host-ubuntu.sh
     ${CMAKE_CURRENT_SOURCE_DIR}/tools/build-silkit-qemu-demos-guest.sh
     ${CMAKE_CURRENT_SOURCE_DIR}/tools/run-silkit-qemu-demos-guest.sh
 )
@@ -100,7 +104,15 @@ install_adapter(sil-kit-adapter-qemu)
 
 include(common/cmake/Packaging.cmake)
 
+if(NOT DEFINED PACKAGE_FILENAME_SUFFIX)
+    set(PACKAGE_FILENAME_SUFFIX "-${PROJECT_VERSION}")
+endif()
+
 declare_package(
     "SilKit-Adapter-QEMU"
     "binary release of SIL Kit Adapter QEMU"
 )
+
+set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
+set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
+set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
