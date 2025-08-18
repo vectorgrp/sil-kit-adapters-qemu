@@ -1,11 +1,8 @@
 cmake_minimum_required(VERSION 3.5)
 project(VectorSilKitAdapterQemu)
 
-set(CMAKE_BUILD_RPATH_USE_ORIGIN ON)
-
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
-set(CMAKE_CXX_STANDARD 17)
+include(common/cmake/RepoTargets.cmake)
+include(common/cmake/Building.cmake)
 
 set(SILKIT_ADAPTER_QEMU_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
 set(SILKIT_ADAPTER_QEMU_LIBRARY_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib")
@@ -26,14 +23,15 @@ if (WIN32)
     endif(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 endif()
 
-include(common/cmake/RepoTargets.cmake)
-include(common/cmake/Building.cmake)
-
 build_common_demo(
     common/demos/SilKitDemoChardevPubSubEchoDevice.cpp
     sil-kit-demo-chardev-echo-device
     ${SILKIT_ADAPTER_QEMU_OUTPUT_DIRECTORY}
 )
+
+enable_address_sanitizer(${ENABLE_ASAN})
+enable_undefined_sanitizer(${ENABLE_UBSAN})
+enable_thread_sanitizer(${ENABLE_THREADSAN})
 
 add_subdirectory(adapter)
 add_subdirectory(eth/Utility)

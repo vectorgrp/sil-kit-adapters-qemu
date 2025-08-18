@@ -13,16 +13,25 @@ if (-not $SILKitDir) {
     }
 }
 
+$logDir = Join-Path $PSScriptRoot "logs"
+$timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
+
+# Create the log directory
+if (-not (Test-Path -Path $logDir))
+{
+    mkdir -p $logDir | Out-Null
+}
+
 # Processes to run the executables and commands in background
 $RegistryProcess = New-Object System.Diagnostics.Process
-$RegistryProcess.StartInfo.FileName = "$SILKitDir/sil-kit-registry.exe"
-$RegistryProcess.StartInfo.Arguments = "--listen-uri 'silkit://0.0.0.0:8501' -s"
+$RegistryProcess.StartInfo.FileName = "$SILKitDir\sil-kit-registry.exe"
+$RegistryProcess.StartInfo.Arguments = "--listen-uri 'silkit://0.0.0.0:8501'"
 $RegistryProcess.StartInfo.UseShellExecute = $false
 $RegistryProcess.StartInfo.RedirectStandardOutput = $true
 
 $RunQEMUProcess = New-Object System.Diagnostics.Process
 $RunQEMUProcess.StartInfo.FileName = "powershell"
-$RunQEMUProcess.StartInfo.Arguments = "$PSScriptRoot\..\..\..\tools\run-silkit-qemu-demos-guest.ps1 | Out-File -FilePath $PSScriptRoot\logs\run-silkit-qemu-demos-guest.out"
+$RunQEMUProcess.StartInfo.Arguments = "$PSScriptRoot\..\..\..\tools\run-silkit-qemu-demos-guest.ps1 | Out-File -FilePath $logDir\run-silkit-qemu-demos-guest_$timestamp.out"
 $RunQEMUProcess.StartInfo.UseShellExecute = $false
 $RunQEMUProcess.StartInfo.RedirectStandardInput = $true
 
@@ -42,37 +51,31 @@ $DemoProcess.StartInfo.RedirectStandardOutput = $true
 $RegistryOutputHandler = {
     param($sending, $data)
     if ($data.Data) {
-        Add-Content -Path "$PSScriptRoot\logs\sil-kit-registry.out" -Value $data.Data
+        Add-Content -Path "$logDir\sil-kit-registry_$timestamp.out" -Value $data.Data
     }
 }
 
 $AdapterOutputHandler = {
     param($sending, $data)
     if ($data.Data) {
-        Add-Content -Path "$PSScriptRoot\logs\sil-kit-adapter-qemu.out" -Value $data.Data
+        Add-Content -Path "$logDir\sil-kit-adapter-qemu_$timestamp.out" -Value $data.Data
     }
 }
 
 $DemoOutputHandler = {
     param($sending, $data)
     if ($data.Data) {
-        Add-Content -Path "$PSScriptRoot\logs\sil-kit-demo-chardev-echo-device.out" -Value $data.Data
+        Add-Content -Path "$logDir\sil-kit-demo-chardev-echo-device_$timestamp.out" -Value $data.Data
     }
 }
 
-Clear-Content -Path $PSScriptRoot\logs\sil-kit-registry.out -ErrorAction SilentlyContinue
-Clear-Content -Path $PSScriptRoot\logs\sil-kit-adapter-qemu.out -ErrorAction SilentlyContinue
-Clear-Content -Path $PSScriptRoot\logs\sil-kit-demo-chardev-echo-device.out -ErrorAction SilentlyContinue
+Clear-Content -Path $logDir\sil-kit-registry_$timestamp.out -ErrorAction SilentlyContinue
+Clear-Content -Path $logDir\sil-kit-adapter-qemu_$timestamp.out -ErrorAction SilentlyContinue
+Clear-Content -Path $logDir\sil-kit-demo-chardev-echo-device_$timestamp.out -ErrorAction SilentlyContinue
 
 Register-ObjectEvent -InputObject $RegistryProcess -EventName OutputDataReceived -Action $RegistryOutputHandler | Out-Null
 Register-ObjectEvent -InputObject $AdapterProcess -EventName OutputDataReceived -Action $AdapterOutputHandler | Out-Null
 Register-ObjectEvent -InputObject $DemoProcess -EventName OutputDataReceived -Action $DemoOutputHandler | Out-Null
-
-# Create the log directory
-if (-not (Test-Path -Path $PSScriptRoot/logs))
-{
-    mkdir $PSScriptRoot/logs | Out-Null
-}
 
 echo "[info] Starting the QEMU image"
 $out=$RunQEMUProcess.Start()
@@ -89,7 +92,7 @@ $sentenceFound = $false
 while ($true)
 {
     # Tail the file and search for the sentence before logging
-    Get-Content -Path "$PSScriptRoot\logs\run-silkit-qemu-demos-guest.out" -Tail 0 -Wait | ForEach-Object {
+    Get-Content -Path "$logDir\run-silkit-qemu-demos-guest_$timestamp.out" -Tail 0 -Wait | ForEach-Object {
         if ($_ -match 'Debian GNU/Linux 11 silkit-qemu-demos-guest ttyS0') 
         {
             echo "[info] QEMU image ready to log in"
@@ -156,6 +159,10 @@ Stop-Process -Id $RegistryProcess.Id
 Stop-Process -Id $DemoProcess.Id
 Stop-Process -Id $AdapterProcess.Id
 Get-Process qemu-system-x86_64 | Stop-Process
+
+# Unregister all event handlers
+Get-EventSubscriber | Unregister-Event -Force
+Remove-Job * -Force
 
 if($StdIn) 
 {

@@ -4,6 +4,12 @@ silKitDir=/home/vector/SilKit/SilKit-4.0.50-ubuntu-18.04-x86_64-gcc/
 # if "exported_full_path_to_silkit" environment variable is set (in pipeline script), use it. Otherwise, use default value
 silKitDir="${exported_full_path_to_silkit:-$silKitDir}"
 
+logDir=$scriptDir/logs # define a directory for .out files
+mkdir -p $logDir # if it does not exist, create it
+
+# create a timestamp for log files
+timestamp=$(date +"%Y%m%d_%H%M%S")
+
 # cleanup trap for child processes 
 trap 'kill $(jobs -p) 2>&1 &>/dev/null; ps aux | grep qemu-system-x86_64 | grep -v grep | tr -s " " | cut -d " " -f 2 | xargs -r kill; exit' EXIT SIGHUP;
 
@@ -19,9 +25,9 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 # start SIL Kit registry
-$silKitDir/SilKit/bin/sil-kit-registry --listen-uri 'silkit://0.0.0.0:8501' &> $scriptDir/sil-kit-registry.out &
+$silKitDir/SilKit/bin/sil-kit-registry --listen-uri 'silkit://0.0.0.0:8501' &> $logDir/sil-kit-registry_${timestamp}.out &
 sleep 1 # wait 1 second for the creation/existense of the .out file
-timeout 30s grep -q 'Press Ctrl-C to terminate...' <(tail -f $scriptDir/sil-kit-registry.out -n +1) || { echo "[error] Timeout reached while waiting for sil-kit-registry to start"; exit 1; }
+timeout 30s grep -q 'Press Ctrl-C to terminate...' <(tail -f $logDir/sil-kit-registry_${timestamp}.out -n +1) || { echo "[error] Timeout reached while waiting for sil-kit-registry to start"; exit 1; }
 
 echo "[info] Starting QEMU image"
 tmp_fifo3=$(mktemp -u)
@@ -31,7 +37,7 @@ exec 3<>$tmp_fifo3
 exec 4<>$tmp_fifo4
 rm $tmp_fifo3 $tmp_fifo4
 
-{ $scriptDir/../../../tools/run-silkit-qemu-demos-guest.sh | tee $scriptDir/run-silkit-qemu-demos-guest.out; } <&3 >&4 &
+{ $scriptDir/../../../tools/run-silkit-qemu-demos-guest.sh | tee $logDir/run-silkit-qemu-demos-guest_${timestamp}.out; } <&3 >&4 &
 
 # set a timer for starting the QEMU image
 echo "[info] Waiting for initialization"
@@ -39,7 +45,7 @@ timer=180 #seconds
 while [ $timer -ne 0 ]
 do
     sleep 1
-    if grep -q "silkit-qemu-demos-guest login:" $scriptDir/run-silkit-qemu-demos-guest.out; then
+    if grep -q "silkit-qemu-demos-guest login:" $logDir/run-silkit-qemu-demos-guest_${timestamp}.out; then
         echo "[info] QEMU image ready to log in"
         break
     fi
@@ -57,8 +63,8 @@ echo "root" >&3
 sleep 1
 echo "root" >&3
 
-$scriptDir/../../../bin/sil-kit-adapter-qemu --socket-to-ethernet localhost:12345,network=Ethernet1 --configuration ./eth/demos/SilKitConfig_Adapter.silkit.yaml &> $scriptDir/sil-kit-adapter-qemu.out &
-$scriptDir/../../../bin/sil-kit-demo-ethernet-icmp-echo-device --log Debug &> $scriptDir/sil-kit-demo-ethernet-icmp-echo-device.out &
+$scriptDir/../../../bin/sil-kit-adapter-qemu --socket-to-ethernet localhost:12345,network=Ethernet1 --configuration ./eth/demos/SilKitConfig_Adapter.silkit.yaml &> $logDir/sil-kit-adapter-qemu_${timestamp}.out &
+$scriptDir/../../../bin/sil-kit-demo-ethernet-icmp-echo-device --log Debug &> $scriptDir/sil-kit-demo-ethernet-icmp-echo-device_${timestamp}.out &
 
 echo "[Info] Ping 192.168.7.35" 
 echo "ping 192.168.7.35 &" >&3
@@ -69,7 +75,7 @@ exit_status=$?
 
 echo "[info] Stopping QEMU image"
 echo "shutdown now" >&3
-timeout 30s grep -q 'reboot: Power down' <(tail -f $scriptDir/run-silkit-qemu-demos-guest.out -n +1) || { echo "[error] Timeout reached while waiting for the QEMU image to shut down"; exit 1; }
+timeout 30s grep -q 'reboot: Power down' <(tail -f $logDir/run-silkit-qemu-demos-guest_${timestamp}.out -n +1) || { echo "[error] Timeout reached while waiting for the QEMU image to shut down"; exit 1; }
 
 #exit run_all.sh with same exit_status
 exit $exit_status

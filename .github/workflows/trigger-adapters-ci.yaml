@@ -6,6 +6,9 @@ on:
       common_repo_commit:
         required: false
         type: string
+      branch_under_test:
+        required: false
+        type: string
   pull_request:
     types: [opened, reopened, synchronize]
 
@@ -14,7 +17,7 @@ jobs:
     uses: pnd/sil-kit-adapters-ci-testing/.github/workflows/sil-kit-adapters-ci.yaml@main
     with:
       repository_under_test : 'pnd/sil-kit-adapters-qemu'
-      branch_under_test: ${{ inputs.common_repo_commit != '' && 'main' || github.event.pull_request.head.ref }}
+      branch_under_test: ${{ inputs.branch_under_test != '' && inputs.branch_under_test || github.event.pull_request.head.ref }}
       common_repo_commit: ${{ inputs.common_repo_commit }}
       linux_scripts: |
         eth/demos/CANoe4SW_SE/run_all.sh
