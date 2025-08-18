@@ -74,6 +74,11 @@ install_scripts_to(tools
     ${CMAKE_CURRENT_SOURCE_DIR}/tools/run-silkit-qemu-demos-guest.sh
 )
 
+install_scripts_to(tools/virt-builder/debian
+    ${CMAKE_CURRENT_SOURCE_DIR}/tools/virt-builder/debian/install.100.setup-network.sh
+    ${CMAKE_CURRENT_SOURCE_DIR}/tools/virt-builder/debian/install.110.setup-sshd.sh
+)
+
 install_scripts_to(eth/demos/CANoe4SW_SE
     ${CMAKE_CURRENT_SOURCE_DIR}/eth/demos/CANoe4SW_SE/run_all.sh
     ${CMAKE_CURRENT_SOURCE_DIR}/eth/demos/CANoe4SW_SE/run.sh
@@ -85,6 +90,7 @@ install_scripts_to(qmp/demos/CANoe4SW_SE
 )
 
 install_scripts_to(chardev/demos/CANoe4SW_SE
+    ${CMAKE_CURRENT_SOURCE_DIR}/chardev/demos/CANoe4SW_SE/run_all.sh
     ${CMAKE_CURRENT_SOURCE_DIR}/chardev/demos/CANoe4SW_SE/run.sh
 )
 
