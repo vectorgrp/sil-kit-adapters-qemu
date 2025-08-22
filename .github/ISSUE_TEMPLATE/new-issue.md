@@ -21,7 +21,7 @@ A clear and concise description of what you expected to happen.
 If applicable, add screenshots to help explain your problem.
 
 **Your Environment (please complete the following information):**
- - OS version and platform: [e.g. Linux, Ubuntu 20.04, amd64]
+ - OS version and platform: [e.g. Linux, Ubuntu 22.04, amd64]
  - Compiler and CMake version:
  - SIL Kit Version:
  - Please include a description of the SIL Kit participants, including which
