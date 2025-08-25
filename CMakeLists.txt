@@ -45,26 +45,18 @@ add_subdirectory(eth/demos)
 # Copy all files from the source and bin directory to the proper destination
 # Leave out git repo related data
 
-install(
-    DIRECTORY            
-        ${CMAKE_CURRENT_SOURCE_DIR}/adapter
-        ${CMAKE_CURRENT_SOURCE_DIR}/common
-        ${CMAKE_CURRENT_SOURCE_DIR}/eth
-        ${CMAKE_CURRENT_SOURCE_DIR}/chardev
-        ${CMAKE_CURRENT_SOURCE_DIR}/qmp
-        ${CMAKE_CURRENT_SOURCE_DIR}/third_party
-        ${CMAKE_CURRENT_SOURCE_DIR}/tools
-        ${CMAKE_CURRENT_SOURCE_DIR}/cmake
-
-    DESTINATION .
-    COMPONENT source
-    EXCLUDE_FROM_ALL
-    REGEX "\.git$" EXCLUDE
-    REGEX "\.github$" EXCLUDE
-    REGEX "Downloads$" EXCLUDE
-)
-
 include(common/cmake/InstallFunctions.cmake)
+
+install_adapter_source(
+    ${CMAKE_CURRENT_SOURCE_DIR}/adapter
+    ${CMAKE_CURRENT_SOURCE_DIR}/common
+    ${CMAKE_CURRENT_SOURCE_DIR}/eth
+    ${CMAKE_CURRENT_SOURCE_DIR}/chardev
+    ${CMAKE_CURRENT_SOURCE_DIR}/qmp
+    ${CMAKE_CURRENT_SOURCE_DIR}/third_party
+    ${CMAKE_CURRENT_SOURCE_DIR}/tools
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmake
+)
 
 install_scripts_to(tools
     ${CMAKE_CURRENT_SOURCE_DIR}/tools/setup-host-ubuntu.sh
