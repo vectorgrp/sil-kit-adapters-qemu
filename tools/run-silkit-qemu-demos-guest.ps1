@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: Copyright 2025 Vector Informatik GmbH
+# SPDX-License-Identifier: MIT
+
 . "C:\Program Files\qemu\qemu-system-x86_64.exe" `
 -m 2048M `
 -smp 2 `

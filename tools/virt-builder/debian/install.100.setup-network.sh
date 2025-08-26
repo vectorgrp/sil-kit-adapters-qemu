@@ -1,4 +1,6 @@
 #!/bin/sh
+# SPDX-FileCopyrightText: Copyright 2025 Vector Informatik GmbH
+# SPDX-License-Identifier: MIT
 
 cat >/etc/network/interfaces <<EOF
 # This file describes the network interfaces available on your system
