@@ -2,6 +2,12 @@ on:
   push:
     branches:
       - 'main'
+
+env:
+  HTTP_PROXY:  ${{ secrets.HTTP_PROXY }}
+  HTTPS_PROXY: ${{ secrets.HTTPS_PROXY }}
+  NO_PROXY:    ${{ secrets.NO_PROXY }}
+
 jobs:
   sync_main_branch:
     name: Sync branch to remote public GitHub
@@ -9,10 +15,6 @@ jobs:
     environment: repo-sync-action/public-github
     steps:
       - uses: actions/checkout@v4
-        env:
-          HTTP_PROXY:  ${{ secrets.HTTP_PROXY }}
-          HTTPS_PROXY: ${{ secrets.HTTPS_PROXY }}
-          NO_PROXY:    ${{ secrets.NO_PROXY }}
         with:
           clean: true
           fetch-depth: 0
