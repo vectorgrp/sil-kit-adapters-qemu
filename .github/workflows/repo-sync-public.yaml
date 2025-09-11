@@ -5,9 +5,7 @@ on:
 jobs:
   sync_main_branch:
     name: Sync branch to remote public GitHub
-    runs-on:
-      group: shared-runners
-      labels: Linux
+    runs-on: [self-hosted, Linux, ska]
     environment: repo-sync-action/public-github
     steps:
       - uses: actions/checkout@v3
