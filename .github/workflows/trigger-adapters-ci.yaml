@@ -9,8 +9,16 @@ on:
       branch_under_test:
         required: false
         type: string
+      linux_runner:
+        required: true
+        type: string
+        default: '["self-hosted", "linux", "ska", "testing"]'
   pull_request:
     types: [opened, reopened, synchronize]
+
+concurrency:
+  group: serialization_group
+  cancel-in-progress: false
 
 jobs:
   trigger-adapters-ci:
@@ -25,4 +33,5 @@ jobs:
       windows_scripts: |
         eth/demos/CANoe4SW_SE/run_all.ps1
         chardev/demos/CANoe4SW_SE/run_all.ps1
+      linux_runner: ${{ inputs.linux_runner }}
     secrets: inherit
