@@ -8,7 +8,11 @@ jobs:
     runs-on: [self-hosted, Linux, ska]
     environment: repo-sync-action/public-github
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+        env:
+          HTTP_PROXY:  ${{ secrets.HTTP_PROXY }}
+          HTTPS_PROXY: ${{ secrets.HTTPS_PROXY }}
+          NO_PROXY:    ${{ secrets.NO_PROXY }}
         with:
           clean: true
           fetch-depth: 0
