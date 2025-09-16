@@ -35,7 +35,7 @@ The demo applications will produce output when they send and receive Ethernet fr
 
 **Note 2:** If you want to use UNIX domain sockets instead of TCP sockets for the QEMU network backend, the adapter can be started as follows 
 
-    ./bin/sil-kit-adapter-qemu --unix-socket-to-ethernet PATH,network=qemu_demo --configuration ./eth/demos/SilKitConfig_Adapter.silkit.yaml
+    ./bin/sil-kit-adapter-qemu --unix-socket-to-ethernet PATH,network=Ethernet1 --configuration ./eth/demos/SilKitConfig_Adapter.silkit.yaml
 
 where PATH needs to be replaced by an actual filesystem location representing the socket address. If you are using a Linux OS, you may choose PATH=/tmp/socket. In case of a Windows system, PATH=C:\Users\MyUser\AppData\Local\Temp\qemu.socket is a possible choice. 
 Note that in ``./tools/run-silkit-qemu-demos-guest.sh``, respectively ``./tools/run-silkit-qemu-demos-guest.ps1``, the line

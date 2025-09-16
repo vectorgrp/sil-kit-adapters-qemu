@@ -23,6 +23,8 @@ const std::string adapters::chardevArg = "--socket-to-chardev";
 
 const std::string adapters::unixEthArg = "--unix-socket-to-ethernet";
 
+const std::string adapters::unixChardevArg = "--unix-socket-to-chardev";
+
 const std::string adapters::defaultParticipantName = "SilKitAdapterQemu";
 
 void print_help(bool userRequested=false)
@@ -44,15 +46,20 @@ void print_help(bool userRequested=false)
               << " <host>:<port>,network=<network's name>[:<controller's name>]]]\n"
                  " [["
               << unixEthArg
-              << " <path>,network=<network's name>[:<controller's name>]]]\n"
+              << " <path to socket identifier>,network=<network's name>[:<controller's name>]]]\n"
                  " [["
               << chardevArg
               << "\n"
-              << SocketToBytesPubSubAdapter::printArgumentHelp("    ")
+              << SocketToBytesPubSubAdapter::printArgumentHelp("<host>:<port>", "    ")
+              << " ]]\n"
+              << " [["
+              << unixChardevArg
+              << "\n"
+              << SocketToBytesPubSubAdapter::printArgumentHelp("<path to socket identifier>", "    ")
               << " ]]\n"
                  "\n"
                  "There needs to be at least one "
-              << chardevArg << " or " << ethArg << " or " << unixEthArg
+              << chardevArg << " or " << unixChardevArg << " or " << ethArg << " or " << unixEthArg
               << " argument. Each socket must be unique.\n"
                  "SIL Kit-specific CLI arguments will be overwritten by the config file passed by "
               << configurationArg << ".\n";
@@ -81,7 +88,7 @@ int main(int argc, char** argv)
     try
     {
         throwInvalidCliIf(thereAreUnknownArguments(argc, argv, 
-            {&ethArg, &chardevArg, &regUriArg, &logLevelArg, &participantNameArg, &configurationArg, &unixEthArg},
+            {&ethArg, &chardevArg, &regUriArg, &logLevelArg, &participantNameArg, &configurationArg, &unixEthArg, &unixChardevArg},
             {&helpArg}));
 
         SilKit::Services::Logging::ILogger* logger;
@@ -102,7 +109,13 @@ int main(int argc, char** argv)
         foreachArgDo(argc, argv, chardevArg, [&](char* arg) -> void {
             ++numberOfRequestedAdaptations;
             chardevSocketTransmitters.emplace_back(SocketToBytesPubSubAdapter::parseArgument(
-                arg, alreadyProvidedSockets, participantName, ioContext, participant.get(), logger));
+                arg, alreadyProvidedSockets, participantName, ioContext, participant.get(), logger, false));
+        });
+
+        foreachArgDo(argc, argv, unixChardevArg, [&](char* arg) -> void {
+            ++numberOfRequestedAdaptations;
+            chardevSocketTransmitters.emplace_back(SocketToBytesPubSubAdapter::parseArgument(
+                arg, alreadyProvidedSockets, participantName, ioContext, participant.get(), logger, true));
         });
 
         std::vector<std::unique_ptr<EthSocketToEthControllerAdapter>> ethernetSocketTransmitters;
@@ -110,15 +123,13 @@ int main(int argc, char** argv)
         foreachArgDo(argc, argv, ethArg, [&](char* arg) -> void {
             ++numberOfRequestedAdaptations;
             ethernetSocketTransmitters.emplace_back(parseEthernetSocketArgument(
-                arg, alreadyProvidedSockets, participantName, ioContext, participant.get(), logger));
+                arg, alreadyProvidedSockets, participantName, ioContext, participant.get(), logger, false));
         });
-
-        std::vector<EthSocketToEthControllerAdapter*> ethernetUnixSocketTransmitters;
 
         foreachArgDo(argc, argv, unixEthArg, [&](char* arg) -> void {
             ++numberOfRequestedAdaptations;
-            ethernetUnixSocketTransmitters.emplace_back(parseEthernetUnixSocketArgument(
-                arg, alreadyProvidedSockets, participantName, ioContext, participant.get(), logger));
+            ethernetSocketTransmitters.emplace_back(parseEthernetSocketArgument(
+                arg, alreadyProvidedSockets, participantName, ioContext, participant.get(), logger, true));
         });
 
         if (numberOfRequestedAdaptations == 0)

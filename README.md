@@ -120,8 +120,19 @@ The application takes the following command line arguments (defaults in curly br
             |,<label key>=<mandatory label value>
            ]]
      ]]
+     [[--unix-socket-to-chardev
+         <path to socket identifier>,
+        [<namespace>::]<toChardev topic name>[~<subscriber's name>]
+           [[,<label key>:<optional label value>
+            |,<label key>=<mandatory label value>
+           ]],
+        [<namespace>::]<fromChardev topic name>[~<publisher's name>]
+           [[,<label key>:<optional label value>
+            |,<label key>=<mandatory label value>
+           ]]
+     ]]
 
-There needs to be at least one ``--socket-to-chardev`` or ``--socket-to-ethernet`` or ``--unix-socket-to-ethernet`` argument. Each socket must be unique.
+There needs to be at least one ``--socket-to-chardev`` or ``--unix-socket-to-chardev`` or ``--socket-to-ethernet`` or ``--unix-socket-to-ethernet`` argument. Each socket must be unique.
 
 SIL Kit-specific CLI arguments will be overwritten by the config file passed by ``--configuration``.
 

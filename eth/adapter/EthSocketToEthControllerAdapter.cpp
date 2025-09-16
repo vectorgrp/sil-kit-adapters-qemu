@@ -13,6 +13,7 @@
 #include "WriteUintBe.hpp"
 #include "common/StringUtils.hpp"
 #include "common/Parsing.hpp"
+#include "common/SocketToBytesPubSubAdapter.hpp"
 
 #include <asio/ts/buffer.hpp>
 #include <asio/ts/net.hpp>
@@ -194,21 +195,29 @@ std::string generateControllerName()
     return static_cast<std::ostringstream&>(subscriberName << base << count++).str();
 }
 
-EthSocketToEthControllerAdapter* ethernet::parseEthernetSocketArgument(
+std::unique_ptr<EthSocketToEthControllerAdapter> ethernet::parseEthernetSocketArgument(
     char* arg, std::set<std::string>& alreadyProvidedSockets, const std::string& participantName,
-    asio::io_context& ioContext, SilKit::IParticipant* participant, SilKit::Services::Logging::ILogger* logger)
+    asio::io_context& ioContext, SilKit::IParticipant* participant, SilKit::Services::Logging::ILogger* logger,
+    const bool isUnixSocket)
 {
-    EthSocketToEthControllerAdapter* newAdapter = NULL;
     auto args = util::split(arg, ",");
     auto arg_iter = args.begin();
 
-    //handle <address>:<port>
     assertAdditionalIterator(arg_iter, args);
     throwInvalidCliIf(alreadyProvidedSockets.insert(*arg_iter).second == false);
-    auto portAddress = util::split(*arg_iter++, ":");
-    throwInvalidCliIf(portAddress.size() != 2);
-    const auto& address = portAddress[0];
-    const auto& port = portAddress[1];
+
+    std::string address, port, debug_message;
+    if (isUnixSocket)
+    {
+        extractUnixSocket(address, port, arg_iter);
+        debug_message = "Created Ethernet transmitter " + address;
+    }
+    else // TCP Socket
+    {
+        extractTcpSocket(address, port, arg_iter);
+        debug_message = "Created Ethernet transmitter " + address + ':' + port;
+    }
+
     //handle inbound topic and labels
     assertAdditionalIterator(arg_iter, args);
     std::string controllerName = "";
@@ -217,39 +226,11 @@ EthSocketToEthControllerAdapter* ethernet::parseEthernetSocketArgument(
         controllerName = generateControllerName();
     const std::string& networkName = *arg_iter;
 
-    newAdapter =
-        new EthSocketToEthControllerAdapter(participant, ioContext, address, port, controllerName, networkName, false);
+    auto newAdapter = std::make_unique<EthSocketToEthControllerAdapter>(
+        participant, ioContext, address, port, controllerName, networkName, isUnixSocket);
 
-    logger->Debug("Created Ethernet transmitter " + address + ':' + port + " (" + networkName + ')');
+    debug_message += " (" + networkName + ')';
+    logger->Debug(debug_message);
 
-    return newAdapter;
-}
-
-EthSocketToEthControllerAdapter* ethernet::parseEthernetUnixSocketArgument(
-    char* arg, std::set<std::string>& alreadyProvidedSockets, const std::string& participantName,
-    asio::io_context& ioContext, SilKit::IParticipant* participant, SilKit::Services::Logging::ILogger* logger)
-{
-    EthSocketToEthControllerAdapter* newAdapter = NULL;
-    auto args = util::split(arg, ",");
-    auto arg_iter = args.begin();
-
-    //handle <path>
-    assertAdditionalIterator(arg_iter, args);
-    throwInvalidCliIf(alreadyProvidedSockets.insert(*arg_iter).second == false);
-    const std::string& socketPath = *arg_iter++;
-    const std::string& dummyPort = "-1";
-    //handle inbound topic and labels
-    assertAdditionalIterator(arg_iter, args);
-    std::string controllerName = "";
-    extractAndEraseNamespaceAndControllernameFrom(*arg_iter, controllerName);
-    if (controllerName == "")
-        controllerName = generateControllerName();
-    const std::string& networkName = *arg_iter;
-
-    newAdapter = new EthSocketToEthControllerAdapter(participant, ioContext, socketPath, dummyPort, controllerName,
-                                                     networkName, true);
-
-    logger->Debug("Created Ethernet transmitter " + socketPath + " (" + networkName + ')');
-
-    return newAdapter;
+    return std::move(newAdapter);
 }

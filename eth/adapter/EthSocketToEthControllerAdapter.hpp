@@ -52,17 +52,12 @@ private:
     std::function<void(std::vector<uint8_t>)> _onNewFrameHandler;
 };
 
-EthSocketToEthControllerAdapter* parseEthernetSocketArgument(char* arg, std::set<std::string>& alreadyProvidedSockets,
+std::unique_ptr<EthSocketToEthControllerAdapter> parseEthernetSocketArgument(char* arg, std::set<std::string>& alreadyProvidedSockets,
                                                                const std::string& participantName,
                                                                asio::io_context& ioContext,
                                                                SilKit::IParticipant* participant,
-                                                               SilKit::Services::Logging::ILogger* logger);
-
-EthSocketToEthControllerAdapter* parseEthernetUnixSocketArgument(char* arg, std::set<std::string>& alreadyProvidedSockets,
-                                                                 const std::string& participantName,
-                                                                 asio::io_context& ioContext,
-                                                                 SilKit::IParticipant* participant,
-                                                                 SilKit::Services::Logging::ILogger* logger);
+                                                               SilKit::Services::Logging::ILogger* logger,
+                                                               const bool isTcpSocket);
 
 } // namespace ethernet
 } // namespace adapters

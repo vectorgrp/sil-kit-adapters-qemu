@@ -120,7 +120,22 @@ In the following diagram you can see the whole setup. It illustrates the data fl
                                                 <  toChardev  < 
 ```
 
-**Note:** You can compile and run the demos on Windows even if QEMU is running in WSL.
+**Note 1:** You can compile and run the demos on Windows even if QEMU is running in WSL.
+
+**Note 2:** If you want to use UNIX domain sockets instead of TCP sockets for the QEMU network backend, the adapter can be started as follows
+
+```
+./bin/sil-kit-adapter-qemu --unix-socket-to-chardev PATH,Namespace::toChardev,VirtualNetwork=Default,Instance=EchoDevice,Namespace::fromChardev,VirtualNetwork:Default,Instance:Adapter --configuration ./chardev/demos/SilKitConfig_Adapter.silkit.yaml
+```
+
+where PATH needs to be replaced by an actual filesystem location representing the socket address. If you are using a Linux OS, you may choose PATH=/tmp/socket. In case of a Windows system, PATH=C:\Users\MyUser\AppData\Local\Temp\qemu.socket is a possible choice. 
+Note that in ``./tools/run-silkit-qemu-demos-guest.sh``, respectively ``./tools/run-silkit-qemu-demos-guest.ps1``, the line
+
+    -chardev socket,id=ttySPI,server=on,wait=off,host=0.0.0.0,port=23456
+
+needs to be replaced by the following line:
+
+    -chardev socket,id=ttySPI,server=on,wait=off,path=PATH
 
 ### Observing and/or testing the echo demo with CANoe (CANoe 17 SP3 or newer)
 
