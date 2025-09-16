@@ -33,5 +33,5 @@ jobs:
       windows_scripts: |
         eth/demos/CANoe4SW_SE/run_all.ps1
         chardev/demos/CANoe4SW_SE/run_all.ps1
-      linux_runner: ${{ inputs.linux_runner }}
+      linux_runner: ${{ inputs.linux_runner != '' && inputs.linux_runner || '["self-hosted", "linux", "ska", "testing"]' }}
     secrets: inherit
