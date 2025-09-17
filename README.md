@@ -146,6 +146,8 @@ The application takes the following command line arguments (defaults in curly br
             |,<label key>=<mandatory label value>
            ]]
      ]]
+     [--version]
+     [--help]
 
 There needs to be at least one ``--socket-to-chardev`` or ``--unix-socket-to-chardev`` or ``--socket-to-ethernet`` or ``--unix-socket-to-ethernet`` argument. Each socket must be unique.
 

@@ -27,7 +27,12 @@ const std::string adapters::unixChardevArg = "--unix-socket-to-chardev";
 
 const std::string adapters::defaultParticipantName = "SilKitAdapterQemu";
 
-void print_help(bool userRequested=false)
+void print_version()
+{
+    std::cout << "Vector SIL Kit Adapter for QEMU - version: " << SILKIT_ADAPTER_VERSION << std::endl;
+}
+
+void print_help(bool userRequested = false)
 {
     std::cout << "Usage (defaults in curly braces if you omit the switch):" << std::endl
               << "sil-kit-adapter-qemu [" << participantNameArg
@@ -48,13 +53,9 @@ void print_help(bool userRequested=false)
               << unixEthArg
               << " <path to socket identifier>,network=<network's name>[:<controller's name>]]]\n"
                  " [["
-              << chardevArg
-              << "\n"
-              << SocketToBytesPubSubAdapter::printArgumentHelp("<host>:<port>", "    ")
-              << " ]]\n"
-              << " [["
-              << unixChardevArg
-              << "\n"
+              << chardevArg << "\n"
+              << SocketToBytesPubSubAdapter::printArgumentHelp("<host>:<port>", "    ") << " ]]\n"
+              << " [[" << unixChardevArg << "\n"
               << SocketToBytesPubSubAdapter::printArgumentHelp("<path to socket identifier>", "    ")
               << " ]]\n"
                  "\n"
@@ -70,26 +71,38 @@ void print_help(bool userRequested=false)
               << " localhost:12345,"
                  "Namespace::toChardev,VirtualNetwork=Default,"
                  "fromChardev,Namespace:Namespace,VirtualNetwork:Default\n";
+    std::cout << "\n"
+                 "Pass "
+              << versionArg << " to get the version of the Adapter.\n";
     if (!userRequested)
         std::cout << "\n"
-                     "Pass " << helpArg << " to get this message.\n";
+                     "Pass "
+                  << helpArg << " to get this message.\n";
 };
 
 int main(int argc, char** argv)
 {
+    if (findArg(argc, argv, versionArg, argv) != NULL)
+    {
+        print_version();
+        return CodeSuccess;
+    }
+    print_version();
+
     if (findArg(argc, argv, helpArg, argv) != NULL)
     {
         ::print_help(true);
         return CodeSuccess;
     }
-    
+
     asio::io_context ioContext;
 
     try
     {
-        throwInvalidCliIf(thereAreUnknownArguments(argc, argv, 
-            {&ethArg, &chardevArg, &regUriArg, &logLevelArg, &participantNameArg, &configurationArg, &unixEthArg, &unixChardevArg},
-            {&helpArg}));
+        throwInvalidCliIf(thereAreUnknownArguments(argc, argv,
+                                                   {&ethArg, &chardevArg, &regUriArg, &logLevelArg, &participantNameArg,
+                                                    &configurationArg, &unixEthArg, &unixChardevArg},
+                                                   {&helpArg}));
 
         SilKit::Services::Logging::ILogger* logger;
         SilKit::Services::Orchestration::ILifecycleService* lifecycleService;
@@ -139,9 +152,7 @@ int main(int argc, char** argv)
         }
         auto finalStateFuture = lifecycleService->StartLifecycle();
 
-        std::thread ioContextThread([&]() -> void {
-            ioContext.run();
-        });
+        std::thread ioContextThread([&]() -> void { ioContext.run(); });
 
         promptForExit();
 

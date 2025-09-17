@@ -6,7 +6,7 @@ UseCRLF:         false
 UseTab:          Never
 
 ---
-# Vector IntegrationBus style
+# Vector SilKit style
 Language:        Cpp
 AccessModifierOffset: -4 
 AlignAfterOpenBracket: Align
@@ -15,14 +15,19 @@ AlignConsecutiveAssignments: false
 AlignConsecutiveDeclarations: false
 AlignEscapedNewlines: DontAlign
 AlignOperands:   true
+
 AlignTrailingComments: false
+# > clang-format-13, looks weird
+#    Kind: Leave
+#    OverEmptyLines: 2
+
 AllowAllArgumentsOnNextLine: true
 AllowAllConstructorInitializersOnNextLine: true
 AllowAllParametersOfDeclarationOnNextLine: true
 AllowShortBlocksOnASingleLine: false
-AllowShortCaseLabelsOnASingleLine: true
-AllowShortFunctionsOnASingleLine: InlineOnly
-AllowShortLambdasOnASingleLine: false
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortLambdasOnASingleLine: All
 AllowShortIfStatementsOnASingleLine: false
 AllowShortLoopsOnASingleLine: false
 AlwaysBreakAfterDefinitionReturnType: None
@@ -81,7 +86,7 @@ IncludeCategories:
   - Regex:           '^<.*'
     Priority:        2
     SortPriority:    0
-  - Regex:           '"ib/.*'
+  - Regex:           '"silkit/.*'
     Priority:        3
     SortPriority:    0
   - Regex:           '^(<|"(gtest|gmock|isl|json)/)'
@@ -95,16 +100,17 @@ IncludeIsMainSourceRegex: ''
 #IndentCaseBlocks: true
 IndentCaseLabels: false
 IndentGotoLabels: false
-IndentPPDirectives: AfterHash
+IndentPPDirectives: None
 IndentWidth:     4
 IndentWrappedFunctionNames: false
 JavaScriptQuotes: Leave
 JavaScriptWrapImports: true
 KeepEmptyLinesAtTheStartOfBlocks: false
-#LambdaBodyIntdentation: Signature
+#>clang-format-13
+LambdaBodyIndentation: OuterScope
 MacroBlockBegin: ''
 MacroBlockEnd:   ''
-MaxEmptyLinesToKeep: 1
+MaxEmptyLinesToKeep: 2
 NamespaceIndentation: None
 ObjCBinPackProtocolList: Never
 ObjCBlockIndentWidth: 2
