@@ -83,8 +83,8 @@ Register-ObjectEvent -InputObject $DemoProcess -EventName OutputDataReceived -Ac
 echo "[info] Starting the QEMU image"
 $out=$RunQEMUProcess.Start()
 
-# Sleep 1 second to create the output file
-Start-Sleep -Seconds 1
+# Sleep 2 seconds to create the output file
+Start-Sleep -Seconds 2
 
 # Timeout for starting the QEMU image
 $timeout = 180

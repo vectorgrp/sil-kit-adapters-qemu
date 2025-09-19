@@ -277,3 +277,28 @@ And here is what you'll see in the Adapter's log (note that binary values are no
 ```
 
 Take note that timing and other considerations may split the message.
+
+## Using the SIL Kit Dashboard
+
+For general instructions and features, see the documentation in [common/demos/README.md](https://github.com/vectorgrp/sil-kit-adapters-common/blob/main/docs/sil-kit-dashboard/README.md).
+
+### Steps for the Chardev Demo
+
+1. Start the SIL Kit registry with dashboard support:
+    ```
+    /path/to/SilKit-x.y.z-$platform/SilKit/bin/sil-kit-registry --listen-uri 'silkit://0.0.0.0:8501' --dashboard-uri http://localhost:8082
+    ```
+
+2. Launch the QEMU chardev adapter and demo participants as described above.
+
+    > With SIL Kit Dashboard version 1.1.0 or newer, you can configure the participant configuration file to enable all available metrics. See the [SIL Kit documentation](https://github.com/vectorgrp/sil-kit/blob/main/docs/troubleshooting/advanced.rst) for details.
+
+3. Open your web browser and navigate to [http://localhost:8080/dashboard](http://localhost:8080/dashboard).
+
+4. In the dashboard, select the registry URI (e.g., `silkit://localhost:8501`).
+
+5. In the participant tab, you should see `SilKitAdapterQemu`, `EchoDevice`, and any other participants (such as CANoe).
+
+6. Click on `SilKitAdapterQemu` and look under `Data / RPC Services` to find the Data Publisher/Subscriber with the topic names `fromChardev` and `toChardev` and their labels.
+
+7. Use the dashboard to monitor participant status and troubleshoot issues specific to the chardev demo.

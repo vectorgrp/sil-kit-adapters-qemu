@@ -98,4 +98,27 @@ You can also run the same test set with ``CANoe4SW SE`` by executing the followi
 ### CANoe4SW Server Edition (Linux)
 You can also run the same test set with ``CANoe4SW SE (Linux)``. At first you have to execute the PowerShell script ``./eth/demos/CANoe4SW_SE/createEnvForLinux.ps1`` on your Windows system by using tools of ``CANoe4SW SE (Windows)`` to prepare your test environment for Linux. In ``./eth/demos/CANoe4SW_SE/run.sh`` you should set ``canoe4sw_se_install_dir`` to the path of your ``CANoe4SW SE`` installation in your WSL. Afterwards you can execute ``./eth/demos/CANoe4SW_SE/run.sh`` in your WSL. The test cases are executed automatically and you should see a short test report in your terminal after execution.
 
+## Using the SIL Kit Dashboard
 
+For general instructions and features, see the documentation in [common/demos/README.md](https://github.com/vectorgrp/sil-kit-adapters-common/blob/main/docs/sil-kit-dashboard/README.md).
+
+### Steps for the Ethernet Demo
+
+1. Start the SIL Kit registry with dashboard support:
+    ```
+    /path/to/SilKit-x.y.z-$platform/SilKit/bin/sil-kit-registry --listen-uri 'silkit://0.0.0.0:8501' --dashboard-uri http://localhost:8082
+    ```
+
+2. Launch the QEMU ethernet adapter and demo participants as described above.
+
+    > With SIL Kit Dashboard version 1.1.0 or newer, you can configure the participant configuration file to enable all available metrics. See the [SIL Kit documentation](https://github.com/vectorgrp/sil-kit/blob/main/docs/troubleshooting/advanced.rst) for details.
+
+3. Open your web browser and navigate to [http://localhost:8080/dashboard](http://localhost:8080/dashboard).
+
+4. In the dashboard, select the registry URI (e.g., `silkit://localhost:8501`).
+
+5. In the participant tab, you should see `sil-kit-adapter-qemu`, `EthernetDevice`, and any other participants (such as CANoe).
+
+6. Click on `Network: Ethernet1 > Ethernet > Ethernet1` to view an overview of the setup.
+
+7. Use the dashboard to monitor participant status and troubleshoot issues specific to the Ethernet demo.
