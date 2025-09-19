@@ -1,0 +1,66 @@
+.\" DO NOT MODIFY THIS FILE!  It was generated based on project options and help output.
+.TH sil-kit-adapter-qemu "1" "September 2025" "sil-kit-adapter-qemu" "User Commands"
+.SH NAME
+sil-kit-adapter-qemu \- Manual page for Vector SIL Kit Adapter QEMU
+.SH SYNOPSIS
+.B sil-kit-adapter-qemu
+[\fI\,--version\/\fR]
+[\fI\,--name <participant name{SilKitAdapterQemu}>\/\fR]
+[\fI\,--configuration <path to .silkit.yaml or .json configuration file>\/\fR]
+[\fI\,--registry-uri silkit://<host{localhost}>:<port{8501}>\/\fR]
+[\fI\,--log <Trace|Debug|Warn|{Info}|Error|Critical|off>\/\fR]
+[\fI\,--socket-to-ethernet <host>:<port>,network=<network's name>[:<controller's name>]\/\fR]
+[\fI\,--unix-socket-to-ethernet <path to socket identifier>,network=<network's name>[:<controller's name>]\/\fR]
+[\fI\,--socket-to-chardev <host>:<port>,[<namespace>::]<toAdapter topic name>[~<subscriber's name>][[,<label key>:<optional label value>|,<label key>=<mandatory label value>]], [<namespace>::]<fromAdapter topic name>[~<publisher's name>][[,<label key>:<optional label value>|,<label key>=<mandatory label value>]] \/\fR]
+[\fI\,--unix-socket-to-chardev <path to socket identifier>,[<namespace>::]<toAdapter topic name>[~<subscriber's name>][[,<label key>:<optional label value>|,<label key>=<mandatory label value>]], [<namespace>::]<fromAdapter topic name>[~<publisher's name>][[,<label key>:<optional label value>|,<label key>=<mandatory label value>]] \/\fR]
+.SH DESCRIPTION
+Vector SIL Kit Adapter QEMU
+.PP
+Provides connectivity between QEMU and Vector SIL Kit via Ethernet and Chardev interfaces.
+.SH OPTIONS
+.IP "--version"
+Show Adapter's version information.
+.IP "--name <participant name>"
+Set the participant's name. Defaults to 'SilKitAdapterQemu'.
+.IP "--configuration <path>"
+Path to the .silkit.yaml or .json configuration file.
+.IP "--registry-uri silkit://<host>:<port>"
+The silkit:// URI the adapter should connect to. Defaults to 'silkit://localhost:8501'.
+.IP "--log <level>"
+Log to stdout with level 'Trace', 'Debug', 'Warn', 'Info', 'Error', 'Critical', or 'off'. Defaults to 'Info'.
+.IP "--socket-to-ethernet <host>:<port>,network=<network's name>[:<controller's name>]"
+Connect a TCP socket to a SIL Kit Ethernet network and optional controller.
+.IP "--unix-socket-to-ethernet <path to socket identifier>,network=<network's name>[:<controller's name>]"
+Connect a Unix domain socket to a SIL Kit Ethernet network and optional controller.
+.IP "--socket-to-chardev <host>:<port>,..."
+Connect a TCP socket to a SIL Kit Chardev topic pair with optional labels and names.
+.IP "--unix-socket-to-chardev <path to socket identifier>,..."
+Connect a Unix domain socket to a SIL Kit Chardev topic pair with optional labels and names.
+.SH "SEE ALSO"
+The full documentation for
+.I sil-kit-adapter-qemu
+is maintained at
+.B https://github.com/vectorgrp/sil-kit-adapters-qemu
+.SH COPYRIGHT
+MIT License
+
+Copyright (c) 2024 Vector Informatik GmbH
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

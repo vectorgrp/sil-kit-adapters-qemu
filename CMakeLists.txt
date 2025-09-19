@@ -7,6 +7,12 @@ project(VectorSilKitAdapterQemu)
 include(common/cmake/RepoTargets.cmake)
 include(common/cmake/Building.cmake)
 
+option(BUILD_LINUX_PACKAGE "Creates a SIL Kit Adapter QEMU build suitable for package managers in Linux Distributions (.deb)" OFF)
+
+if(BUILD_LINUX_PACKAGE)
+    add_subdirectory(docs/man)
+endif()
+
 set(SILKIT_ADAPTER_QEMU_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
 set(SILKIT_ADAPTER_QEMU_LIBRARY_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/lib")
 
@@ -52,13 +58,14 @@ include(common/cmake/InstallFunctions.cmake)
 
 install_adapter_source(
     ${CMAKE_CURRENT_SOURCE_DIR}/adapter
-    ${CMAKE_CURRENT_SOURCE_DIR}/common
-    ${CMAKE_CURRENT_SOURCE_DIR}/eth
     ${CMAKE_CURRENT_SOURCE_DIR}/chardev
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmake
+    ${CMAKE_CURRENT_SOURCE_DIR}/common
+    ${CMAKE_CURRENT_SOURCE_DIR}/docs
+    ${CMAKE_CURRENT_SOURCE_DIR}/eth
     ${CMAKE_CURRENT_SOURCE_DIR}/qmp
     ${CMAKE_CURRENT_SOURCE_DIR}/third_party
     ${CMAKE_CURRENT_SOURCE_DIR}/tools
-    ${CMAKE_CURRENT_SOURCE_DIR}/cmake
 )
 
 install_scripts_to(tools
