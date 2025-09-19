@@ -128,7 +128,10 @@ Start-Sleep -Seconds 1
 echo "[info] Sending data to /dev/ttyS1"
 $StdIn.WriteLine("stty -echo raw -F /dev/ttyS1")
 Start-Sleep -Seconds 1
-$StdIn.WriteLine("while true; do echo test > /dev/ttyS1; sleep 1; done")
+$StdIn.WriteLine("while true;\")
+$StdIn.WriteLine("do echo test > /dev/ttyS1;\")
+$StdIn.WriteLine("sleep 1;\")
+$StdIn.WriteLine("done")
 
 # Start the SIL Kit registry
 echo "[info] Starting SIL Kit registry"
