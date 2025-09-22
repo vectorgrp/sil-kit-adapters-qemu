@@ -101,12 +101,14 @@ void Device::Process(asio::const_buffer incomingData)
 
             break;
         }
-        default: break;
+        default:
+            break;
         }
 
         break;
     }
-    default: break;
+    default:
+        break;
     }
 }
 

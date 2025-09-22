@@ -25,9 +25,9 @@ class EthSocketToEthControllerAdapter
 
 public:
     EthSocketToEthControllerAdapter(SilKit::IParticipant* participant, asio::io_context& io_context,
-                                      const std::string& host, const std::string& service,
-                                      const std::string& ethernetControllerName, const std::string& ethernetNetworkName,
-                                      bool enableDomainSockets);
+                                    const std::string& host, const std::string& service,
+                                    const std::string& ethernetControllerName, const std::string& ethernetNetworkName,
+                                    bool enableDomainSockets);
 
     template <class container>
     void SendEthernetFrameToQemu(const container& data)
@@ -52,12 +52,10 @@ private:
     std::function<void(std::vector<uint8_t>)> _onNewFrameHandler;
 };
 
-std::unique_ptr<EthSocketToEthControllerAdapter> parseEthernetSocketArgument(char* arg, std::set<std::string>& alreadyProvidedSockets,
-                                                               const std::string& participantName,
-                                                               asio::io_context& ioContext,
-                                                               SilKit::IParticipant* participant,
-                                                               SilKit::Services::Logging::ILogger* logger,
-                                                               const bool isTcpSocket);
+std::unique_ptr<EthSocketToEthControllerAdapter> parseEthernetSocketArgument(
+    char* arg, std::set<std::string>& alreadyProvidedSockets, const std::string& participantName,
+    asio::io_context& ioContext, SilKit::IParticipant* participant, SilKit::Services::Logging::ILogger* logger,
+    const bool isTcpSocket);
 
 } // namespace ethernet
 } // namespace adapters

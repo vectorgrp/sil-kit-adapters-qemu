@@ -79,20 +79,19 @@ int main(int argc, char** argv)
         static constexpr auto ethernetAddress = demo::EthernetAddress{0x01, 0x23, 0x45, 0x67, 0x89, 0xab};
         static constexpr auto ip4Address = demo::Ip4Address{192, 168, 7, 35};
         demo::Device demoDevice{ethernetAddress, ip4Address, [ethController](std::vector<std::uint8_t> data) {
-                                    const auto frameSize = data.size();
-                                    static intptr_t transmitId = 0;
-                                    ethController->SendFrame(EthernetFrame{std::move(data)},
-                                                             reinterpret_cast<void*>(++transmitId));
-                                    std::cout << "Demo >> SIL Kit: Ethernet frame (" << frameSize
-                                              << " bytes, txId=" << transmitId << ")" << std::endl;
-                                }};
+            const auto frameSize = data.size();
+            static intptr_t transmitId = 0;
+            ethController->SendFrame(EthernetFrame{std::move(data)}, reinterpret_cast<void*>(++transmitId));
+            std::cout << "Demo >> SIL Kit: Ethernet frame (" << frameSize << " bytes, txId=" << transmitId << ")"
+                      << std::endl;
+        }};
 
         ethController->AddFrameHandler(
             [&demoDevice](IEthernetController* /*controller*/, const EthernetFrameEvent& msg) {
-                auto rawFrame = msg.frame.raw;
-                std::cout << "SIL Kit >> Demo: Ethernet frame (" << rawFrame.size() << " bytes)" << std::endl;
-                demoDevice.Process(asio::buffer(rawFrame.data(), rawFrame.size()));
-            });
+            auto rawFrame = msg.frame.raw;
+            std::cout << "SIL Kit >> Demo: Ethernet frame (" << rawFrame.size() << " bytes)" << std::endl;
+            demoDevice.Process(asio::buffer(rawFrame.data(), rawFrame.size()));
+        });
 
         ethController->AddFrameTransmitHandler(&EthAckCallback);
 

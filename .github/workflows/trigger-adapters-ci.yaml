@@ -17,7 +17,7 @@ on:
     types: [opened, reopened, synchronize]
 
 concurrency:
-  group: serialization_group
+  group: serialization_group_qemu
   cancel-in-progress: false
 
 jobs:

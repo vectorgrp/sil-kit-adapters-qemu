@@ -59,8 +59,10 @@ inline auto ParseArpIp4Packet(asio::const_buffer data) -> ArpIp4Packet
     switch (operation)
     {
     case ArpOperation::Request:
-    case ArpOperation::Reply: break;
-    default: throw adapters::InvalidArpPacketError{};
+    case ArpOperation::Reply:
+        break;
+    default:
+        throw adapters::InvalidArpPacketError{};
     }
 
     const auto sha = ReadEthernetAddress(data + 8);

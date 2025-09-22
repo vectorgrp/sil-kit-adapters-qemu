@@ -100,61 +100,59 @@ EthSocketToEthControllerAdapter::EthSocketToEthControllerAdapter(SilKit::IPartic
     });
     _ethController->AddFrameTransmitHandler(
         [&](IEthernetController* /*controller*/, const EthernetFrameTransmitEvent& ack) -> void {
-            std::ostringstream debug_message;
-            if (ack.status == EthernetTransmitStatus::Transmitted)
-            {
-                debug_message << "SIL Kit >> Adapter: ACK for ETH Message with transmitId="
-                              << reinterpret_cast<intptr_t>(ack.userContext);
-            }
-            else
-            {
-                debug_message << "SIL Kit >> Adapter: NACK for ETH Message with transmitId="
-                              << reinterpret_cast<intptr_t>(ack.userContext) << ": " << ack.status;
-            }
-            _logger->Debug(debug_message.str());
-        });
+        std::ostringstream debug_message;
+        if (ack.status == EthernetTransmitStatus::Transmitted)
+        {
+            debug_message << "SIL Kit >> Adapter: ACK for ETH Message with transmitId="
+                          << reinterpret_cast<intptr_t>(ack.userContext);
+        }
+        else
+        {
+            debug_message << "SIL Kit >> Adapter: NACK for ETH Message with transmitId="
+                          << reinterpret_cast<intptr_t>(ack.userContext) << ": " << ack.status;
+        }
+        _logger->Debug(debug_message.str());
+    });
 
     _ethController->Activate();
 }
 
 void EthSocketToEthControllerAdapter::DoReceiveFrameFromQemu()
 {
-    asio::async_read(
-        _socket, asio::buffer(_frame_size_buffer.data(), _frame_size_buffer.size()),
-        [this](const std::error_code ec, const std::size_t bytes_received) {
-            if (ec || bytes_received != _frame_size_buffer.size())
+    asio::async_read(_socket, asio::buffer(_frame_size_buffer.data(), _frame_size_buffer.size()),
+                     [this](const std::error_code ec, const std::size_t bytes_received) {
+        if (ec || bytes_received != _frame_size_buffer.size())
+        {
+            throw IncompleteReadError{};
+        }
+
+        std::uint32_t frame_size = 0;
+        for (unsigned byte_index = 0; byte_index < 4; ++byte_index)
+        {
+            frame_size |= static_cast<std::uint32_t>(_frame_size_buffer[4 - 1 - byte_index]) << (byte_index * 8u);
+        }
+
+        if (frame_size > _frame_data_buffer.size())
+        {
+            throw InvalidFrameSizeError{};
+        }
+
+        asio::async_read(_socket, asio::buffer(_frame_data_buffer.data(), frame_size),
+                         [this, frame_size](const std::error_code ec, const std::size_t bytes_received) {
+            if (ec || bytes_received != frame_size)
             {
                 throw IncompleteReadError{};
             }
 
-            std::uint32_t frame_size = 0;
-            for (unsigned byte_index = 0; byte_index < 4; ++byte_index)
-            {
-                frame_size |= static_cast<std::uint32_t>(_frame_size_buffer[4 - 1 - byte_index]) << (byte_index * 8u);
-            }
+            auto frame_data = std::vector<std::uint8_t>(frame_size);
+            asio::buffer_copy(asio::buffer(frame_data),
+                              asio::buffer(_frame_data_buffer.data(), _frame_data_buffer.size()), frame_size);
 
-            if (frame_size > _frame_data_buffer.size())
-            {
-                throw InvalidFrameSizeError{};
-            }
+            _onNewFrameHandler(std::move(frame_data));
 
-            asio::async_read(_socket, asio::buffer(_frame_data_buffer.data(), frame_size),
-                             [this, frame_size](const std::error_code ec, const std::size_t bytes_received) {
-                                 if (ec || bytes_received != frame_size)
-                                 {
-                                     throw IncompleteReadError{};
-                                 }
-
-                                 auto frame_data = std::vector<std::uint8_t>(frame_size);
-                                 asio::buffer_copy(asio::buffer(frame_data),
-                                                   asio::buffer(_frame_data_buffer.data(), _frame_data_buffer.size()),
-                                                   frame_size);
-
-                                 _onNewFrameHandler(std::move(frame_data));
-
-                                 DoReceiveFrameFromQemu();
-                             });
+            DoReceiveFrameFromQemu();
         });
+    });
 }
 
 /// <summary>
@@ -226,8 +224,8 @@ std::unique_ptr<EthSocketToEthControllerAdapter> ethernet::parseEthernetSocketAr
         controllerName = generateControllerName();
     const std::string& networkName = *arg_iter;
 
-    auto newAdapter = std::make_unique<EthSocketToEthControllerAdapter>(
-        participant, ioContext, address, port, controllerName, networkName, isUnixSocket);
+    auto newAdapter = std::make_unique<EthSocketToEthControllerAdapter>(participant, ioContext, address, port,
+                                                                        controllerName, networkName, isUnixSocket);
 
     debug_message += " (" + networkName + ')';
     logger->Debug(debug_message);

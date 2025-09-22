@@ -12,8 +12,8 @@
 namespace demo {
 
 template <typename T>
-auto WriteUintBe(asio::mutable_buffer buffer, const T value)
-    -> std::enable_if_t<std::is_unsigned<T>::value, std::size_t>
+auto WriteUintBe(asio::mutable_buffer buffer,
+                 const T value) -> std::enable_if_t<std::is_unsigned<T>::value, std::size_t>
 {
     if (buffer.size() < sizeof(T))
     {
