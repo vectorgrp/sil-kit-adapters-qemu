@@ -39,7 +39,8 @@ EthSocketToEthControllerAdapter::EthSocketToEthControllerAdapter(SilKit::IPartic
                                                                  const std::string& ethernetControllerName,
                                                                  const std::string& ethernetNetworkName,
                                                                  bool enableDomainSockets)
-    : _socket{io_context}
+    : _ioContext{&io_context}
+    , _socket{io_context}
     , _logger{participant->GetLogger()}
     , _ethController(participant->CreateEthernetController(ethernetControllerName, ethernetNetworkName))
     , _onNewFrameHandler(std::move([&](std::vector<std::uint8_t> data) {
@@ -117,13 +118,31 @@ EthSocketToEthControllerAdapter::EthSocketToEthControllerAdapter(SilKit::IPartic
     _ethController->Activate();
 }
 
+void ShutdownEthSocketToEthControllerAdapter(SilKit::Services::Logging::ILogger* logger, asio::io_context* ioContext,
+                                             asio::generic::stream_protocol::socket& socket,
+                                             const std::string& logMessage)
+{
+    logger->Error(logMessage);
+    socket.close();
+    ioContext->stop();
+#ifdef WIN32
+    GenerateConsoleCtrlEvent(CTRL_C_EVENT, 0);
+#else
+    std::raise(SIGINT);
+#endif
+}
+
 void EthSocketToEthControllerAdapter::DoReceiveFrameFromQemu()
 {
     asio::async_read(_socket, asio::buffer(_frame_size_buffer.data(), _frame_size_buffer.size()),
                      [this](const std::error_code ec, const std::size_t bytes_received) {
         if (ec || bytes_received != _frame_size_buffer.size())
         {
-            throw IncompleteReadError{};
+            const std::string errorMsg =
+                "Error during socket read. Closing the socket and shutting down the adapter. (error code="
+                + std::to_string(ec.value()) + ", message=" + ec.message() + ")";
+
+            ShutdownEthSocketToEthControllerAdapter(_logger, _ioContext, _socket, errorMsg);
         }
 
         std::uint32_t frame_size = 0;
@@ -134,14 +153,22 @@ void EthSocketToEthControllerAdapter::DoReceiveFrameFromQemu()
 
         if (frame_size > _frame_data_buffer.size())
         {
-            throw InvalidFrameSizeError{};
+            const std::string errorMsg =
+                "Invalid frame size. Closing the socket and shutting down the adapter. (frame size="
+                + std::to_string(frame_size) + ")";
+
+            ShutdownEthSocketToEthControllerAdapter(_logger, _ioContext, _socket, errorMsg);
         }
 
         asio::async_read(_socket, asio::buffer(_frame_data_buffer.data(), frame_size),
                          [this, frame_size](const std::error_code ec, const std::size_t bytes_received) {
             if (ec || bytes_received != frame_size)
             {
-                throw IncompleteReadError{};
+                const std::string errorMsg =
+                    "Error during socket read. Closing the socket and shutting down the adapter. (error code="
+                    + std::to_string(ec.value()) + ", message=" + ec.message() + ")";
+
+                ShutdownEthSocketToEthControllerAdapter(_logger, _ioContext, _socket, errorMsg);
             }
 
             auto frame_data = std::vector<std::uint8_t>(frame_size);

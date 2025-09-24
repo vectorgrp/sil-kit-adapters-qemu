@@ -42,6 +42,7 @@ public:
 private:
     void DoReceiveFrameFromQemu();
 
+    asio::io_context* _ioContext;
     asio::generic::stream_protocol::socket _socket;
     SilKit::Services::Logging::ILogger* _logger;
 
