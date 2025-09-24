@@ -70,10 +70,10 @@ int main(int argc, char** argv)
         auto participantConfiguration =
             SilKit::Config::ParticipantConfigurationFromString(participantConfigurationString);
 
-        std::cout << "Creating participant '" << participantName << "' at " << registryURI << std::endl;
         auto participant = SilKit::CreateParticipant(participantConfiguration, participantName, registryURI);
 
-        std::cout << "Creating ethernet controller '" << ethernetControllerName << "'" << std::endl;
+        auto logger = participant->GetLogger();
+        logger->Info("Creating ethernet controller '" + ethernetControllerName + "'");
         auto* ethController = participant->CreateEthernetController(ethernetControllerName, ethernetNetworkName);
 
         static constexpr auto ethernetAddress = demo::EthernetAddress{0x01, 0x23, 0x45, 0x67, 0x89, 0xab};
