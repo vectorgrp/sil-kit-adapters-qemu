@@ -35,7 +35,7 @@ struct EthernetVlanTag
 inline auto WriteEthernetVlanTag(asio::mutable_buffer target, const EthernetVlanTag& ethernetVlanTag) -> std::size_t
 {
     target += WriteUintBe(target, ethernetVlanTag.tpid);
-    target += WriteUintBe(target + 2, ethernetVlanTag.data);
+    target += WriteUintBe(target, ethernetVlanTag.data);
     return 4;
 }
 
