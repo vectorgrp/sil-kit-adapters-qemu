@@ -67,7 +67,7 @@ sudo apt install ./sil-kit-adapter-qemu_*.deb
 ```
 To get more information about this Debian package you can refer to the SIL Kit Adapter Packaging [README](https://github.com/vectorgrp/sil-kit-adapters-pkg).
 
-**Note 1:** To be able to run the installed adapter you will also have to install the SIL Kit library. This can be done installing the `libsilkit5_*.deb` and `libsilkit-dev_*.deb` provided in the SIL Kit releases.
+**Note 1:** To be able to install and run the adapter, you will also need to install the SIL Kit library. This can be done by installing the `libsilkit<major>_*.deb` and `libsilkit-dev_*.deb` packages provided in the SIL Kit releases, where `<major>` corresponds to the SIL Kit major version (e.g., 5).
 
 **Note 2:** After installing the adapter, you can run the ``sil-kit-adapter-qemu`` from any location without specifying a path. The default installation path is ``/usr/bin``.
 
