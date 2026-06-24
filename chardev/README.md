@@ -171,9 +171,9 @@ root@silkit-qemu-demos-guest:~# while true; do echo test > /dev/ttyS1; sleep 1; 
 You can also run the same test set with ``CANoe4SW SE`` by executing the following PowerShell script ``./chardev/demos/CANoe4SW_SE/run.ps1``. The test cases are executed automatically and you should see a short test report in PowerShell after execution.
 
 ### CANoe4SW Server Edition (Linux)
-You can also run the same test set with ``CANoe4SW SE (Linux)``. At first you have to execute the PowerShell script ``./chardev/demos/CANoe4SW_SE/createEnvForLinux.ps1`` on your Windows system by using tools of ``CANoe4SW SE (Windows)`` to prepare your test environment for Linux. In ``./chardev/demos/CANoe4SW_SE/run.sh`` you should set ``canoe4sw_se_install_dir`` to the path of your ``CANoe4SW SE`` installation in your WSL. Afterwards you can execute ``./chardev/demos/CANoe4SW_SE/run.sh`` in your WSL. The test cases are executed automatically and you should see a short test report in your terminal after execution.
+You can also run the same test set with ``CANoe4SW SE (Linux)``. In ``./chardev/demos/CANoe4SW_SE/run.sh`` you should set ``canoe4sw_se_install_dir`` to the path of your ``CANoe4SW SE`` installation in your WSL. Afterwards you can execute ``./chardev/demos/CANoe4SW_SE/run.sh`` in your WSL. The test cases are executed automatically and you should see a short test report in your terminal after execution.
 
-## Demo with CANoe interaction (CANoe 17 SP3 or newer)
+## Demo with CANoe interaction (CANoe 19 SP3 or newer)
 This demo showcases sending data from CANoe Desktop to the serial port of QEMU.
 
 Before you can connect CANoe to the SIL Kit network you should adapt the `RegistryUri` in `./chardev/demos/SilKitConfig_CANoe.silkit.yaml` to the IP address of your system where your sil-kit-registry is running (in case of a WSL2 Ubuntu image e.g. the IP address of Eth0).
@@ -213,7 +213,7 @@ Similarly to the previous demo, any text sent to the ``/dev/ttyS1`` file inside 
 CANoe as data in the small widget for ``fromChardev``. While text inputted in CANoe's ``toChardev``
 field will be outputted by the ``cat`` inside QEMU once you press the "Send" button.
 
-## Byte-oriented demos (CANoe 17 SP3 or newer)
+## Byte-oriented demos (CANoe 19 SP3 or newer)
 
 These demos showcase binary transfer and conversion from the chardev channel to a DataPublisher-DataSubscriber pair for CANoe communication.
 

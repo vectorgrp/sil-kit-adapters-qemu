@@ -31,6 +31,7 @@ $RegistryProcess.StartInfo.FileName = "$SILKitDir\sil-kit-registry.exe"
 $RegistryProcess.StartInfo.Arguments = "--listen-uri 'silkit://0.0.0.0:8501'"
 $RegistryProcess.StartInfo.UseShellExecute = $false
 $RegistryProcess.StartInfo.RedirectStandardOutput = $true
+$RegistryProcess.StartInfo.RedirectStandardError = $true
 
 $RunQEMUProcess = New-Object System.Diagnostics.Process
 $RunQEMUProcess.StartInfo.FileName = "powershell"
@@ -43,32 +44,20 @@ $AdapterProcess.StartInfo.FileName = "$PSScriptRoot\..\..\..\bin\sil-kit-adapter
 $AdapterProcess.StartInfo.Arguments = "--socket-to-chardev localhost:23456,Namespace::toChardev,VirtualNetwork=Default,Instance=EchoDevice,Namespace::fromChardev,VirtualNetwork:Default,Instance:Adapter --configuration $PSScriptRoot\..\SilKitConfig_Adapter.silkit.yaml"
 $AdapterProcess.StartInfo.UseShellExecute = $false
 $AdapterProcess.StartInfo.RedirectStandardOutput = $true
+$AdapterProcess.StartInfo.RedirectStandardError = $true
 
 $DemoProcess = New-Object System.Diagnostics.Process
 $DemoProcess.StartInfo.FileName = "$PSScriptRoot\..\..\..\bin\sil-kit-demo-chardev-echo-device.exe"
 $DemoProcess.StartInfo.Arguments = "--log Debug"
 $DemoProcess.StartInfo.UseShellExecute = $false
 $DemoProcess.StartInfo.RedirectStandardOutput = $true
+$DemoProcess.StartInfo.RedirectStandardError = $true
 
-# Define all the output handlers
-$RegistryOutputHandler = {
+# Define the output handler (uses $Event.MessageData for the log file path)
+$OutputHandler = {
     param($sending, $data)
     if ($data.Data) {
-        Add-Content -Path "$logDir\sil-kit-registry_$timestamp.out" -Value $data.Data
-    }
-}
-
-$AdapterOutputHandler = {
-    param($sending, $data)
-    if ($data.Data) {
-        Add-Content -Path "$logDir\sil-kit-adapter-qemu_$timestamp.out" -Value $data.Data
-    }
-}
-
-$DemoOutputHandler = {
-    param($sending, $data)
-    if ($data.Data) {
-        Add-Content -Path "$logDir\sil-kit-demo-chardev-echo-device_$timestamp.out" -Value $data.Data
+        Add-Content -Path $Event.MessageData -Value $data.Data
     }
 }
 
@@ -76,14 +65,19 @@ Clear-Content -Path $logDir\sil-kit-registry_$timestamp.out -ErrorAction Silentl
 Clear-Content -Path $logDir\sil-kit-adapter-qemu_$timestamp.out -ErrorAction SilentlyContinue
 Clear-Content -Path $logDir\sil-kit-demo-chardev-echo-device_$timestamp.out -ErrorAction SilentlyContinue
 
-Register-ObjectEvent -InputObject $RegistryProcess -EventName OutputDataReceived -Action $RegistryOutputHandler | Out-Null
-Register-ObjectEvent -InputObject $AdapterProcess -EventName OutputDataReceived -Action $AdapterOutputHandler | Out-Null
-Register-ObjectEvent -InputObject $DemoProcess -EventName OutputDataReceived -Action $DemoOutputHandler | Out-Null
+Register-ObjectEvent -InputObject $RegistryProcess -EventName OutputDataReceived -Action $OutputHandler -MessageData "$logDir\sil-kit-registry_$timestamp.out" | Out-Null
+Register-ObjectEvent -InputObject $AdapterProcess -EventName OutputDataReceived -Action $OutputHandler -MessageData "$logDir\sil-kit-adapter-qemu_$timestamp.out" | Out-Null
+Register-ObjectEvent -InputObject $DemoProcess -EventName OutputDataReceived -Action $OutputHandler -MessageData "$logDir\sil-kit-demo-chardev-echo-device_$timestamp.out" | Out-Null
+Register-ObjectEvent -InputObject $RegistryProcess -EventName ErrorDataReceived -Action $OutputHandler -MessageData "$logDir\sil-kit-registry_$timestamp.out" | Out-Null
+Register-ObjectEvent -InputObject $AdapterProcess -EventName ErrorDataReceived -Action $OutputHandler -MessageData "$logDir\sil-kit-adapter-qemu_$timestamp.out" | Out-Null
+Register-ObjectEvent -InputObject $DemoProcess -EventName ErrorDataReceived -Action $OutputHandler -MessageData "$logDir\sil-kit-demo-chardev-echo-device_$timestamp.out" | Out-Null
 
 echo "[info] Starting the QEMU image"
+# Pre-create the log file so Get-Content -Wait can tail it immediately
+New-Item -Path "$logDir\run-silkit-qemu-demos-guest_$timestamp.out" -ItemType File -Force | Out-Null
 $out=$RunQEMUProcess.Start()
 
-# Sleep 2 seconds to create the output file
+# Sleep 2 seconds to let QEMU start producing output
 Start-Sleep -Seconds 2
 
 # Timeout for starting the QEMU image
@@ -139,6 +133,7 @@ $out=$RegistryProcess.Start()
 
 # Start recording the SIL Kit registry logs
 $RegistryProcess.BeginOutputReadLine()
+$RegistryProcess.BeginErrorReadLine()
 
 Start-Sleep -Seconds 2
 
@@ -149,7 +144,9 @@ $out=$DemoProcess.Start()
 
 # Start recording the adapter and the demo logs
 $AdapterProcess.BeginOutputReadLine()
+$AdapterProcess.BeginErrorReadLine()
 $DemoProcess.BeginOutputReadLine()
+$DemoProcess.BeginErrorReadLine()
 
 echo "[info] Starting run.ps1 test script"
 # Get the last line telling the overall test verdict (passed/failed)

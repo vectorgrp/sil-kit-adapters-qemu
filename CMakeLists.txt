@@ -80,16 +80,19 @@ install_scripts_to(tools/virt-builder/debian
 )
 
 install_scripts_to(eth/demos/CANoe4SW_SE
+    ${CMAKE_CURRENT_SOURCE_DIR}/eth/demos/CANoe4SW_SE/createEnvironment.sh
     ${CMAKE_CURRENT_SOURCE_DIR}/eth/demos/CANoe4SW_SE/run_all.sh
     ${CMAKE_CURRENT_SOURCE_DIR}/eth/demos/CANoe4SW_SE/run.sh
 )
 
 install_scripts_to(qmp/demos/CANoe4SW_SE
+    ${CMAKE_CURRENT_SOURCE_DIR}/qmp/demos/CANoe4SW_SE/createEnvironment.sh
     ${CMAKE_CURRENT_SOURCE_DIR}/qmp/demos/CANoe4SW_SE/run_all.sh
     ${CMAKE_CURRENT_SOURCE_DIR}/qmp/demos/CANoe4SW_SE/run.sh
 )
 
 install_scripts_to(chardev/demos/CANoe4SW_SE
+    ${CMAKE_CURRENT_SOURCE_DIR}/chardev/demos/CANoe4SW_SE/createEnvironment.sh
     ${CMAKE_CURRENT_SOURCE_DIR}/chardev/demos/CANoe4SW_SE/run_all.sh
     ${CMAKE_CURRENT_SOURCE_DIR}/chardev/demos/CANoe4SW_SE/run.sh
 )

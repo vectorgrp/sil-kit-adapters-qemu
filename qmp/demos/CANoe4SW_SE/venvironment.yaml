@@ -1,11 +1,11 @@
-version: "2.2.0"
+version: 4.0.0
 
 global-settings:
- time-source: internal-realtime
- default-network-mapping: external-sil-kit
+  working-mode:
+    time-source: internal-realtime
+    default-network-mapping: internal-simulator
 
 datasources:
-  input-files:
   - file-path: ../CANoe/Datasource_qmp.vcdl
 
 sil-kit:

@@ -84,7 +84,7 @@ And output similar to the following from the ``sil-kit-demo-ethernet-icmp-echo-d
     ...
 
 
-## Adding CANoe (17 SP3 or newer) as a participant
+## Adding CANoe (19 SP3 or newer) as a participant
 If CANoe is connected to the SIL Kit, all ethernet traffic is visible there as well. You can also execute a test unit which checks if the ICMP Ping and Pong is happening as expected.
 
 Before you can connect CANoe to the SIL Kit network you should adapt the ``RegistryUri`` in ``./eth/demos/SilKitConfig_CANoe.silkit.yaml`` to the IP address of your system where your sil-kit-registry is running (in case of a WSL Ubuntu image e.g. the IP address of Eth0). The configuration file is referenced by both following CANoe use cases (Desktop Edition and Server Edition).
@@ -96,7 +96,7 @@ Load the ``Qemu_Ethernet_adapter_CANoe.cfg`` from the ``./eth/demos/CANoe`` dire
 You can also run the same test set with ``CANoe4SW SE`` by executing the following PowerShell script ``./eth/demos/CANoe4SW_SE/run.ps1``. The test cases are executed automatically and you should see a short test report in PowerShell after execution.
 
 ### CANoe4SW Server Edition (Linux)
-You can also run the same test set with ``CANoe4SW SE (Linux)``. At first you have to execute the PowerShell script ``./eth/demos/CANoe4SW_SE/createEnvForLinux.ps1`` on your Windows system by using tools of ``CANoe4SW SE (Windows)`` to prepare your test environment for Linux. In ``./eth/demos/CANoe4SW_SE/run.sh`` you should set ``canoe4sw_se_install_dir`` to the path of your ``CANoe4SW SE`` installation in your WSL. Afterwards you can execute ``./eth/demos/CANoe4SW_SE/run.sh`` in your WSL. The test cases are executed automatically and you should see a short test report in your terminal after execution.
+You can also run the same test set with ``CANoe4SW SE (Linux)``. In ``./eth/demos/CANoe4SW_SE/run.sh`` you should set ``canoe4sw_se_install_dir`` to the path of your ``CANoe4SW SE`` installation in your WSL. Afterwards you can execute ``./eth/demos/CANoe4SW_SE/run.sh`` in your WSL. The test cases are executed automatically and you should see a short test report in your terminal after execution.
 
 ## Using the SIL Kit Dashboard
 

@@ -28,18 +28,21 @@ $RegistryProcess.StartInfo.FileName = "$SILKitDir\sil-kit-registry.exe"
 $RegistryProcess.StartInfo.Arguments = "--listen-uri 'silkit://0.0.0.0:8501' -s"
 $RegistryProcess.StartInfo.UseShellExecute = $false
 $RegistryProcess.StartInfo.RedirectStandardOutput = $true
+$RegistryProcess.StartInfo.RedirectStandardError = $true
 
 $RunQEMUProcess = New-Object System.Diagnostics.Process
 $RunQEMUProcess.StartInfo.FileName = "powershell"
 $RunQEMUProcess.StartInfo.Arguments = "$PSScriptRoot\..\..\..\tools\run-silkit-qemu-demos-guest.ps1 | Out-File -FilePath $PSScriptRoot\logs\run-silkit-qemu-demos-guest.out"
 $RunQEMUProcess.StartInfo.UseShellExecute = $false
 $RunQEMUProcess.StartInfo.RedirectStandardInput = $true
+$RunQEMUProcess.StartInfo.RedirectStandardError = $true
 
 $AdapterProcess = New-Object System.Diagnostics.Process
 $AdapterProcess.StartInfo.FileName = "$PSScriptRoot\..\..\..\bin\sil-kit-adapter-qemu.exe"
 $AdapterProcess.StartInfo.Arguments = "--socket-to-ethernet localhost:12345,network=Ethernet1 --socket-to-chardev localhost:4444,Namespace::toQMP,VirtualNetwork=Default,Instance=CANoe,Namespace::fromQMP,VirtualNetwork:Default,Instance:Adapter --configuration $PSScriptRoot\..\SilKitConfig_Adapter.silkit.yaml"
 $AdapterProcess.StartInfo.UseShellExecute = $false
 $AdapterProcess.StartInfo.RedirectStandardOutput = $true
+$AdapterProcess.StartInfo.RedirectStandardError = $true
 
 # Define all the output handlers
 $RegistryOutputHandler = {
@@ -61,6 +64,8 @@ Clear-Content -Path $PSScriptRoot\logs\sil-kit-adapter-qemu.out -ErrorAction Sil
 
 Register-ObjectEvent -InputObject $RegistryProcess -EventName OutputDataReceived -Action $RegistryOutputHandler | Out-Null
 Register-ObjectEvent -InputObject $AdapterProcess -EventName OutputDataReceived -Action $AdapterOutputHandler | Out-Null
+Register-ObjectEvent -InputObject $RegistryProcess -EventName ErrorDataReceived -Action $RegistryOutputHandler | Out-Null
+Register-ObjectEvent -InputObject $AdapterProcess -EventName ErrorDataReceived -Action $AdapterOutputHandler | Out-Null
 
 echo "[info] Starting the QEMU image"
 $out=$RunQEMUProcess.Start()
@@ -116,6 +121,7 @@ $out=$RegistryProcess.Start()
 
 # Start recording the SIL Kit registry logs
 $RegistryProcess.BeginOutputReadLine()
+$RegistryProcess.BeginErrorReadLine()
 
 Start-Sleep -Seconds 2
 
@@ -125,6 +131,7 @@ $out=$AdapterProcess.Start()
 
 # Start recording the adapter logs
 $AdapterProcess.BeginOutputReadLine()
+$AdapterProcess.BeginErrorReadLine()
 
 echo "[info] Starting run.ps1 test script"
 # Get the last line telling the overall test verdict (passed/failed)
