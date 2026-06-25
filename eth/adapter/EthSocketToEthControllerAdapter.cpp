@@ -14,6 +14,7 @@
 #include "common/StringUtils.hpp"
 #include "common/Parsing.hpp"
 #include "common/SocketToBytesPubSubAdapter.hpp"
+#include "common/util/SocketEndpointParsing.hpp"
 
 #include <asio/ts/buffer.hpp>
 #include <asio/ts/net.hpp>
@@ -234,12 +235,12 @@ std::unique_ptr<EthSocketToEthControllerAdapter> ethernet::parseEthernetSocketAr
     std::string address, port, debug_message;
     if (isUnixSocket)
     {
-        extractUnixSocket(address, port, arg_iter);
+        util_socket::extractUnixSocket(address, port, arg_iter);
         debug_message = "Created Ethernet transmitter " + address;
     }
     else // TCP Socket
     {
-        extractTcpSocket(address, port, arg_iter);
+        util_socket::extractTcpSocket(address, port, arg_iter);
         debug_message = "Created Ethernet transmitter " + address + ':' + port;
     }
 

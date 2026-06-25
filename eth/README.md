@@ -29,7 +29,7 @@ interface with the SIL Kit - and the ``sil-kit-demo-ethernet-icmp-echo-device`` 
     
     ./bin/sil-kit-demo-ethernet-icmp-echo-device
     
-The demo applications will produce output when they send and receive Ethernet frames from QEMU or the Vector SIL Kit.
+The demo applications will produce output when they send and receive Ethernet frames from QEMU or the SIL Kit.
 
 **Note 1:** You can compile and run the demos on Windows even if QEMU is running in WSL.
 
@@ -49,7 +49,7 @@ needs to be replaced by the following line:
 We remark that the ``-netdev stream`` option is only available with QEMU 7.2.0 and higher. Further, if you are building QEMU yourself from source, you may encounter problems regarding the 'user' networking backend in case of QEMU 7.2.0 and higher. In this case, the 'slirp' submodule is probably missing and can be added by recompiling QEMU with the option ``--enable-slirp``.
 
 ## ICMP Ping and Pong
-When the virtual machine boots, the network interface created for hooking up with the Vector SIL Kit (``silkit0``) is ``up``.
+When the virtual machine boots, the network interface created for hooking up with the SIL Kit (``silkit0``) is ``up``.
 It automatically assigns the static IP ``192.168.7.2/24`` to the interface.
 
 Apart from SSH you can also log into the QEMU guest with the user ``root`` with password ``root``.

@@ -47,7 +47,7 @@ Before you connect CANoe to the SIL Kit network you should adapt the ``RegistryU
 
 Load the ``Qemu_qmp_demo.cfg`` from the ``./qmp/demos/CANoe`` directory and start the measurement.
 
-When the QEMU image boots up, the network interface created for hooking up with the Vector SIL Kit (``silkit0``) is ``up``.
+When the QEMU image boots up, the network interface created for hooking up with the SIL Kit (``silkit0``) is ``up``.
 It automatically assigns the static IP ``192.168.7.2/24`` to the interface.
 
 Apart from SSH, you can also log into the QEMU guest with the user ``root`` with password ``root`` directly from the terminal where you have started the image.

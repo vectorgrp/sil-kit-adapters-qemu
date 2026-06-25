@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 
 cmake_minimum_required(VERSION 3.13)
-project(VectorSilKitAdapterQemu)
+project(SilKitAdapterQemu)
 
 include(common/cmake/RepoTargets.cmake)
 include(common/cmake/Building.cmake)
@@ -25,9 +25,9 @@ if (WIN32)
     if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
         # set the default install paths for Windows 32 and 64 bits
         if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-            set(CMAKE_INSTALL_PREFIX "C:/Program Files/Vector SIL Kit Adapter QEMU ${PROJECT_VERSION}" CACHE PATH "Default install path" FORCE)
+            set(CMAKE_INSTALL_PREFIX "C:/Program Files/SIL Kit Adapter QEMU ${PROJECT_VERSION}" CACHE PATH "Default install path" FORCE)
         elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
-            set(CMAKE_INSTALL_PREFIX "C:/Program Files (x86)/Vector SIL Kit Adapter QEMU ${PROJECT_VERSION}" CACHE PATH "Default install path" FORCE)
+            set(CMAKE_INSTALL_PREFIX "C:/Program Files (x86)/SIL Kit Adapter QEMU ${PROJECT_VERSION}" CACHE PATH "Default install path" FORCE)
         endif()
     endif(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 endif()

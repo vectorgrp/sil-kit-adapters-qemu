@@ -29,7 +29,7 @@ const std::string adapters::defaultParticipantName = "SilKitAdapterQemu";
 
 void print_version()
 {
-    std::cout << "Vector SIL Kit Adapter for QEMU - version: " << SILKIT_ADAPTER_VERSION << std::endl;
+    std::cout << "SIL Kit Adapter for QEMU - version: " << SILKIT_ADAPTER_VERSION << std::endl;
 }
 
 void print_help(bool userRequested = false)
@@ -54,9 +54,9 @@ void print_help(bool userRequested = false)
               << " <path to socket identifier>,network=<network's name>[:<controller's name>]]]\n"
                  " [["
               << chardevArg << "\n"
-              << SocketToBytesPubSubAdapter::printArgumentHelp("<host>:<port>", "    ") << " ]]\n"
+              << help::SocketAdapterArgumentHelp("<host>:<port>", "    ") << " ]]\n"
               << " [[" << unixChardevArg << "\n"
-              << SocketToBytesPubSubAdapter::printArgumentHelp("<path to socket identifier>", "    ")
+              << help::SocketAdapterArgumentHelp("<path to socket identifier>", "    ")
               << " ]]\n"
                  "\n"
                  "There needs to be at least one "

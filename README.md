@@ -1,4 +1,4 @@
-# Vector SIL Kit Adapter for QEMU
+# SIL Kit Adapter for QEMU
 [![Vector Informatik](https://img.shields.io/badge/Vector%20Informatik-rgb(180,0,50))](https://www.vector.com/int/en/)
 [![SocialNetwork](https://img.shields.io/badge/vectorgrp-rgb(0,113,176))](https://www.linkedin.com/company/vectorgrp/)\
 [![ReleaseBadge](https://img.shields.io/github/v/release/vectorgrp/sil-kit-adapters-qemu.svg)](https://github.com/vectorgrp/sil-kit-adapters-qemu/releases)
@@ -6,7 +6,7 @@
 [![Win & Linux Builds](https://github.com/vectorgrp/sil-kit-adapters-qemu/actions/workflows/build-linux-and-windows-release.yml/badge.svg)](https://github.com/vectorgrp/sil-kit-adapters-qemu/actions/workflows/build-linux-and-windows-release.yml)
 [![SIL Kit](https://img.shields.io/badge/SIL%20Kit-353b42?logo=github&logoColor=969da4)](https://github.com/vectorgrp/sil-kit)
 
-This collection of software is provided to illustrate how the [Vector SIL Kit](https://github.com/vectorgrp/sil-kit/)
+This collection of software is provided to illustrate how the [SIL Kit](https://github.com/vectorgrp/sil-kit/)
 can be attached to running [QEMU](https://www.qemu.org/) processes.
 
 This repository contains instructions to create, set up, and launch a QEMU image, and a minimal development environment.
@@ -35,7 +35,7 @@ Otherwise clone the standalone version of asio manually:
     git clone --branch asio-1-24-0 https://github.com/chriskohlhoff/asio.git third_party/asio
 
 ### Build the Adapter and Demos
-To build the adapter and demos, you'll need a SIL Kit package ``SilKit-x.y.z-$platform`` for your platform. You can download them directly from [Vector SIL Kit Releases](https://github.com/vectorgrp/sil-kit/releases). 
+To build the adapter and demos, you'll need a SIL Kit package ``SilKit-x.y.z-$platform`` for your platform. You can download them directly from [SIL Kit Releases](https://github.com/vectorgrp/sil-kit/releases). 
 The easiest way would be to download it with your web browser, unzip it and place it on your Windows file system, where it also can be accessed by WSL.
 
 The adapter and demos are built using ``cmake``:
@@ -53,9 +53,9 @@ The adapter and demos are built using ``cmake``:
 The adapter and demo executables will be available in the ``bin`` directory as well as the ``SilKit.dll`` if you are on Windows. Additionally the ``SilKit.lib`` on Windows and the ``libSilKit.so`` on Linux are automatically copied to the ``lib`` directory.
 
 ## b) Getting Started with pre-built Adapter and Demos
-Download a preview or release of the adapter directly from [Vector SIL Kit QEMU Releases](https://github.com/vectorgrp/sil-kit-adapters-qemu/releases).
+Download a preview or release of the adapter directly from [SIL Kit Adapter for QEMU Releases](https://github.com/vectorgrp/sil-kit-adapters-qemu/releases).
 
-If not already existent on your system you should also download a SIL Kit Release directly from [Vector SIL Kit Releases](https://github.com/vectorgrp/sil-kit/releases). You will need this for being able to start a sil-kit-registry.
+If not already existent on your system you should also download a SIL Kit Release directly from [SIL Kit Releases](https://github.com/vectorgrp/sil-kit/releases). You will need this for being able to start a sil-kit-registry.
 
 ## Install the sil-kit-adapter-qemu (optional)
 
@@ -89,7 +89,7 @@ To install the sil-kit-adapter-qemu on Windows, run the following command (can b
 
 **Note 2:** Elevated rights are needed to install the adapter under its default location. This can be achieved by running the command in a PowerShell opened as administrator.
 
-**Note 3:** The default installation path will be ``C:\Program Files\Vector SIL Kit Adapter QEMU <QEMU_ADAPTER_VERSION>``, with <QEMU_ADAPTER_VERSION> as the version of the QEMU adapter you install. 
+**Note 3:** The default installation path will be ``C:\Program Files\SIL Kit Adapter QEMU <QEMU_ADAPTER_VERSION>``, with <QEMU_ADAPTER_VERSION> as the version of the QEMU adapter you install. 
 Depending on your system this default path can be ``Program Files (x86)``.
 
 ### Run the sil-kit-adapter-qemu
@@ -168,7 +168,7 @@ With the following instructions you can setup your own QEMU image which can be u
 
 ## Ethernet Demo
 The aim of this demo is to showcase a simple adapter forwarding ethernet traffic from and to the QEMU image through
-Vector SIL Kit. Traffic being exchanged are ping (ICMP) requests, and the answering device replies only to them.
+SIL Kit. Traffic being exchanged are ping (ICMP) requests, and the answering device replies only to them.
 
 This demo is further explained in [eth/README.md](eth/README.md).
 
